@@ -13,7 +13,7 @@
 把下面这句话发给 AI Agent（点击右上角复制）：
 
 ```
-帮我安装这个求职看板：https://github.com/genius916/CareerSail-v2 —— 克隆仓库，启动服务，立即主动安装 lark-cli 并同步飞书秋招公司库（不要等我点击发现是空的再装），然后问我背景信息帮我搜岗位。
+帮我安装这个求职看板：https://github.com/genius916/CareerSail —— 克隆仓库，启动服务，立即主动安装 lark-cli 并同步飞书秋招公司库（不要等我点击发现是空的再装），然后问我背景信息帮我搜岗位。
 如果中途遇到需要安装的依赖（如 Node.js）、MCP 服务（如 Playwright MCP）、飞书同步工具（如 lark-cli）、浏览器自动化工具（如 /browser_use、Chrome DevTools MCP）、或者需要授权（如飞书登录、GitHub 授权），请直接教我怎么装，或者能装的就帮我装上，不要跳过这些步骤。
 ```
 
@@ -26,8 +26,8 @@ Agent 拿到仓库地址后会直接克隆、启动、初始化数据，遇到�
 适合 Claude Code 等终端用户：
 
 ```bash
-git clone https://github.com/genius916/CareerSail-v2.git
-cd CareerSail-v2
+git clone https://github.com/genius916/CareerSail.git
+cd CareerSail
 node dashboard/server.js
 ```
 

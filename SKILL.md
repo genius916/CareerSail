@@ -24,13 +24,13 @@ CareerSail 是一个本地求职看板，运行在用户的电脑上。它由三
 CareerSail 支持两种安装方式：
 
 **方式一：AI Agent 自动安装（推荐）** — 用户把仓库地址发给 Agent 即可：
-"帮我安装这个求职看板：https://github.com/genius916/CareerSail-v2 —— 克隆仓库，启动服务，**立即主动安装 lark-cli 并同步飞书秋招公司库**（不要等我点击发现是空的再装），然后问我背景信息帮我搜岗位。如果中途遇到需要安装的依赖（Node.js）、MCP 服务（Playwright MCP）、飞书同步工具（lark-cli）、浏览器自动化工具（/browser_use、Chrome DevTools MCP）、或需要授权（飞书、GitHub），请直接教我怎么装，或者能装的就帮我装上，不要跳过。"
+"帮我安装这个求职看板：https://github.com/genius916/CareerSail —— 克隆仓库，启动服务，**立即主动安装 lark-cli 并同步飞书秋招公司库**（不要等我点击发现是空的再装），然后问我背景信息帮我搜岗位。如果中途遇到需要安装的依赖（Node.js）、MCP 服务（Playwright MCP）、飞书同步工具（lark-cli）、浏览器自动化工具（/browser_use、Chrome DevTools MCP）、或需要授权（飞书、GitHub），请直接教我怎么装，或者能装的就帮我装上，不要跳过。"
 Agent 负责克隆仓库、启动服务、初始化数据文件（从 `templates/dashboard/` 复制空模板），并主动引导用户完成依赖安装。
 
 **方式二：终端手动安装** — 适合 Claude Code 等终端用户：
 ```bash
-git clone https://github.com/genius916/CareerSail-v2.git
-cd CareerSail-v2
+git clone https://github.com/genius916/CareerSail.git
+cd CareerSail
 node dashboard/server.js
 ```
 
