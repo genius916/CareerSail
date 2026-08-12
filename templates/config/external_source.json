@@ -1,0 +1,22 @@
+{
+  "_comment": "外部公司库数据源配置 — 同步飞书 Base 多维表格到本地 CSV，在仪表盘「秋招公司库」功能区展示",
+  "_usage": "可改成任何飞书 Base 链接：用 `lark-cli base +url-resolve --url '<飞书Base链接>' --as user` 获取 base_token",
+  "base_token": "Cf3ObcMAraB00OseV55cITzSnGg",
+  "table_id": "tblFFtkAAUnHjfXP",
+  "source_name": "27届 秋招投递信息",
+  "source_url": "https://y00b74dmx5n.feishu.cn/wiki/O6d1wk0UNiJq90kIsQfcRS9An1p",
+  "auto_sync_on_startup": true,
+  "sync_interval_hours": 6,
+  "last_sync_at": "",
+  "last_sync_count": 0,
+  "field_map": {
+    "公司名称": "company_name",
+    "企业类型": "enterprise_type",
+    "批次": "batch",
+    "base（超6个即全国）": "cities",
+    "岗位（具体需要查看官网）": "job_categories",
+    "开放日期": "open_date",
+    "截止日期": "deadline",
+    "招聘官网": "career_url"
+  }
+}

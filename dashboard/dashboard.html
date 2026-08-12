@@ -1,0 +1,2767 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CareerSail · 职航</title>
+<style>
+/* ========== CSS Variables ========== */
+:root {
+  --font-display: 'Georgia', 'Times New Roman', serif;
+  --font-body: -apple-system, 'Segoe UI', 'Microsoft YaHei', 'PingFang SC', sans-serif;
+
+  /* Light Theme — clean white */
+  --bg: #fefefe;
+  --bg-alt: #f9f8f6;
+  --surface: #ffffff;
+  --surface-hover: #f7f6f4;
+  --text: #1a1a1a;
+  --text-secondary: #6b6660;
+  --text-muted: #9a9590;
+  --accent: #c75b4a;
+  --accent-hover: #b04a3a;
+  --accent-soft: #fdf5f3;
+  --navy: #1e3b5c;
+  --navy-hover: #2a5078;
+  --navy-soft: #eef3f8;
+  --border: #e8e4df;
+  --border-light: #f0ede8;
+  --success: #3d8b6e;
+  --success-soft: #eef7f3;
+  --warning: #d4a853;
+  --warning-soft: #fdf8ee;
+  --danger: #c75b4a;
+  --danger-soft: #fdf5f3;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+  --shadow: 0 2px 12px rgba(0,0,0,0.05);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.08);
+  --radius: 10px;
+  --radius-sm: 6px;
+  --radius-lg: 16px;
+  --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="dark"] {
+  --bg: #0d1117;
+  --bg-alt: #111820;
+  --surface: #161b22;
+  --surface-hover: #1c2333;
+  --text: #e6e6e6;
+  --text-secondary: #8b949e;
+  --text-muted: #5d646e;
+  --accent: #e07060;
+  --accent-hover: #c96050;
+  --accent-soft: #2d1f1c;
+  --navy: #58a6ff;
+  --navy-hover: #79b8ff;
+  --navy-soft: #1a2332;
+  --border: #21262d;
+  --border-light: #1c2128;
+  --success: #3fb950;
+  --success-soft: #1a2f1e;
+  --warning: #d2991d;
+  --warning-soft: #2a2418;
+  --danger: #e07060;
+  --danger-soft: #2d1f1c;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.2);
+  --shadow: 0 2px 12px rgba(0,0,0,0.25);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.35);
+}
+
+/* ========== Reset & Base ========== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{
+  font-family:var(--font-body);
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  min-height:100vh;
+  transition:background var(--transition),color var(--transition);
+  -webkit-font-smoothing:antialiased;
+}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+/* ========== Layout ========== */
+.app-container{max-width:1320px;margin:0 auto;padding:0 28px;position:relative;z-index:1}
+
+/* ========== Header ========== */
+.header{
+  padding:28px 0 20px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:14px;
+}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-icon{
+  width:42px;height:42px;
+  background:linear-gradient(135deg,#1e3b5c,#c75b4a);
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:19px;
+  box-shadow:0 3px 10px rgba(199,91,74,0.2);
+}
+.brand-text h1{font-family:var(--font-display);font-size:1.65rem;font-weight:600;color:var(--text);letter-spacing:-0.5px;line-height:1.2}
+.brand-text span{font-size:0.78rem;color:var(--text-secondary);font-weight:400;letter-spacing:0.5px}
+.header-actions{display:flex;align-items:center;gap:8px}
+
+/* ========== Buttons ========== */
+.btn{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:9px 16px;border-radius:var(--radius-sm);
+  font-family:var(--font-body);font-size:0.85rem;font-weight:500;
+  border:none;cursor:pointer;
+  transition:all var(--transition);text-decoration:none;white-space:nowrap;
+}
+.btn-primary{background:var(--navy);color:#fff}
+.btn-primary:hover{background:var(--navy-hover)}
+.btn-accent{background:var(--accent);color:#fff}
+.btn-accent:hover{background:var(--accent-hover)}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--text)}
+.btn-outline:hover{background:var(--surface-hover);border-color:var(--text-muted)}
+.btn-ghost{background:transparent;color:var(--text-secondary);padding:7px 10px}
+.btn-ghost:hover{background:var(--surface-hover);color:var(--text)}
+.btn-sm{padding:6px 12px;font-size:0.78rem}
+.btn-xs{padding:4px 8px;font-size:0.72rem;border-radius:5px}
+.resume-gen-btn{border-color:var(--accent);color:var(--accent);font-weight:500}
+.resume-gen-btn:hover{background:var(--accent-soft);border-color:var(--accent-hover);color:var(--accent-hover)}
+
+/* ========== Theme Toggle — Nautical Compass ========== */
+.theme-toggle{
+  width:40px;height:40px;border-radius:50%;
+  border:1.5px solid var(--border);background:var(--surface);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all 0.3s ease;padding:0;position:relative;overflow:hidden;
+}
+.theme-toggle:hover{background:var(--surface-hover);transform:rotate(30deg);border-color:var(--accent)}
+.theme-toggle svg{width:20px;height:20px;transition:all 0.3s ease}
+.theme-toggle .icon-sun{display:block}
+.theme-toggle .icon-moon{display:none}
+[data-theme="dark"] .theme-toggle{background:var(--surface)}
+[data-theme="dark"] .theme-toggle .icon-sun{display:none}
+[data-theme="dark"] .theme-toggle .icon-moon{display:block}
+[data-theme="dark"] .theme-toggle:hover{border-color:var(--navy)}
+
+/* ========== Stats Row ========== */
+.stats-row{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;
+}
+.stat-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:16px 20px;
+  cursor:pointer;transition:all var(--transition);
+  position:relative;overflow:hidden;
+}
+.stat-card:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
+.stat-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;transition:all var(--transition)}
+.stat-card:nth-child(1)::before{background:var(--navy)}
+.stat-card:nth-child(2)::before{background:var(--warning)}
+.stat-card:nth-child(3)::before{background:var(--accent)}
+.stat-card:nth-child(4)::before{background:var(--success)}
+.stat-label{font-size:0.75rem;color:var(--text-secondary);font-weight:500;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px}
+.stat-value{font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--text);line-height:1}
+.stat-sub{font-size:0.72rem;color:var(--text-muted);margin-top:2px}
+
+/* ========== 投递工具快捷栏 ========== */
+.tools-bar{
+  display:flex;gap:12px;margin-bottom:18px;flex-wrap:wrap
+}
+.tool-card{
+  display:flex;align-items:center;gap:10px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:12px 16px;
+  text-decoration:none;transition:all var(--transition);
+  flex:1;min-width:240px
+}
+.tool-card:hover{box-shadow:var(--shadow);border-color:var(--accent);transform:translateY(-1px)}
+.tool-icon{font-size:1.5rem;flex-shrink:0}
+.tool-info{min-width:0}
+.tool-name{font-size:0.85rem;font-weight:600;color:var(--text)}
+.tool-desc{font-size:0.72rem;color:var(--text-muted);margin-top:2px;line-height:1.4}
+.tool-badge{
+  display:inline-block;font-size:0.65rem;padding:2px 6px;border-radius:3px;
+  background:var(--accent-soft);color:var(--accent);margin-left:6px;font-weight:500
+}
+
+/* ========== Main Layout ========== */
+.main-layout{display:flex;gap:20px;min-height:60vh}
+.sidebar{width:230px;flex-shrink:0}
+.content-area{flex:1;min-width:0}
+
+/* ========== Sidebar Filters ========== */
+.filter-panel{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:16px;
+  position:sticky;top:20px;
+  max-height:calc(100vh - 40px);overflow-y:auto;
+}
+.filter-panel h3{font-size:0.8rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;font-weight:600}
+.filter-section{margin-bottom:14px}
+.filter-section:last-child{margin-bottom:0}
+.filter-section label{display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.5px}
+.filter-select{
+  width:100%;padding:8px 10px;border:1.5px solid var(--border);
+  border-radius:var(--radius-sm);font-family:var(--font-body);
+  font-size:0.82rem;background:var(--bg);color:var(--text);
+  cursor:pointer;transition:border-color var(--transition);
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239a9590' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;
+}
+.filter-select:focus{outline:none;border-color:var(--navy);background:var(--surface)}
+.search-input{
+  width:100%;padding:8px 10px 8px 32px;
+  border:1.5px solid var(--border);border-radius:var(--radius-sm);
+  font-family:var(--font-body);font-size:0.82rem;
+  background:var(--bg);color:var(--text);
+  transition:border-color var(--transition);
+}
+.search-input:focus{outline:none;border-color:var(--navy);background:var(--surface)}
+.search-wrap{position:relative}
+.search-wrap .search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:0.8rem;pointer-events:none}
+
+/* Category Tags — vertical expandable */
+.cat-tags{display:flex;flex-wrap:wrap;gap:5px}
+.cat-tag{
+  padding:4px 9px;border-radius:12px;font-size:0.7rem;font-weight:500;
+  cursor:pointer;border:1px solid var(--border-light);
+  background:var(--bg);color:var(--text-secondary);
+  transition:all var(--transition);white-space:nowrap;
+}
+.cat-tag:hover{background:var(--surface-hover);border-color:var(--text-muted)}
+.cat-tag.active{background:var(--navy-soft);color:var(--navy);border-color:var(--navy);font-weight:600}
+.cat-tag .cat-count{font-size:0.65rem;opacity:0.7;margin-left:2px}
+
+/* ========== Status Tabs ========== */
+.status-tabs{
+  display:flex;gap:0;margin-bottom:16px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;
+}
+.status-tab{
+  flex:1;padding:12px 16px;text-align:center;
+  font-size:0.85rem;font-weight:500;cursor:pointer;
+  border:none;background:transparent;color:var(--text-secondary);
+  transition:all var(--transition);font-family:var(--font-body);
+  border-bottom:2px solid transparent;
+}
+.status-tab:hover{color:var(--text);background:var(--surface-hover)}
+.status-tab.active{color:var(--navy);border-bottom-color:var(--navy);font-weight:600}
+.status-tab .count{font-size:0.7rem;color:var(--text-muted);margin-left:4px}
+.status-tab.active .count{color:var(--navy)}
+
+/* ========== Job List (Vertical) ========== */
+.job-count-bar{padding:4px 0 12px;font-size:0.78rem;color:var(--text-muted)}
+.job-list{display:flex;flex-direction:column;gap:10px}
+
+.job-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:18px 20px;
+  transition:all var(--transition);
+  display:flex;align-items:flex-start;gap:16px;
+  animation:cardIn 0.35s ease-out backwards;
+}
+@keyframes cardIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.job-card:hover{box-shadow:var(--shadow);border-color:var(--text-muted)}
+.job-card.excluded{opacity:0.45;border-style:dashed}
+.job-card.excluded:hover{opacity:0.6}
+
+.job-card-left{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:48px;padding-top:2px}
+.job-priority-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.dot-最高{background:var(--danger);box-shadow:0 0 6px var(--danger)}
+.dot-High{background:var(--warning);box-shadow:0 0 6px var(--warning)}
+.dot-Medium{background:var(--navy);box-shadow:0 0 4px var(--navy)}
+.dot-低{background:var(--text-muted)}
+
+.job-card-main{flex:1;min-width:0}
+.job-card-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.job-company{font-family:var(--font-display);font-size:1.05rem;font-weight:600;color:var(--text);line-height:1.3}
+.job-title-text{font-size:0.82rem;color:var(--text-secondary);margin-top:1px}
+.job-meta{display:flex;gap:14px;margin-top:6px;font-size:0.78rem;color:var(--text-muted);flex-wrap:wrap;align-items:center}
+.job-meta-item{display:flex;align-items:center;gap:3px}
+
+.badge-row{display:flex;gap:5px;flex-wrap:wrap;flex-shrink:0}
+.badge{padding:3px 9px;border-radius:12px;font-size:0.68rem;font-weight:600;letter-spacing:0.3px;white-space:nowrap}
+.badge-cat{background:var(--navy-soft);color:var(--navy)}
+.badge-priority{background:var(--warning-soft);color:var(--warning)}
+.badge-priority.p-high{background:var(--danger-soft);color:var(--danger)}
+.badge-status{font-size:0.65rem;padding:2px 7px}
+.badge-status.submitted{background:var(--accent-soft);color:var(--accent)}
+.badge-status.ended{background:var(--bg-alt);color:var(--text-muted)}
+.badge-status.offer{background:var(--success-soft);color:var(--success)}
+
+.job-card-actions{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap;align-items:center}
+.stage-select{
+  padding:5px 8px;border-radius:var(--radius-sm);
+  font-size:0.75rem;font-family:var(--font-body);
+  border:1.5px solid var(--border);background:var(--surface);
+  color:var(--text);cursor:pointer;max-width:140px;
+}
+.stage-select:focus{outline:none;border-color:var(--navy)}
+.job-link{color:var(--navy);text-decoration:none;font-size:0.78rem;font-weight:500;transition:color var(--transition)}
+.job-link:hover{color:var(--accent);text-decoration:underline}
+
+/* ========== Timeline View (Submitted/Ended) ========== */
+.timeline-view{padding:0}
+.timeline-entry{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:20px;
+  margin-bottom:12px;position:relative;
+  transition:all var(--transition);
+  animation:cardIn 0.35s ease-out backwards;
+}
+.timeline-entry:hover{box-shadow:var(--shadow)}
+.timeline-entry::before{
+  content:'';position:absolute;left:20px;top:56px;bottom:-12px;
+  width:2px;background:var(--border);
+}
+.timeline-entry:last-child::before{display:none}
+
+.timeline-header{display:flex;align-items:flex-start;gap:12px}
+.timeline-dot{
+  width:12px;height:12px;border-radius:50%;
+  border:2px solid var(--surface);flex-shrink:0;margin-top:4px;
+  position:relative;z-index:1;
+}
+.timeline-dot.active{background:var(--navy);box-shadow:0 0 0 3px var(--navy-soft)}
+.timeline-dot.done{background:var(--success)}
+.timeline-dot.fail{background:var(--danger)}
+
+.timeline-body{flex:1}
+.timeline-company{font-family:var(--font-display);font-size:1rem;font-weight:600;color:var(--text)}
+.timeline-title{font-size:0.8rem;color:var(--text-secondary)}
+.timeline-stages{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.timeline-stage{
+  padding:4px 10px;border-radius:12px;font-size:0.7rem;
+  font-weight:500;background:var(--bg-alt);color:var(--text-secondary);
+  border:1px solid var(--border-light);
+}
+.timeline-stage.current{background:var(--navy-soft);color:var(--navy);border-color:var(--navy);font-weight:600}
+.timeline-stage.passed{background:var(--success-soft);color:var(--success);border-color:var(--success)}
+.timeline-stage.failed{background:var(--danger-soft);color:var(--danger);border-color:var(--danger)}
+
+.timeline-footer{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:10px;border-top:1px solid var(--border-light)}
+.timeline-date{font-size:0.75rem;color:var(--text-muted)}
+
+/* Collapsible Timeline Detail */
+.timeline-toggle{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 9px;border-radius:12px;font-size:0.7rem;
+  cursor:pointer;border:1px dashed var(--border);
+  background:transparent;color:var(--text-muted);
+  transition:all var(--transition);font-family:var(--font-body);
+  white-space:nowrap;
+}
+.timeline-toggle:hover{background:var(--navy-soft);color:var(--navy);border-color:var(--navy)}
+.timeline-toggle.open{background:var(--navy-soft);color:var(--navy);border-color:var(--navy)}
+.timeline-detail{
+  display:none;margin-top:10px;padding:14px 16px;
+  background:var(--bg);border-radius:var(--radius-sm);
+  border:1px solid var(--border-light);
+}
+.timeline-detail.open{display:block;animation:cardIn 0.25s ease}
+.timeline-detail-item{
+  display:flex;align-items:flex-start;gap:10px;padding:8px 0;
+  border-bottom:1px solid var(--border-light);position:relative;
+}
+.timeline-detail-item:last-child{border-bottom:none}
+.timeline-detail-dot{
+  width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px;
+  background:var(--navy);
+}
+.timeline-detail-dot.latest{background:var(--accent);box-shadow:0 0 4px var(--accent)}
+.timeline-detail-content{flex:1;min-width:0}
+.timeline-detail-date{font-size:0.7rem;color:var(--text-muted);margin-bottom:1px}
+.timeline-detail-event{font-size:0.82rem;color:var(--text);font-weight:500}
+.timeline-detail-notes{font-size:0.75rem;color:var(--text-secondary);margin-top:2px}
+.timeline-detail-actions{display:flex;gap:4px;flex-shrink:0;align-items:center}
+.timeline-detail-edit{
+  width:22px;height:22px;border-radius:4px;border:none;background:transparent;
+  color:var(--text-muted);cursor:pointer;font-size:0.7rem;display:flex;
+  align-items:center;justify-content:center;transition:all var(--transition);
+}
+.timeline-detail-edit:hover{background:var(--surface-hover);color:var(--accent)}
+.timeline-detail-empty{font-size:0.78rem;color:var(--text-muted);text-align:center;padding:8px 0}
+
+/* Current stage badge in timeline */
+.current-stage-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:5px 12px;border-radius:14px;font-size:0.78rem;
+  font-weight:600;background:var(--navy-soft);color:var(--navy);
+  border:1px solid var(--navy);
+}
+
+/* ========== Excluded Section ========== */
+.excluded-section{margin-top:24px;opacity:0.55}
+.excluded-section h4{font-size:0.78rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-weight:500;display:flex;align-items:center;gap:6px}
+.excluded-section h4::after{content:'';flex:1;height:1px;background:var(--border-light)}
+
+/* ========== Empty State ========== */
+.empty-state{text-align:center;padding:60px 20px;color:var(--text-muted)}
+.empty-state-icon{font-size:2.5rem;margin-bottom:10px;opacity:0.4}
+.empty-state-text{font-size:0.9rem}
+
+/* ========== Modal ========== */
+.modal-overlay{
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  background:rgba(0,0,0,0.45);backdrop-filter:blur(3px);
+  display:flex;align-items:center;justify-content:center;
+  z-index:100;animation:fadeIn 0.2s ease;
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{
+  background:var(--surface);border-radius:var(--radius-lg);
+  padding:28px;width:90%;max-width:560px;max-height:85vh;
+  overflow-y:auto;box-shadow:var(--shadow-lg);
+  animation:slideUp 0.25s ease;
+}
+@keyframes slideUp{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal h2{font-family:var(--font-display);font-size:1.3rem;margin-bottom:18px;color:var(--text)}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.5px}
+.form-group input,.form-group select,.form-group textarea{
+  width:100%;padding:9px 12px;border:1.5px solid var(--border);
+  border-radius:var(--radius-sm);font-family:var(--font-body);
+  font-size:0.85rem;background:var(--bg);color:var(--text);
+  transition:border-color var(--transition);
+}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--navy);background:var(--surface)}
+.form-group textarea{resize:vertical;min-height:70px}
+.form-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+
+/* Guide Modal */
+.guide-steps{display:flex;flex-direction:column;gap:14px}
+.guide-step{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:var(--radius-sm);background:var(--bg);border:1px solid var(--border-light)}
+.guide-step-num{width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;flex-shrink:0}
+.guide-step-content h4{font-size:0.88rem;margin-bottom:2px;color:var(--text)}
+.guide-step-content p{font-size:0.78rem;color:var(--text-secondary);line-height:1.5}
+
+/* ========== Log Panel ========== */
+.log-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-top:20px}
+.log-panel-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.log-panel h3{font-size:0.8rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;font-weight:600;display:flex;align-items:center;gap:6px;margin:0}
+.log-panel h3 .log-badge{font-size:0.65rem;background:var(--navy-soft);color:var(--navy);padding:1px 7px;border-radius:10px;font-weight:500}
+.log-actions{display:flex;gap:4px}
+.log-scroll{max-height:360px;overflow-y:auto;padding-right:4px}
+.log-scroll::-webkit-scrollbar{width:4px}
+.log-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.log-entry{font-size:0.78rem;color:var(--text-secondary);padding:6px 8px;border-bottom:1px solid var(--border-light);display:flex;gap:8px;align-items:flex-start;transition:background var(--transition);border-radius:4px}
+.log-entry:hover{background:var(--bg-alt)}
+.log-entry:last-child{border-bottom:none}
+.log-time{color:var(--text-muted);white-space:nowrap;font-size:0.7rem;min-width:50px;text-align:right}
+.log-msg{flex:1;word-break:break-word}
+.log-notes{font-size:0.72rem;color:var(--accent);margin-top:2px;font-style:italic}
+.log-actions-inline{display:flex;gap:3px;flex-shrink:0;opacity:0;transition:opacity 0.2s}
+.log-entry:hover .log-actions-inline{opacity:1}
+.log-btn-mini{width:20px;height:20px;border-radius:3px;border:none;background:transparent;color:var(--text-muted);cursor:pointer;font-size:0.65rem;display:flex;align-items:center;justify-content:center;transition:all var(--transition)}
+.log-btn-mini:hover{background:var(--surface-hover);color:var(--accent)}
+.log-date-sep{font-size:0.72rem;color:var(--accent);font-weight:600;padding:10px 0 4px;margin-bottom:2px;border-bottom:1px solid var(--border-light);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--surface);z-index:2}
+.log-date-sep:first-child{margin-top:0}
+.log-date-count{font-size:0.65rem;color:var(--text-muted);font-weight:400}
+.log-empty{font-size:0.82rem;color:var(--text-muted);text-align:center;padding:20px 0}
+.log-note-input{width:100%;padding:4px 8px;border:1px solid var(--border);border-radius:4px;font-family:var(--font-body);font-size:0.75rem;background:var(--bg);color:var(--text);margin-top:2px}
+.log-note-input:focus{outline:none;border-color:var(--navy)}
+
+/* Toast */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 18px;box-shadow:var(--shadow-lg);z-index:200;animation:slideIn 0.3s ease;font-size:0.85rem;color:var(--text)}
+@keyframes slideIn{from{transform:translateX(80px);opacity:0}to{transform:translateX(0);opacity:1}}
+.toast.success{border-left:3px solid var(--success)}
+.toast.error{border-left:3px solid var(--danger)}
+
+/* Loading spinner */
+.spin{animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ========== Responsive ========== */
+@media(max-width:860px){
+  .main-layout{flex-direction:column}
+  .sidebar{width:100%}
+  .filter-panel{position:static;display:flex;flex-wrap:wrap;gap:10px}
+  .filter-section{flex:1;min-width:120px;margin-bottom:0}
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .job-card{flex-direction:column;gap:10px}
+  .job-card-left{flex-direction:row;min-width:auto}
+}
+@media(max-width:480px){
+  .app-container{padding:0 12px}
+  .stats-row{grid-template-columns:1fr 1fr;gap:8px}
+  .stat-card{padding:12px 14px}
+  .stat-value{font-size:1.5rem}
+  .header{padding:16px 0 12px}
+  .brand-text h1{font-size:1.3rem}
+}
+
+/* ========== 秋招公司库（外部数据源）========== */
+.ext-tab{background:linear-gradient(90deg,transparent 0%,var(--navy-soft) 100%);border-left:3px solid var(--navy)}
+.ext-tab.active{background:var(--navy-soft)}
+
+.ext-toolbar{
+  display:flex;justify-content:space-between;align-items:center;
+  gap:12px;margin-bottom:14px;flex-wrap:wrap;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:12px 16px;
+}
+.ext-toolbar-left{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.ext-toolbar-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ext-source-info{font-size:0.8rem;color:var(--text-secondary);font-weight:500}
+.ext-sync-info{font-size:0.72rem;color:var(--text-muted);background:var(--bg-alt);padding:3px 8px;border-radius:10px}
+.ext-sync-info.synced{color:var(--success);background:var(--success-soft)}
+.ext-sync-info.syncing{color:var(--warning);background:var(--warning-soft)}
+.ext-filter{padding:6px 10px;font-size:0.78rem;max-width:130px;padding-right:26px}
+.ext-search{padding:6px 10px 6px 28px;font-size:0.78rem}
+
+.ext-table-wrap{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;overflow-x:auto;
+}
+.ext-table{width:100%;border-collapse:collapse;font-size:0.82rem}
+.ext-table thead{background:var(--bg-alt)}
+.ext-table th{
+  padding:10px 14px;text-align:left;font-weight:600;
+  color:var(--text-secondary);font-size:0.72rem;
+  text-transform:uppercase;letter-spacing:0.5px;
+  border-bottom:1px solid var(--border);white-space:nowrap;
+}
+.ext-table td{
+  padding:10px 14px;border-bottom:1px solid var(--border-light);
+  color:var(--text);vertical-align:top;
+}
+.ext-table tbody tr:hover{background:var(--surface-hover)}
+.ext-table tbody tr:last-child td{border-bottom:none}
+.ext-company{font-weight:600;color:var(--text)}
+.ext-type-badge{
+  display:inline-block;padding:2px 8px;border-radius:10px;
+  font-size:0.7rem;font-weight:500;
+}
+.ext-type-badge.国央企{background:#e6f4ff;color:#0958d9}
+.ext-type-badge.科技{background:#f6ffed;color:#389e0d}
+.ext-type-badge.互联网{background:#fff1f0;color:#cf1322}
+.ext-type-badge.游戏{background:#f9f0ff;color:#531dab}
+.ext-type-badge.外企{background:#e6f4ff;color:#0958d9}
+.ext-type-badge.金融{background:#fffbe6;color:#d4b106}
+.ext-type-badge.教育{background:#fff7e6;color:#d46b08}
+.ext-batch{font-size:0.74rem;color:var(--text-secondary)}
+.ext-cities,.ext-jobs{font-size:0.74rem;color:var(--text-secondary);max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ext-date{font-size:0.74rem;color:var(--text-muted);white-space:nowrap}
+.ext-link{color:var(--navy);text-decoration:none;font-size:0.76rem;font-weight:500}
+.ext-link:hover{color:var(--accent);text-decoration:underline}
+.ext-actions{display:flex;gap:5px;white-space:nowrap;align-items:center}
+.ext-empty{padding:40px 20px;text-align:center}
+
+/* ========== Favorite & Exclude Buttons ========== */
+.ext-row-excluded{opacity:0.45;background:var(--bg-alt)}
+.ext-row-excluded td{color:var(--text-muted);text-decoration:line-through}
+.ext-row-excluded:hover{opacity:0.6}
+.ext-row-favorited td.ext-company{position:relative}
+.ext-row-favorited td.ext-company::before{content:'⭐';position:absolute;left:2px;top:10px;font-size:0.7rem;opacity:0.85}
+.ext-row-favorited td.ext-company{padding-left:18px}
+
+.star-btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  background:transparent;border:none;cursor:pointer;
+  font-size:1rem;line-height:1;padding:4px 6px;border-radius:var(--radius-sm);
+  color:var(--text-muted);transition:all var(--transition);
+}
+.star-btn:hover{background:var(--surface-hover);transform:scale(1.15)}
+.star-btn.active{color:var(--warning)}
+
+.ext-star{
+  display:inline-flex;align-items:center;justify-content:center;
+  background:transparent;border:none;cursor:pointer;
+  font-size:0.95rem;line-height:1;padding:4px 5px;border-radius:var(--radius-sm);
+  color:var(--text-muted);transition:all var(--transition);
+}
+.ext-star:hover{background:var(--surface-hover);transform:scale(1.15)}
+.ext-star.active{color:var(--warning)}
+
+.ext-exclude-btn{
+  display:inline-flex;align-items:center;gap:2px;
+  background:transparent;border:none;cursor:pointer;
+  font-size:0.72rem;padding:4px 6px;border-radius:var(--radius-sm);
+  color:var(--text-muted);transition:all var(--transition);white-space:nowrap;
+}
+.ext-exclude-btn:hover{background:var(--danger-soft);color:var(--danger)}
+.ext-exclude-btn.excluded{color:var(--danger)}
+.ext-exclude-btn.excluded:hover{color:var(--success);background:var(--success-soft)}
+
+/* ========== v3.7: 岗位类别折叠下拉框（替代平铺标签）========== */
+.cat-dropdown{
+  position:relative;width:100%;
+}
+.cat-dropdown-trigger{
+  width:100%;display:flex;align-items:center;justify-content:space-between;
+  padding:8px 10px;border:1.5px solid var(--border);border-radius:var(--radius-sm);
+  background:var(--bg);color:var(--text);cursor:pointer;
+  font-size:0.82rem;font-family:var(--font-body);
+  transition:border-color var(--transition);
+}
+.cat-dropdown-trigger:hover{border-color:var(--text-muted)}
+.cat-dropdown-trigger .cat-trigger-label{
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;
+}
+.cat-dropdown-trigger .cat-trigger-caret{
+  font-size:0.7rem;color:var(--text-muted);transition:transform var(--transition);margin-left:6px;
+}
+.cat-dropdown.open .cat-dropdown-trigger .cat-trigger-caret{transform:rotate(180deg)}
+.cat-dropdown-panel{
+  position:absolute;bottom:calc(100% + 4px);left:0;right:0;
+  max-height:280px;overflow-y:auto;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-sm);box-shadow:var(--shadow-lg);
+  z-index:50;display:none;padding:4px;
+}
+.cat-dropdown.open .cat-dropdown-panel{display:block;animation:cardIn 0.18s ease-out}
+.cat-dropdown-search{
+  width:100%;padding:6px 8px;margin-bottom:6px;
+  border:1px solid var(--border-light);border-radius:5px;
+  font-size:0.78rem;background:var(--bg);color:var(--text);
+}
+.cat-dropdown-search:focus{outline:none;border-color:var(--navy)}
+.cat-dropdown-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:6px 10px;border-radius:5px;cursor:pointer;
+  font-size:0.8rem;color:var(--text);transition:background var(--transition);
+}
+.cat-dropdown-item:hover{background:var(--surface-hover)}
+.cat-dropdown-item.active{background:var(--navy-soft);color:var(--navy);font-weight:600}
+.cat-dropdown-item .cat-count{font-size:0.7rem;color:var(--text-muted);margin-left:6px}
+.cat-dropdown-item.active .cat-count{color:var(--navy)}
+
+/* ========== v3.7: 秋招公司库 — 隐藏左侧栏 + 操作列固定 ========== */
+body.ext-mode .sidebar{display:none}
+body.ext-mode .main-layout{display:block}
+body.ext-mode .content-area{max-width:100%}
+body.ext-mode .stats-row{display:none}
+body.ext-mode .status-tabs{margin-bottom:12px}
+
+/* 秋招公司库顶部工具栏：仅看收藏 切换 */
+.ext-fav-toggle{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:6px 12px;border-radius:14px;font-size:0.78rem;font-weight:500;
+  cursor:pointer;border:1px solid var(--border);background:var(--bg);color:var(--text-secondary);
+  transition:all var(--transition);white-space:nowrap;
+}
+.ext-fav-toggle:hover{border-color:var(--text-muted);background:var(--surface-hover)}
+.ext-fav-toggle.active{background:var(--warning-soft);color:var(--warning);border-color:var(--warning);font-weight:600}
+
+/* 秋招公司库表格：操作列固定在右侧，避免横向滚动看不到按钮 */
+.ext-table-wrap{overflow-x:auto;position:relative}
+.ext-table{table-layout:auto}
+.ext-table th.ext-col-actions,.ext-table td.ext-actions{
+  position:sticky;right:0;z-index:2;
+  background:var(--surface);box-shadow:-2px 0 4px rgba(0,0,0,0.04);
+}
+.ext-table thead th.ext-col-actions{background:var(--bg-alt)}
+.ext-table tbody tr:hover td.ext-actions{background:var(--surface-hover)}
+.ext-row-excluded td.ext-actions{background:var(--bg-alt)}
+.ext-row-favorited td.ext-actions{background:var(--surface)}
+
+/* base 地点 / 岗位类别 单元格：截断 + 悬浮查看全部 */
+.ext-cell-toggle{
+  cursor:pointer;display:inline-block;max-width:160px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  vertical-align:middle;
+}
+.ext-cell-toggle:hover{color:var(--navy);text-decoration:underline}
+.ext-cities-popup{
+  position:absolute;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-sm);box-shadow:var(--shadow-lg);
+  padding:10px 12px;font-size:0.78rem;color:var(--text);
+  max-width:260px;max-height:200px;overflow-y:auto;z-index:100;
+  white-space:normal;line-height:1.5;
+}
+.ext-cities-popup-title{font-weight:600;margin-bottom:4px;color:var(--text-secondary);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.5px}
+</style>
+</head>
+<body>
+
+<div class="app-container">
+  <!-- Header -->
+  <header class="header">
+    <div class="brand">
+      <div class="brand-icon">⛵</div>
+      <div class="brand-text"><h1>CareerSail</h1><span>职航 · 求职助手</span></div>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-accent" onclick="openImportModal()">＋ 添加岗位</button>
+      <button class="btn btn-outline btn-sm" onclick="openGuideModal()" title="使用指南" style="font-weight:600">📖 指南</button>
+      <button class="btn btn-outline btn-sm" onclick="refreshJobs()" title="刷新岗位数据" id="refreshBtn">🔄 刷新</button>
+      <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+        <!-- Sun icon: nautical compass rose -->
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"/>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+          <path d="M12 7l1 5-1 5M12 7l-1 5 1 5" stroke-width="0.8" opacity="0.5"/>
+        </svg>
+        <!-- Moon icon: crescent with stars -->
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 14.12A8.5 8.5 0 1 1 11.5 4.5a6.5 6.5 0 0 0 8.5 9.62Z"/>
+          <circle cx="17" cy="7" r="0.8" fill="currentColor" stroke="none"/>
+          <circle cx="6" cy="12" r="0.6" fill="currentColor" stroke="none" opacity="0.6"/>
+          <circle cx="15" cy="18" r="0.7" fill="currentColor" stroke="none" opacity="0.4"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Stats -->
+  <div class="stats-row" id="statsRow">
+    <div class="stat-card" onclick="switchTab('all')"><div class="stat-label">岗位总数</div><div class="stat-value" id="statTotal">0</div><div class="stat-sub">全部岗位</div></div>
+    <div class="stat-card" onclick="switchTab('pending')"><div class="stat-label">待投递</div><div class="stat-value" id="statPending">0</div><div class="stat-sub">高优先 <span id="statHigh">0</span> 个</div></div>
+    <div class="stat-card" onclick="switchTab('submitted')"><div class="stat-label">已投递</div><div class="stat-value" id="statSubmitted">0</div><div class="stat-sub">流程中</div></div>
+    <div class="stat-card" onclick="switchTab('ended')"><div class="stat-label">已结束</div><div class="stat-value" id="statEnded">0</div><div class="stat-sub">Offer / 已挂</div></div>
+  </div>
+
+  <!-- 投递工具快捷栏 -->
+  <div class="tools-bar">
+    <a class="tool-card" href="https://github.com/Pluto-Mo/personal-career-os" target="_blank" rel="noopener noreferrer">
+      <span class="tool-icon">📝</span>
+      <div class="tool-info">
+        <span class="tool-name">personal-career-os<span class="tool-badge">简历定制</span></span>
+        <div class="tool-desc">AI根据JD自动生成定制简历，输出HTML/DOCX</div>
+      </div>
+    </a>
+    <a class="tool-card" href="https://www.nowcoder.com/my/resume-plugin-intro" target="_blank" rel="noopener noreferrer">
+      <span class="tool-icon">🔌</span>
+      <div class="tool-info">
+        <span class="tool-name">牛客网申助手<span class="tool-badge">一键填表</span></span>
+        <div class="tool-desc">Chrome/Edge插件，智能识别表单，自动填写网申</div>
+      </div>
+    </a>
+  </div>
+
+  <!-- Main Layout -->
+  <div class="main-layout">
+    <!-- Sidebar Filters -->
+    <aside class="sidebar">
+      <div class="filter-panel">
+        <h3>筛选</h3>
+        <div class="filter-section">
+          <div class="search-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" id="searchInput" placeholder="搜索公司/岗位..." oninput="renderJobs()">
+          </div>
+        </div>
+        <div class="filter-section">
+          <label>收藏</label>
+          <select class="filter-select" id="filterFav" onchange="renderJobs()">
+            <option value="all">全部岗位</option>
+            <option value="fav">⭐ 仅看收藏</option>
+          </select>
+        </div>
+        <div class="filter-section">
+          <label>岗位类别</label>
+          <div class="cat-dropdown" id="catDropdown">
+            <div class="cat-dropdown-trigger" onclick="toggleCatDropdown()">
+              <span class="cat-trigger-label" id="catTriggerLabel">全部</span>
+              <span class="cat-trigger-caret">▼</span>
+            </div>
+            <div class="cat-dropdown-panel" id="catDropdownPanel">
+              <input type="text" class="cat-dropdown-search" id="catDropdownSearch" placeholder="搜索类别..." oninput="filterCatDropdown()">
+              <div id="catDropdownItems"></div>
+            </div>
+          </div>
+        </div>
+        <div class="filter-section">
+          <label>城市</label>
+          <div class="cat-dropdown" id="cityDropdown">
+            <div class="cat-dropdown-trigger" onclick="toggleCityDropdown()">
+              <span class="cat-trigger-label" id="cityTriggerLabel">全部</span>
+              <span class="cat-trigger-caret">▼</span>
+            </div>
+            <div class="cat-dropdown-panel" id="cityDropdownPanel">
+              <input type="text" class="cat-dropdown-search" id="cityDropdownSearch" placeholder="搜索城市..." oninput="filterCityDropdown()">
+              <div id="cityDropdownItems"></div>
+            </div>
+          </div>
+        </div>
+        <div class="filter-section">
+          <label>适配度</label>
+          <select class="filter-select" id="filterMatch" onchange="renderJobs()">
+            <option value="all">全部适配度</option>
+            <option value="high">🔥 高度匹配</option>
+            <option value="medium">👍 中度匹配</option>
+            <option value="low">👀 可以尝试</option>
+          </select>
+        </div>
+        <div class="filter-section">
+          <label>优先级</label>
+          <select class="filter-select" id="filterPriority" onchange="renderJobs()">
+            <option value="all">全部优先级</option>
+            <option value="最高">🔥 最高</option>
+            <option value="High">⭐ High</option>
+            <option value="Medium">Medium</option>
+            <option value="低">低</option>
+          </select>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Content Area -->
+    <main class="content-area">
+      <!-- Status Tabs -->
+      <div class="status-tabs">
+        <button class="status-tab active" data-tab="all" onclick="switchTab('all')">全部<span class="count" id="tabCountAll">0</span></button>
+        <button class="status-tab" data-tab="pending" onclick="switchTab('pending')">待投递<span class="count" id="tabCountPending">0</span></button>
+        <button class="status-tab" data-tab="submitted" onclick="switchTab('submitted')">已投递<span class="count" id="tabCountSubmitted">0</span></button>
+        <button class="status-tab" data-tab="ended" onclick="switchTab('ended')">已结束<span class="count" id="tabCountEnded">0</span></button>
+        <button class="status-tab ext-tab" data-tab="external" onclick="switchTab('external')">📁 秋招公司库<span class="count" id="tabCountExternal">0</span></button>
+      </div>
+
+      <div class="job-count-bar" id="jobCountBar"></div>
+      <div id="jobContent"></div>
+      <div class="empty-state" id="emptyState" style="display:none"><div class="empty-state-icon">📭</div><div class="empty-state-text">暂无匹配的岗位</div></div>
+
+      <!-- Excluded Section -->
+      <div class="excluded-section" id="excludedSection" style="display:none">
+        <h4>🚫 已剔除</h4>
+        <div id="excludedContent"></div>
+      </div>
+
+      <!-- ===== 秋招公司库（飞书 Base 同步）===== -->
+      <div id="externalSection" style="display:none">
+        <div class="ext-toolbar">
+          <div class="ext-toolbar-left">
+            <span class="ext-source-info" id="extSourceInfo">数据源：飞书多维表格</span>
+            <span class="ext-sync-info" id="extSyncInfo">未同步</span>
+          </div>
+          <div class="ext-toolbar-right">
+            <button class="ext-fav-toggle" id="extFavToggle" onclick="toggleExtFavOnly()">☆ 仅看收藏</button>
+            <div class="cat-dropdown" id="extCityDropdown" style="min-width:120px">
+              <div class="cat-dropdown-trigger" onclick="toggleExtCityDropdown()">
+                <span class="cat-trigger-label" id="extCityTriggerLabel">全部城市</span>
+                <span class="cat-trigger-caret">▼</span>
+              </div>
+              <div class="cat-dropdown-panel" id="extCityDropdownPanel">
+                <input type="text" class="cat-dropdown-search" id="extCityDropdownSearch" placeholder="搜索城市..." oninput="filterExtCityDropdown()">
+                <div id="extCityDropdownItems"></div>
+              </div>
+            </div>
+            <select id="extFilterBatch" class="filter-select ext-filter" onchange="renderExternalTable()">
+              <option value="">全部批次</option>
+            </select>
+            <select id="extFilterType" class="filter-select ext-filter" onchange="renderExternalTable()">
+              <option value="">全部类型</option>
+            </select>
+            <input type="text" id="extSearchInput" class="search-input ext-search" placeholder="搜索公司名..." oninput="renderExternalTable()" style="width:160px">
+            <button class="btn btn-primary btn-sm" onclick="syncExternal()" id="syncExtBtn">🔄 同步飞书</button>
+          </div>
+        </div>
+        <div class="ext-table-wrap">
+          <table class="ext-table" id="extTable">
+            <thead>
+              <tr>
+                <th>公司名称</th>
+                <th>企业类型</th>
+                <th>批次</th>
+                <th>base 地点</th>
+                <th>岗位类别</th>
+                <th>开放日期</th>
+                <th>截止日期</th>
+                <th>招聘官网</th>
+                <th class="ext-col-actions">操作</th>
+              </tr>
+            </thead>
+            <tbody id="extTableBody"></tbody>
+          </table>
+        </div>
+        <div class="ext-empty" id="extEmpty" style="display:none">
+          <div class="empty-state-icon">📭</div>
+          <div class="empty-state-text">暂无数据，点击「同步飞书」拉取最新公司库</div>
+        </div>
+      </div>
+
+      <!-- Daily Log -->
+      <div class="log-panel" id="logPanel">
+        <div class="log-panel-header">
+          <h3>📋 操作日志 <span class="log-badge" id="logBadge">0</span></h3>
+          <div class="log-actions">
+            <button class="btn btn-ghost btn-xs" onclick="addLogNote()" title="添加备注">＋ 备注</button>
+            <button class="btn btn-ghost btn-xs" onclick="syncLogToServer()" title="同步到服务器">💾 同步</button>
+          </div>
+        </div>
+        <div class="log-scroll" id="logScroll"><div class="log-empty">暂无日志记录</div></div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Import Modal -->
+<div class="modal-overlay" id="importModal" style="display:none">
+  <div class="modal">
+    <h2>添加新岗位</h2>
+    <div class="form-group"><label>公司名称 *</label><input type="text" id="impCompany" placeholder="如：字节跳动"></div>
+    <div class="form-group"><label>岗位名称 *</label><input type="text" id="impTitle" placeholder="如：AI产品经理"></div>
+    <div class="form-group"><label>城市</label><input type="text" id="impCity" placeholder="如：北京"></div>
+    <div class="form-group"><label>岗位类别</label><input type="text" id="impCategory" placeholder="如：AI产品 / 产品运营 / 医学产品..."></div>
+    <div class="form-group"><label>优先级</label><select id="impPriority"><option value="最高">最高</option><option value="High">High</option><option value="Medium" selected>Medium</option><option value="低">低</option></select></div>
+    <div class="form-group"><label>网申链接</label><input type="url" id="impUrl" placeholder="https://..."></div>
+    <div class="form-group"><label>备注</label><textarea id="impNotes" placeholder="如：内推码、截止日期..."></textarea></div>
+    <div class="form-actions"><button class="btn btn-outline" onclick="closeImportModal()">取消</button><button class="btn btn-primary" onclick="importJob()">确认添加</button></div>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal-overlay" id="editModal" style="display:none">
+  <div class="modal">
+    <h2>编辑岗位</h2>
+    <input type="hidden" id="editRowIndex">
+    <div class="form-group"><label>公司名称</label><input type="text" id="editCompany"></div>
+    <div class="form-group"><label>岗位名称</label><input type="text" id="editTitle"></div>
+    <div class="form-group"><label>城市</label><input type="text" id="editCity"></div>
+    <div class="form-group"><label>岗位类别</label><input type="text" id="editCategory"></div>
+    <div class="form-group"><label>优先级</label><select id="editPriority"><option value="最高">最高</option><option value="High">High</option><option value="Medium">Medium</option><option value="低">低</option></select></div>
+    <div class="form-group"><label>状态</label><select id="editStatus"><option value="Pending">待投递</option><option value="Submitted">已投递</option><option value="Excluded">已剔除</option><option value="Rejected">已挂</option><option value="Offer">Offer</option></select></div>
+    <div class="form-group"><label>网申链接</label><input type="url" id="editUrl"></div>
+    <div class="form-group"><label>备注</label><textarea id="editNotes"></textarea></div>
+    <div class="form-actions"><button class="btn btn-outline" onclick="closeEditModal()">取消</button><button class="btn btn-primary" onclick="saveEdit()">保存修改</button></div>
+  </div>
+</div>
+
+<!-- Guide Modal -->
+<div class="modal-overlay" id="guideModal" style="display:none">
+  <div class="modal">
+    <h2>⛵ CareerSail 使用指南</h2>
+    <div class="guide-steps">
+      <div class="guide-step"><div class="guide-step-num">1</div><div class="guide-step-content"><h4>管理岗位池</h4><p>点击「添加岗位」录入公司、职位、链接等信息。左侧筛选栏支持按<strong>类别、城市、适配度、优先级</strong>快速定位。类别标签自动从数据生成，开源后他人也能用自己的分类。</p></div></div>
+      <div class="guide-step"><div class="guide-step-num">2</div><div class="guide-step-content"><h4>生成专属简历</h4><p>使用 <strong>personal-career-os</strong> 技能，根据 JD 自动生成定制简历（Word/PDF），支持多版本管理。</p></div></div>
+      <div class="guide-step"><div class="guide-step-num">3</div><div class="guide-step-content"><h4>快速投递</h4><p>点击岗位链接打开网申页面，用 <strong>牛客网申助手</strong> 浏览器插件一键填表，或手动填写后更新投递状态。</p></div></div>
+      <div class="guide-step"><div class="guide-step-num">4</div><div class="guide-step-content"><h4>追踪进度</h4><p>在「已投递/已结束」标签页可看到<strong>竖版时间线</strong>视图，更新面试进度后自动记录每个关键节点。</p></div></div>
+      <div class="guide-step"><div class="guide-step-num">5</div><div class="guide-step-content"><h4>刷新岗位</h4><p>点击「🔄 刷新」按钮触发 AI Agent 浏览招聘网站，搜索最新岗位并自动更新到岗位池。<strong>日志面板</strong>记录每天所有操作。</p></div></div>
+    </div>
+    <div class="form-actions"><button class="btn btn-primary" onclick="closeGuideModal()">知道了</button></div>
+  </div>
+</div>
+
+<script>
+// ========== State ==========
+let allJobs = [];
+let currentTab = 'all';
+let followUpMap = {};
+let activityLog = [];
+let activeCats = new Set();  // 多选岗位类别
+let activeCities = new Set(); // 多选城市
+
+// ========== P2-8: XSS 防护工具 ==========
+function escapeHtml(str) {
+  if (str == null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// 格式化日期：去掉 ISO 时间后缀 (T00:00:00.000+08:00 → 只保留日期)
+function fmtDate(str) {
+  if (!str) return '';
+  const s = String(str).trim();
+  // 匹配 YYYY-MM-DD 开头，截掉后面的 T... 时间部分
+  const m = s.match(/^(\d{4}-\d{2}-\d{2})/);
+  return m ? m[1] : s;
+}
+
+// P2-8: URL 协议白名单校验 — 只允许 http/https
+function safeUrl(url) {
+  if (!url) return '';
+  const str = String(url).trim();
+  if (/^https?:\/\//i.test(str)) return str;
+  return '';
+}
+
+// 收藏/剔除标记统一判定（兼容 CSV 字符串 '1' 与 API 布尔值）
+function isMarked(val) {
+  return val === true || val === 1 || val === '1' || val === 'true' || val === 'TRUE';
+}
+
+// P1-7: 本地日期（替代 toISOString().split('T')[0]）
+function getLocalDate() {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const d = String(now.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+// ========== Init ==========
+async function init() {
+  const savedTheme = localStorage.getItem('careersail-theme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  loadLog();
+  await loadData();
+  populateFilters();
+  renderAll();
+  // v3.9: 启动后检查用户画像是否为空，为空则弹引导
+  checkUserProfileAndGuide();
+}
+
+// v3.9: 检查用户画像，为空时弹引导框
+async function checkUserProfileAndGuide() {
+  // 仅当通过 http:// 加载时才调用后端API，file:// 协议下跳过
+  if (window.location.protocol === 'file:') return;
+  try {
+    const res = await fetch('/api/user-profile');
+    if (!res.ok) return;
+    const data = await res.json();
+    const p = data.profile || {};
+    // 判定画像是否"基本为空"：专业/毕业年份/目标岗位/目标城市 4 个关键字段全空
+    const isEmpty = !p.major && !p.graduation_year
+      && (!Array.isArray(p.target_roles) || p.target_roles.length === 0)
+      && (!Array.isArray(p.target_cities) || p.target_cities.length === 0);
+    if (!isEmpty) return;
+
+    // 30 秒内不重复弹（避免刷新骚扰）
+    const lastShown = parseInt(localStorage.getItem('careersail-setup-shown') || '0', 10);
+    if (Date.now() - lastShown < 30000) return;
+    localStorage.setItem('careersail-setup-shown', String(Date.now()));
+
+    showSetupWizard();
+  } catch (e) { /* 静默 */ }
+}
+
+// v3.11: 显示设置向导弹窗（多专业岗位候选 + 可选上传简历 + 城市仅作参考说明）
+function showSetupWizard() {
+  const overlay = document.createElement('div');
+  overlay.id = 'setup-wizard-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;';
+  overlay.innerHTML = `
+    <div style="background:var(--surface);border-radius:16px;max-width:680px;width:100%;padding:32px;box-shadow:0 20px 60px rgba(0,0,0,0.3);font-family:var(--font-body);max-height:92vh;overflow-y:auto;margin:auto;">
+      <div style="text-align:center;margin-bottom:24px;">
+        <div style="font-size:48px;margin-bottom:12px;">⛵</div>
+        <h2 style="font-family:var(--font-display);font-size:1.5rem;color:var(--text);margin-bottom:6px;">欢迎使用 CareerSail 职航</h2>
+        <p style="color:var(--text-secondary);font-size:0.88rem;">求职画像还是空的，先告诉 Agent 这些信息，才能精准搜岗位</p>
+      </div>
+
+      <div style="background:var(--bg-alt);border-radius:10px;padding:18px;margin-bottom:16px;">
+        <p style="font-size:0.85rem;color:var(--text);margin-bottom:10px;line-height:1.7;">
+          请直接对 AI Agent 说下面这段话（按你的实际情况替换方括号内容）：
+        </p>
+        <div style="background:var(--surface);padding:12px 14px;border-radius:8px;border-left:3px solid var(--navy);font-size:0.8rem;color:var(--text);line-height:1.75;">
+          "帮我设置求职画像：<br>
+          1) 我的专业是【你的专业，如：机械工程 / 临床医学 / 金融学 / 化学工程 / 土木工程 / 计算机 / 会计学 / 工业设计】<br>
+          2) 我是【毕业年份，如：2027】届毕业生<br>
+          3) 想找的岗位方向（可多选，从下面候选里挑或自己写）<br>
+          4) 意向城市（可多选，仅作优先级参考，不限制搜索范围）<br>
+          5) 技能或研究方向（如：SolidWorks / 有限元分析 / Python / 临床诊断 / 财务建模）<br>
+          6) 如果我有现成简历，会发给你，请帮我提取关键词补充到画像"
+        </div>
+      </div>
+
+      <div style="background:var(--navy-soft);border-radius:10px;padding:16px;margin-bottom:16px;">
+        <p style="font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:10px;">📌 候选岗位方向（按专业分类，可多选）</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;font-size:0.76rem;color:var(--text);">
+          <div style="background:var(--surface);padding:8px 10px;border-radius:6px;"><b>🖥️ 计算机/互联网</b><br>· AI产品经理<br>· 算法工程师<br>· 后端/前端开发<br>· 数据分析师<br>· 产品运营</div>
+          <div style="background:var(--surface);padding:8px 10px;border-radius:6px;"><b>⚙️ 机械/制造</b><br>· 机械工程师<br>· 结构工程师<br>· 制造工程师<br>· 工艺工程师<br>· 机电一体化</div>
+          <div style="background:var(--surface);padding:8px 10px;border-radius:6px;"><b>🩺 医学/医药</b><br>· 临床研发<br>· 医学事务<br>· 医疗产品经理<br>· 药品注册<br>· 临床监查员(CRA)</div>
+          <div style="background:var(--surface);padding:8px 10px;border-radius:6px;"><b>💰 金融/财务</b><br>· 投资分析师<br>· 行业研究员<br>· 风控工程师<br>· 财务管培生<br>· 量化研究员</div>
+          <div style="background:var(--surface);padding:8px 10px;border-radius:6px;"><b>🏗️ 土木/建筑</b><br>· 结构设计<br>· 施工管理<br>· 造价工程师<br>· 建筑设计<br>· 市政工程师</div>
+          <div style="background:var(--surface);padding:8px 10px;border-radius:6px;"><b>🧪 化工/材料</b><br>· 工艺研发<br>· 材料工程师<br>· 配方工程师<br>· 安全工程师<br>· 质量工程师</div>
+          <div style="background:var(--surface);padding:8px 10px;border-radius:6px;"><b>🎨 设计/创意</b><br>· UI/UX设计师<br>· 工业设计<br>· 视觉设计<br>· 交互设计<br>· 品牌策划</div>
+          <div style="background:var(--surface);padding:8px 10px;border-radius:6px;"><b>📈 运营/市场</b><br>· 用户运营<br>· 内容运营<br>· 市场管培生<br>· 品牌运营<br>· 电商运营</div>
+          <div style="background:var(--surface);padding:8px 10px;border-radius:6px;"><b>📋 其他</b><br>· 人力资源<br>· 供应链管理<br>· 法务合规<br>· 战略咨询<br>· 销售管培生</div>
+        </div>
+        <p style="font-size:0.72rem;color:var(--text-muted);margin-top:8px;">不在列表里的岗位直接告诉 Agent 即可，以上只是参考</p>
+      </div>
+
+      <div style="background:var(--success-soft);border-radius:10px;padding:14px;margin-bottom:16px;">
+        <p style="font-size:0.8rem;color:var(--text);line-height:1.6;">
+          <b>📄 可选：上传现成简历</b><br>
+          如果你有已写好的简历（PDF/Word/Markdown 都行），直接发给 Agent，它会提取关键词补充到画像。没有就跳过，不影响使用。
+        </p>
+      </div>
+
+      <div style="background:var(--warning-soft);border-radius:10px;padding:14px;margin-bottom:20px;">
+        <p style="font-size:0.78rem;color:var(--text);line-height:1.6;">
+          <b>ℹ️ 关于城市</b>：意向城市只作为优先级排序参考，<b>不会限制岗位搜索范围</b>。
+          合适的岗位无论在哪个城市都会被搜出来，城市命中只是把匹配岗位排到前面。后期意向变了不用担心漏岗位。
+        </p>
+      </div>
+
+      <div style="display:flex;gap:10px;justify-content:flex-end;">
+        <button onclick="document.getElementById('setup-wizard-overlay').remove()" style="padding:9px 18px;border-radius:6px;border:1.5px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;font-size:0.85rem;">稍后设置</button>
+        <button onclick="copySetupPrompt()" style="padding:9px 18px;border-radius:6px;border:none;background:var(--navy);color:#fff;cursor:pointer;font-size:0.85rem;">复制引导话术</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+}
+
+// v3.11: 复制设置引导话术到剪贴板（多专业 + 简历上传 + 城市仅参考）
+function copySetupPrompt() {
+  const text = '帮我设置求职画像：\n' +
+    '1) 我的专业是【你的专业，如：机械工程 / 临床医学 / 金融学 / 化学工程 / 土木工程 / 计算机 / 会计学 / 工业设计】\n' +
+    '2) 我是【毕业年份，如：2027】届毕业生\n' +
+    '3) 想找的岗位方向（可多选，可从下面候选里挑或自己写）：\n' +
+    '   - 计算机/互联网：AI产品经理 / 算法工程师 / 后端开发 / 数据分析师 / 产品运营\n' +
+    '   - 机械/制造：机械工程师 / 结构工程师 / 制造工程师 / 工艺工程师 / 机电一体化\n' +
+    '   - 医学/医药：临床研发 / 医学事务 / 医疗产品经理 / 药品注册 / 临床监查员CRA\n' +
+    '   - 金融/财务：投资分析师 / 行业研究员 / 风控工程师 / 财务管培生 / 量化研究员\n' +
+    '   - 土木/建筑：结构设计 / 施工管理 / 造价工程师 / 建筑设计 / 市政工程师\n' +
+    '   - 化工/材料：工艺研发 / 材料工程师 / 配方工程师 / 安全工程师 / 质量工程师\n' +
+    '   - 设计/创意：UI/UX设计师 / 工业设计 / 视觉设计 / 交互设计 / 品牌策划\n' +
+    '   - 运营/市场：用户运营 / 内容运营 / 市场管培生 / 品牌运营 / 电商运营\n' +
+    '   - 其他：人力资源 / 供应链管理 / 法务合规 / 战略咨询 / 销售管培生\n' +
+    '4) 意向城市（可多选，仅作优先级参考，不限制搜索范围）\n' +
+    '5) 技能或研究方向（如：SolidWorks / 有限元分析 / Python / 临床诊断 / 财务建模）\n' +
+    '6) 如果我有现成简历会发给你，请帮我提取关键词补充到画像';
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('已复制话术，粘贴给 AI Agent 即可', 'success');
+    document.getElementById('setup-wizard-overlay').remove();
+  }).catch(() => {
+    showToast('复制失败，请手动复制', 'error');
+  });
+}
+
+// ========== CSV Parsing (P1-6: 支持引号内换行) ==========
+function parseCSV(text) {
+  text = text.replace(/^\uFEFF/, '');
+  if (!text.trim()) return [];
+  const rows = [];
+  let currentRow = [];
+  let currentField = '';
+  let inQuotes = false;
+  let i = 0;
+  while (i < text.length) {
+    const ch = text[i];
+    if (inQuotes) {
+      if (ch === '"') {
+        if (text[i + 1] === '"') { currentField += '"'; i += 2; }
+        else { inQuotes = false; i++; }
+      } else { currentField += ch; i++; }
+    } else {
+      if (ch === '"') { inQuotes = true; i++; }
+      else if (ch === ',') { currentRow.push(currentField); currentField = ''; i++; }
+      else if (ch === '\r') { currentRow.push(currentField); currentField = ''; rows.push(currentRow); currentRow = []; i++; if (text[i] === '\n') i++; }
+      else if (ch === '\n') { currentRow.push(currentField); currentField = ''; rows.push(currentRow); currentRow = []; i++; }
+      else { currentField += ch; i++; }
+    }
+  }
+  if (currentField !== '' || currentRow.length > 0) { currentRow.push(currentField); rows.push(currentRow); }
+  if (rows.length === 0) return [];
+  const headers = rows[0].map(h => h.trim().replace(/^\uFEFF/, ''));
+  const result = [];
+  let displayCounter = 0;  // v3.12: 显示序号，从 1 递增，不随 CSV 行号跳
+  for (let r = 1; r < rows.length; r++) {
+    if (rows[r].length === 1 && rows[r][0] === '') continue;
+    const obj = {};
+    headers.forEach((h, j) => { obj[h] = (rows[r][j] || '').trim(); });
+    obj._rowIndex = r;           // CSV 物理行号（API 调用用）
+    obj.displayIndex = ++displayCounter;  // v3.12: 显示序号，从 1 开始
+    result.push(obj);
+  }
+  return result;
+}
+
+function buildFollowUpMap(rows) {
+  const map = {};
+  rows.forEach(r => {
+    const key = (r.company + '|' + r.job_title).toLowerCase();
+    if (!map[key]) map[key] = [];
+    map[key].push(r);
+  });
+  return map;
+}
+
+// ========== Data Loading ==========
+async function loadData() {
+  try {
+    const [poolRes, followRes] = await Promise.all([
+      fetch('job_pool.csv?' + Date.now()),
+      fetch('follow_up.csv?' + Date.now())
+    ]);
+    allJobs = parseCSV(await poolRes.text());
+    followUpMap = buildFollowUpMap(parseCSV(await followRes.text()));
+  } catch (e) { console.error('Data load failed:', e); showToast('数据加载失败', 'error'); }
+}
+
+// ========== Dynamic Filters ==========
+// v3.7: 筛选选项根据当前 tab 动态生成（不再一成不变）
+function getTabJobPool() {
+  // 返回当前 tab 下的岗位集合（不含 Excluded，Excluded 单独展示）
+  if (currentTab === 'all') return allJobs.filter(j => j.status !== 'Excluded');
+  if (currentTab === 'pending') return allJobs.filter(j => j.status === 'Pending');
+  if (currentTab === 'submitted') return allJobs.filter(j => j.status === 'Submitted');
+  if (currentTab === 'ended') return allJobs.filter(j => j.status === 'Rejected' || j.status === 'Offer');
+  return allJobs.filter(j => j.status !== 'Excluded');
+}
+
+function populateFilters() {
+  const pool = getTabJobPool();
+
+  // Category — 多选折叠下拉框
+  const cats = {};
+  pool.forEach(j => {
+    if (j.role_family) {
+      const c = j.role_family.trim();
+      if (c) cats[c] = (cats[c] || 0) + 1;
+    }
+  });
+  const catItems = document.getElementById('catDropdownItems');
+  const allCount = pool.length;
+  let catHtml = `<div class="cat-dropdown-item ${activeCats.size === 0 ? 'active' : ''}" data-cat="__all__" onclick="toggleCat('__all__')">全部<span class="cat-count">${allCount}</span></div>`;
+  Object.entries(cats).sort((a, b) => b[1] - a[1]).forEach(([c, n]) => {
+    const esc = escapeHtml(c);
+    catHtml += `<div class="cat-dropdown-item ${activeCats.has(c) ? 'active' : ''}" data-cat="${esc}" onclick="toggleCat('${esc.replace(/'/g, "&#39;")}')">${esc}<span class="cat-count">${n}</span></div>`;
+  });
+  catItems.innerHTML = catHtml;
+  updateCatTriggerLabel();
+
+  // Cities — 拆分单个城市（深圳/北京/上海 → 深圳、北京、上海），去掉"等"
+  const cities = new Set();
+  pool.forEach(j => {
+    if (!j.location) return;
+    j.location.split(/[,/、;；]/).forEach(c => {
+      c = c.trim().replace(/^[\u4e00-\u9fa5]+·/, '').replace(/等$/, '');
+      if (c) cities.add(c);
+    });
+  });
+  const cityItems = document.getElementById('cityDropdownItems');
+  let cityHtml = `<div class="cat-dropdown-item ${activeCities.size === 0 ? 'active' : ''}" data-city="__all__" onclick="toggleCity('__all__')">全部<span class="cat-count">${allCount}</span></div>`;
+  Array.from(cities).sort().forEach(c => {
+    const n = pool.filter(j => {
+      if (!j.location) return false;
+      return j.location.split(/[,/、;；]/).some(s => s.trim().replace(/^[\u4e00-\u9fa5]+·/, '').replace(/等$/, '') === c);
+    }).length;
+    const esc = escapeHtml(c);
+    cityHtml += `<div class="cat-dropdown-item ${activeCities.has(c) ? 'active' : ''}" data-city="${esc}" onclick="toggleCity('${esc.replace(/'/g, "&#39;")}')">${esc}<span class="cat-count">${n}</span></div>`;
+  });
+  cityItems.innerHTML = cityHtml;
+  updateCityTriggerLabel();
+
+  // 适配度 / 优先级 — 同样仅列出当前 tab 内出现过的选项
+  const matchLevels = new Set();
+  pool.forEach(j => matchLevels.add(getMatchLevel(j)));
+  const matchSelect = document.getElementById('filterMatch');
+  const curMatch = matchSelect.value;
+  const matchOpts = [
+    { v: 'high', label: '🔥 高度匹配' },
+    { v: 'medium', label: '👍 中度匹配' },
+    { v: 'low', label: '👀 可以尝试' }
+  ];
+  matchSelect.innerHTML = '<option value="all">全部适配度</option>';
+  matchOpts.filter(o => matchLevels.has(o.v)).forEach(o => {
+    matchSelect.innerHTML += `<option value="${o.v}">${o.label}</option>`;
+  });
+  if (curMatch !== 'all' && !matchLevels.has(curMatch)) matchSelect.value = 'all';
+  else matchSelect.value = curMatch;
+
+  const priLevels = new Set();
+  pool.forEach(j => { if (j.priority) priLevels.add(j.priority); });
+  const priSelect = document.getElementById('filterPriority');
+  const curPri = priSelect.value;
+  const priOpts = [
+    { v: '最高', label: '🔥 最高' },
+    { v: 'High', label: '⭐ High' },
+    { v: 'Medium', label: 'Medium' },
+    { v: '低', label: '低' }
+  ];
+  priSelect.innerHTML = '<option value="all">全部优先级</option>';
+  priOpts.filter(o => priLevels.has(o.v)).forEach(o => {
+    priSelect.innerHTML += `<option value="${o.v}">${o.label}</option>`;
+  });
+  if (curPri !== 'all' && !priLevels.has(curPri)) priSelect.value = 'all';
+  else priSelect.value = curPri;
+}
+
+function toggleCatDropdown() {
+  const dd = document.getElementById('catDropdown');
+  dd.classList.toggle('open');
+  if (dd.classList.contains('open')) {
+    document.getElementById('catDropdownSearch').value = '';
+    filterCatDropdown();
+  }
+}
+
+function filterCatDropdown() {
+  const q = (document.getElementById('catDropdownSearch').value || '').toLowerCase();
+  document.querySelectorAll('#catDropdownItems .cat-dropdown-item').forEach(item => {
+    const text = (item.textContent || '').toLowerCase();
+    item.style.display = text.includes(q) ? '' : 'none';
+  });
+}
+
+function updateCatTriggerLabel() {
+  const label = document.getElementById('catTriggerLabel');
+  if (activeCats.size === 0) {
+    label.textContent = '全部';
+  } else if (activeCats.size === 1) {
+    label.textContent = [...activeCats][0];
+  } else {
+    label.textContent = `${activeCats.size}个类别`;
+  }
+}
+
+// 点击页面其他位置关闭下拉框
+document.addEventListener('click', (e) => {
+  const dd = document.getElementById('catDropdown');
+  if (dd && dd.classList.contains('open') && !dd.contains(e.target)) {
+    dd.classList.remove('open');
+  }
+  const cdd = document.getElementById('cityDropdown');
+  if (cdd && cdd.classList.contains('open') && !cdd.contains(e.target)) {
+    cdd.classList.remove('open');
+  }
+  const ecdd = document.getElementById('extCityDropdown');
+  if (ecdd && ecdd.classList.contains('open') && !ecdd.contains(e.target)) {
+    ecdd.classList.remove('open');
+  }
+  // 关闭 base 地点悬浮窗
+  const popup = document.getElementById('extCitiesPopup');
+  if (popup && !popup.contains(e.target) && !e.target.classList.contains('ext-cell-toggle')) {
+    popup.remove();
+  }
+});
+
+function toggleCat(cat) {
+  if (cat === '__all__') {
+    activeCats.clear();
+  } else {
+    if (activeCats.has(cat)) activeCats.delete(cat);
+    else activeCats.add(cat);
+  }
+  // 更新 active 状态
+  document.querySelectorAll('#catDropdownItems .cat-dropdown-item').forEach(t => t.classList.remove('active'));
+  if (activeCats.size === 0) {
+    const allItem = document.querySelector('#catDropdownItems .cat-dropdown-item[data-cat="__all__"]');
+    if (allItem) allItem.classList.add('active');
+  } else {
+    activeCats.forEach(c => {
+      const item = document.querySelector(`#catDropdownItems .cat-dropdown-item[data-cat="${c.replace(/'/g, "\\'")}"]`);
+      if (item) item.classList.add('active');
+    });
+  }
+  updateCatTriggerLabel();
+  renderJobs();
+}
+
+function toggleCity(city) {
+  if (city === '__all__') {
+    activeCities.clear();
+  } else {
+    if (activeCities.has(city)) activeCities.delete(city);
+    else activeCities.add(city);
+  }
+  // 更新 active 状态
+  document.querySelectorAll('#cityDropdownItems .cat-dropdown-item').forEach(t => t.classList.remove('active'));
+  if (activeCities.size === 0) {
+    const allItem = document.querySelector('#cityDropdownItems .cat-dropdown-item[data-city="__all__"]');
+    if (allItem) allItem.classList.add('active');
+  } else {
+    activeCities.forEach(c => {
+      const item = document.querySelector(`#cityDropdownItems .cat-dropdown-item[data-city="${c.replace(/'/g, "\\'")}"]`);
+      if (item) item.classList.add('active');
+    });
+  }
+  updateCityTriggerLabel();
+  renderJobs();
+}
+
+function toggleCityDropdown() {
+  const dd = document.getElementById('cityDropdown');
+  dd.classList.toggle('open');
+  if (dd.classList.contains('open')) {
+    document.getElementById('cityDropdownSearch').value = '';
+    filterCityDropdown();
+  }
+}
+
+function filterCityDropdown() {
+  const q = (document.getElementById('cityDropdownSearch').value || '').toLowerCase();
+  document.querySelectorAll('#cityDropdownItems .cat-dropdown-item').forEach(item => {
+    const text = (item.textContent || '').toLowerCase();
+    item.style.display = text.includes(q) ? '' : 'none';
+  });
+}
+
+function updateCityTriggerLabel() {
+  const label = document.getElementById('cityTriggerLabel');
+  if (activeCities.size === 0) {
+    label.textContent = '全部';
+  } else if (activeCities.size === 1) {
+    label.textContent = [...activeCities][0];
+  } else {
+    label.textContent = `${activeCities.size}个城市`;
+  }
+}
+
+// ========== Match Score ==========
+// 优先读 match_degree（新字段），回退到 cohort_match_status（兼容旧 CSV，旧版把匹配度写在该列）
+function getMatchLevel(job) {
+  const match = (job.match_degree || job.cohort_match_status || '').trim();
+  if (match === '高度匹配') return 'high';
+  if (match === '中度匹配') return 'medium';
+  if (match === '可以尝试') return 'low';
+  // 回退：基于 priority 推断
+  const priority = job.priority || '';
+  if (priority === '最高') return 'high';
+  if (priority === 'High') return 'medium';
+  return 'low';
+}
+
+// ========== Render ==========
+function renderAll() {
+  updateStats();
+  renderJobs();
+  updateTabCounts();
+  renderLog();
+}
+
+function updateStats() {
+  const pending = allJobs.filter(j => j.status === 'Pending').length;
+  const submitted = allJobs.filter(j => j.status === 'Submitted').length;
+  const ended = allJobs.filter(j => j.status === 'Rejected' || j.status === 'Offer').length;
+  const highP = allJobs.filter(j => j.status === 'Pending' && (j.priority === '最高' || j.priority === 'High')).length;
+
+  animateVal('statTotal', allJobs.filter(j => j.status !== 'Excluded').length);
+  animateVal('statPending', pending);
+  animateVal('statSubmitted', submitted);
+  animateVal('statEnded', ended);
+  document.getElementById('statHigh').textContent = highP;
+}
+
+function updateTabCounts() {
+  const excl = j => j.status !== 'Excluded';
+  document.getElementById('tabCountAll').textContent = allJobs.filter(excl).length;
+  document.getElementById('tabCountPending').textContent = allJobs.filter(j => j.status === 'Pending').length;
+  document.getElementById('tabCountSubmitted').textContent = allJobs.filter(j => j.status === 'Submitted').length;
+  document.getElementById('tabCountEnded').textContent = allJobs.filter(j => j.status === 'Rejected' || j.status === 'Offer').length;
+}
+
+function animateVal(id, target) {
+  const el = document.getElementById(id);
+  const start = parseInt(el.textContent) || 0;
+  if (start === target) { el.textContent = target; return; }
+  const dur = 350, st = performance.now();
+  function step(ts) {
+    const p = Math.min((ts - st) / dur, 1);
+    el.textContent = Math.round(start + (target - start) * p);
+    if (p < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function getFiltered() {
+  const search = (document.getElementById('searchInput')?.value || '').toLowerCase();
+  const match = document.getElementById('filterMatch')?.value || 'all';
+  const pri = document.getElementById('filterPriority')?.value || 'all';
+  const fav = document.getElementById('filterFav')?.value || 'all';
+
+  let filtered = allJobs.filter(j => j.status !== 'Excluded');
+
+  if (currentTab === 'pending') filtered = filtered.filter(j => j.status === 'Pending');
+  else if (currentTab === 'submitted') filtered = filtered.filter(j => j.status === 'Submitted');
+  else if (currentTab === 'ended') filtered = filtered.filter(j => j.status === 'Rejected' || j.status === 'Offer');
+
+  // 多选岗位类别
+  if (activeCats.size > 0) filtered = filtered.filter(j => activeCats.has((j.role_family || '').trim()));
+  // 多选城市：岗位的 location 按分隔符拆分后，任一城市在选中集合中即通过
+  if (activeCities.size > 0) {
+    filtered = filtered.filter(j => {
+      if (!j.location) return false;
+      return j.location.split(/[,/、;；]/).some(s => {
+        s = s.trim().replace(/^[\u4e00-\u9fa5]+·/, '').replace(/等$/, '');
+        return activeCities.has(s);
+      });
+    });
+  }
+  if (match !== 'all') filtered = filtered.filter(j => getMatchLevel(j) === match);
+  if (pri !== 'all') filtered = filtered.filter(j => j.priority === pri);
+  if (fav === 'fav') filtered = filtered.filter(j => isMarked(j.favorited));
+  if (search) {
+    filtered = filtered.filter(j =>
+      (j.company || '').toLowerCase().includes(search) ||
+      (j.job_title || '').toLowerCase().includes(search) ||
+      (j.location || '').toLowerCase().includes(search) ||
+      (j.notes || '').toLowerCase().includes(search)
+    );
+  }
+
+  const priOrder = { '最高': 0, 'High': 1, 'Medium': 2, '低': 3 };
+  filtered.sort((a, b) => {
+    // 收藏的排在最前（favorited 优先级最高）
+    const fa = isMarked(a.favorited) ? 0 : 1, fb = isMarked(b.favorited) ? 0 : 1;
+    if (fa !== fb) return fa - fb;
+    const pa = priOrder[a.priority] ?? 99, pb = priOrder[b.priority] ?? 99;
+    if (pa !== pb) return pa - pb;
+    return (b.date_found || '').localeCompare(a.date_found || '');
+  });
+  return filtered;
+}
+
+function renderJobs() {
+  const filtered = getFiltered();
+  const content = document.getElementById('jobContent');
+  const empty = document.getElementById('emptyState');
+  const bar = document.getElementById('jobCountBar');
+  const exclSection = document.getElementById('excludedSection');
+  const exclContent = document.getElementById('excludedContent');
+
+  bar.textContent = `共 ${filtered.length} 个岗位`;
+
+  if (filtered.length === 0) {
+    content.innerHTML = '';
+    empty.style.display = 'block';
+  } else {
+    empty.style.display = 'none';
+    if (currentTab === 'submitted' || currentTab === 'ended') {
+      content.innerHTML = '<div class="timeline-view">' + filtered.map((j, i) => buildTimelineEntry(j, i)).join('') + '</div>';
+    } else {
+      content.innerHTML = '<div class="job-list">' + filtered.map((j, i) => buildJobCard(j, i)).join('') + '</div>';
+    }
+  }
+
+  // Excluded section — show at bottom, not in ended
+  const excluded = allJobs.filter(j => j.status === 'Excluded');
+  if (excluded.length > 0 && (currentTab === 'all' || currentTab === 'pending')) {
+    exclSection.style.display = 'block';
+    exclContent.innerHTML = '<div class="job-list">' + excluded.map((j, i) => buildJobCard(j, i, true)).join('') + '</div>';
+  } else {
+    exclSection.style.display = 'none';
+  }
+
+  // 绑定岗位收藏按钮（用 data-* 避免 XSS）
+  document.querySelectorAll('button[data-job-fav]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleMark('job_pool', btn.dataset.jobFav, 'favorited', btn.dataset.current === '1');
+    });
+  });
+}
+
+function buildJobCard(job, idx, isExcluded) {
+  // P2-8: 所有用户输入内容都经过 escapeHtml 转义
+  const company = escapeHtml(job.company || '未知');
+  const title = escapeHtml(job.job_title || '未知');
+  const city = escapeHtml(job.location || '');
+  const priority = escapeHtml(job.priority || 'Medium');
+  const category = escapeHtml(job.role_family || '');
+  const link = safeUrl(job.job_url);
+  const notes = escapeHtml(job.notes || '');
+  const date = escapeHtml(job.date_found || '');
+  const stage = escapeHtml(job.current_stage || '');
+  const statusLabels = { 'Pending': '待投递', 'Submitted': '已投递', 'Excluded': '已剔除', 'Rejected': '已挂', 'Offer': 'Offer' };
+  const statusLabel = statusLabels[job.status] || escapeHtml(job.status);
+  const matchLevel = getMatchLevel(job);
+  const matchEmoji = matchLevel === 'high' ? '🔥' : matchLevel === 'medium' ? '👍' : '👀';
+
+  let stageSelect = '';
+  if (job.status === 'Submitted') {
+    const stages = ['简历筛选', 'AI测评', 'AI面试', '一面', '二面', '三面', 'HR面', '终面', '泡池子', 'offer', '挂了(被拒)'];
+    stageSelect = `<select class="stage-select" onchange="updateStage(${parseInt(job._rowIndex)}, this.value)" data-current="${stage}">
+      <option value="">📌 更新进度</option>${stages.map(s => `<option value="${escapeHtml(s)}" ${stage===escapeHtml(s)?'selected':''}>${escapeHtml(s)}</option>`).join('')}</select>`;
+  }
+
+  // 收藏按钮（job_pool 用 _rowIndex 作为 recordId）
+  const fav = isMarked(job.favorited);
+  const favBtn = `<button class="star-btn${fav ? ' active' : ''}" data-job-fav="${parseInt(job._rowIndex)}" data-current="${fav ? '1' : ''}" title="${fav ? '取消收藏' : '收藏'}" onclick="event.stopPropagation()">${fav ? '⭐' : '☆'}</button>`;
+
+  return `
+  <div class="job-card${isExcluded ? ' excluded' : ''}" style="animation-delay:${idx*0.03}s">
+    <div class="job-card-left"><div class="job-priority-dot dot-${priority}"></div></div>
+    <div class="job-card-main">
+      <div class="job-card-header">
+        <div><div class="job-company">${company}</div><div class="job-title-text">${title}</div></div>
+        <div class="badge-row">
+          ${category ? `<span class="badge badge-cat">${category}</span>` : ''}
+          <span class="badge badge-priority ${priority==='最高'?'p-high':''}">${priority}</span>
+          <span class="badge" style="background:${matchLevel==='high'?'var(--danger-soft)':matchLevel==='medium'?'var(--warning-soft)':'var(--bg-alt)'};color:${matchLevel==='high'?'var(--danger)':matchLevel==='medium'?'var(--warning)':'var(--text-muted)'}">${matchEmoji} ${matchLevel==='high'?'高匹配':matchLevel==='medium'?'中匹配':'可尝试'}</span>
+          <span class="badge badge-status ${job.status==='Submitted'?'submitted':job.status==='Offer'?'offer':job.status==='Rejected'||job.status==='Excluded'?'ended':''}">${statusLabel}</span>
+        </div>
+      </div>
+      <div class="job-meta">
+        ${city ? `<span class="job-meta-item">📍 ${city}</span>` : ''}
+        <span class="job-meta-item">📅 ${date}</span>
+        ${stage ? `<span class="job-meta-item">🔄 ${stage}</span>` : ''}
+        <span class="job-meta-item" title="当前视图序号" style="opacity:0.6;font-size:0.7rem;">#${idx + 1}</span>
+      </div>
+      ${notes ? `<div style="margin-top:4px;font-size:0.76rem;color:var(--text-muted);">💬 ${notes}</div>` : ''}
+      <div class="job-card-actions">
+        ${favBtn}
+        ${link ? `<a href="${link}" target="_blank" rel="noopener noreferrer" class="job-link" onclick="event.stopPropagation()">🔗 网申</a>` : ''}
+        ${link ? `<button class="btn btn-outline btn-xs resume-gen-btn" onclick="event.stopPropagation();copyResumePrompt(${parseInt(job._rowIndex)})">📝 生成简历</button>` : ''}
+        ${stageSelect}
+        <button class="btn btn-ghost btn-xs" onclick="openEditModal(${parseInt(job._rowIndex)})">✎ 编辑</button>
+        ${job.status === 'Pending' ? `<button class="btn btn-outline btn-xs" onclick="markSubmitted(${parseInt(job._rowIndex)})">✓ 已投</button>` : ''}
+        ${job.status === 'Pending' ? `<button class="btn btn-ghost btn-xs" onclick="markExcluded(${parseInt(job._rowIndex)})">✕ 剔除</button>` : ''}
+        ${job.status === 'Submitted' ? `<button class="btn btn-ghost btn-xs" onclick="markRejected(${parseInt(job._rowIndex)})" style="color:var(--danger)">✕ 挂了</button>` : ''}
+        ${job.status === 'Submitted' ? `<button class="btn btn-outline btn-xs" onclick="markOffer(${parseInt(job._rowIndex)})" style="color:var(--success);border-color:var(--success)">🎉 Offer</button>` : ''}
+      </div>
+    </div>
+  </div>`;
+}
+
+function buildTimelineEntry(job, idx) {
+  // P2-8: 转义所有用户输入
+  const company = escapeHtml(job.company || '未知');
+  const title = escapeHtml(job.job_title || '未知');
+  const city = escapeHtml(job.location || '');
+  const date = escapeHtml(job.date_found || '');
+  const stage = escapeHtml(job.current_stage || '');
+  const isOffer = job.status === 'Offer';
+  const isRejected = job.status === 'Rejected';
+  const link = safeUrl(job.job_url);
+  const matchLevel = getMatchLevel(job);
+  const key = (job.company + '|' + job.job_title).toLowerCase();
+
+  // Get follow_up entries for this job
+  const followUps = followUpMap[key] || [];
+  const hasFollowUps = followUps.length > 0;
+
+  // Build stage dropdown options
+  const allStages = ['简历筛选', 'AI测评', 'AI面试', '一面', '二面', '三面', 'HR面', '终面', '泡池子'];
+  const stageOptions = allStages.map(s => `<option value="${escapeHtml(s)}" ${stage===escapeHtml(s)?'selected':''}>${escapeHtml(s)}</option>`).join('');
+
+  // Current stage display
+  let stageDisplay = '';
+  if (isOffer) {
+    stageDisplay = '<span class="current-stage-badge" style="background:var(--success-soft);color:var(--success);border-color:var(--success)">🎉 Offer</span>';
+  } else if (isRejected) {
+    stageDisplay = '<span class="current-stage-badge" style="background:var(--danger-soft);color:var(--danger);border-color:var(--danger)">挂了</span>';
+  } else if (stage) {
+    stageDisplay = `<span class="current-stage-badge">🔄 ${stage}</span>`;
+  } else {
+    stageDisplay = '<span class="current-stage-badge" style="background:var(--bg-alt);color:var(--text-muted);border-color:var(--border-light)">等待进展</span>';
+  }
+
+  return `
+  <div class="timeline-entry" style="animation-delay:${idx*0.04}s">
+    <div class="timeline-header">
+      <div class="timeline-dot ${isOffer?'done':isRejected?'fail':'active'}"></div>
+      <div class="timeline-body">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px">
+          <div>
+            <div class="timeline-company">${company}</div>
+            <div class="timeline-title">${title} ${city ? '· '+city : ''}</div>
+          </div>
+          <div style="display:flex;gap:5px;align-items:center">
+            <span class="badge" style="background:${matchLevel==='high'?'var(--danger-soft)':matchLevel==='medium'?'var(--warning-soft)':'var(--bg-alt)'};color:${matchLevel==='high'?'var(--danger)':matchLevel==='medium'?'var(--warning)':'var(--text-muted)'};font-size:0.65rem">${matchLevel==='high'?'🔥':matchLevel==='medium'?'👍':'👀'}</span>
+            <span class="badge badge-status ${isOffer?'offer':isRejected?'ended':'submitted'}">${isOffer?'🎉 Offer':isRejected?'已挂':'进行中'}</span>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap">
+          ${stageDisplay}
+          ${!isOffer && !isRejected ? `<select class="stage-select" onchange="updateStage(${parseInt(job._rowIndex)}, this.value)" style="font-size:0.75rem"><option value="">📌 更新进度</option>${stageOptions}<option value="offer">🎉 Offer</option><option value="挂了(被拒)">挂了(被拒)</option></select>` : ''}
+          <button class="timeline-toggle" id="toggle-${parseInt(job._rowIndex)}" onclick="toggleTimeline(${parseInt(job._rowIndex)})">
+            📋 时间线 ${hasFollowUps ? '('+followUps.length+')' : ''}
+          </button>
+        </div>
+        <div class="timeline-detail" id="detail-${parseInt(job._rowIndex)}">
+          ${buildTimelineDetail(job._rowIndex, followUps, date, stage, isOffer, isRejected)}
+        </div>
+      </div>
+    </div>
+    <div class="timeline-footer">
+      <span class="timeline-date">📅 ${date} 投递</span>
+      <div style="display:flex;gap:4px;align-items:center">
+        ${link ? `<a href="${link}" target="_blank" rel="noopener noreferrer" class="job-link" onclick="event.stopPropagation()">🔗 网申</a>` : ''}
+        <button class="btn btn-ghost btn-xs" onclick="openEditModal(${parseInt(job._rowIndex)})">✎</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function buildTimelineDetail(rowIndex, followUps, submitDate, currentStage, isOffer, isRejected) {
+  if (followUps.length === 0) {
+    return `<div class="timeline-detail-empty">暂无进度记录，选择上方「更新进度」开始记录</div>`;
+  }
+
+  // Sort followUps by date+time
+  const sorted = [...followUps].sort((a, b) => {
+    const da = (a.date || '') + (a.time || '');
+    const db = (b.date || '') + (b.time || '');
+    return da.localeCompare(db);
+  });
+
+  let html = '';
+  sorted.forEach((f, i) => {
+    const isLatest = i === sorted.length - 1;
+    const eventType = escapeHtml(f.event_type || '进度更新');
+    const notes = escapeHtml(f.notes || '');
+    const fDate = escapeHtml(f.date || '');
+    const fTime = escapeHtml(f.time || '');
+    html += `
+    <div class="timeline-detail-item">
+      <div class="timeline-detail-dot ${isLatest ? 'latest' : ''}"></div>
+      <div class="timeline-detail-content">
+        <div class="timeline-detail-date">${fDate} ${fTime}</div>
+        <div class="timeline-detail-event">${eventType}</div>
+        ${notes ? `<div class="timeline-detail-notes">💬 ${notes}</div>` : ''}
+      </div>
+      <div class="timeline-detail-actions">
+        <button class="timeline-detail-edit" onclick="editTimelineNote(${parseInt(rowIndex)}, ${i})" title="编辑">✎</button>
+      </div>
+    </div>`;
+  });
+  return html;
+}
+
+function toggleTimeline(rowIndex) {
+  const detail = document.getElementById('detail-' + rowIndex);
+  const toggle = document.getElementById('toggle-' + rowIndex);
+  if (!detail || !toggle) return;
+  const isOpen = detail.classList.contains('open');
+  if (isOpen) {
+    detail.classList.remove('open');
+    toggle.classList.remove('open');
+  } else {
+    detail.classList.add('open');
+    toggle.classList.add('open');
+  }
+}
+
+function editTimelineNote(rowIndex, followIdx) {
+  const job = allJobs.find(j => j._rowIndex === rowIndex);
+  if (!job) return;
+  const key = (job.company + '|' + job.job_title).toLowerCase();
+  const followUps = followUpMap[key] || [];
+  const sorted = [...followUps].sort((a, b) => {
+    const da = (a.date || '') + (a.time || '');
+    const db = (b.date || '') + (b.time || '');
+    return da.localeCompare(db);
+  });
+  const entry = sorted[followIdx];
+  if (!entry) return;
+
+  const newNotes = prompt('编辑备注（取消不修改）：', entry.notes || '');
+  if (newNotes === null) return;
+
+  // Update the entry in followUpMap
+  entry.notes = newNotes;
+
+  // Persist to server
+  fetch('/api/update-followup', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      company: job.company,
+      job_title: job.job_title,
+      date: entry.date,
+      time: entry.time,
+      event_type: entry.event_type,
+      notes: newNotes
+    })
+  }).catch(() => {});
+
+  addLog(`编辑时间线备注: ${job.company} ${job.job_title} - ${entry.event_type}`);
+  renderAll();
+}
+
+// ========== Tab Switching ==========
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.status-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.status-tab[data-tab="${tab}"]`)?.classList.add('active');
+
+  // 外部公司库是独立功能区，切换时控制各区域显隐
+  const isExternal = tab === 'external';
+  document.body.classList.toggle('ext-mode', isExternal);  // v3.7: 隐藏左侧 sidebar + stats
+  document.getElementById('externalSection').style.display = isExternal ? 'block' : 'none';
+  document.getElementById('jobContent').style.display = isExternal ? 'none' : 'block';
+  document.getElementById('jobCountBar').style.display = isExternal ? 'none' : 'block';
+  document.getElementById('emptyState').style.display = 'none';
+
+  if (isExternal) {
+    document.getElementById('excludedSection').style.display = 'none';
+    loadExternalCompanies();
+  } else {
+    // v3.7: 切换 tab 时重置类别筛选（不同 tab 的类别集合不同）
+    activeCats.clear();
+    activeCities.clear();
+    updateCatTriggerLabel();
+    populateFilters();   // 根据当前 tab 重新生成筛选选项
+    renderJobs();
+  }
+}
+
+// ========== 秋招公司库（外部数据源）==========
+let externalCompanies = [];
+let externalSourceInfo = { last_sync_at: '', source_name: '', source_url: '' };
+let extFavOnly = false;  // v3.7: 仅看收藏
+let extActiveCities = new Set(); // 多选城市（秋招公司库）
+
+function toggleExtFavOnly() {
+  extFavOnly = !extFavOnly;
+  const btn = document.getElementById('extFavToggle');
+  btn.classList.toggle('active', extFavOnly);
+  btn.textContent = extFavOnly ? '⭐ 仅看收藏' : '☆ 仅看收藏';
+  renderExternalTable();
+}
+
+async function loadExternalCompanies() {
+  try {
+    const res = await fetch('/api/external-companies');
+    const data = await res.json();
+    if (data.success) {
+      externalCompanies = data.companies || [];
+      externalSourceInfo = {
+        last_sync_at: data.last_sync_at || '',
+        source_name: data.source_name || '',
+        source_url: data.source_url || ''
+      };
+      document.getElementById('tabCountExternal').textContent = externalCompanies.length;
+      updateExtSourceInfo();
+      populateExtFilters();
+      renderExternalTable();
+      // v3.9: 数据为 0 时弹出飞书同步引导
+      if (externalCompanies.length === 0) {
+        showFeishuSyncGuide();
+      }
+    }
+  } catch (e) {
+    showToast('加载外部公司库失败: ' + e.message, 'error');
+  }
+}
+
+function updateExtSourceInfo() {
+  const infoEl = document.getElementById('extSourceInfo');
+  const syncEl = document.getElementById('extSyncInfo');
+  if (externalSourceInfo.source_name) {
+    infoEl.textContent = '📁 ' + externalSourceInfo.source_name;
+  }
+  if (externalSourceInfo.last_sync_at) {
+    syncEl.textContent = '上次同步: ' + externalSourceInfo.last_sync_at;
+    syncEl.className = 'ext-sync-info synced';
+  } else {
+    syncEl.textContent = '未同步';
+    syncEl.className = 'ext-sync-info';
+  }
+}
+
+function populateExtFilters() {
+  const cities = new Set();
+  const batches = new Set();
+  const types = new Set();
+  externalCompanies.forEach(c => {
+    // 拆分城市：支持 ; 和 / 分隔，去掉"等"
+    (c.cities || '').split(/[,;；/、]/).forEach(s => {
+      s = s.trim().replace(/^[\u4e00-\u9fa5]+·/, '').replace(/等$/, '');
+      if (s) cities.add(s);
+    });
+    if (c.batch) batches.add(c.batch);
+    if (c.enterprise_type) types.add(c.enterprise_type);
+  });
+  const fillSelect = (id, set) => {
+    const sel = document.getElementById(id);
+    const cur = sel.value;
+    sel.innerHTML = '<option value="">全部</option>' + [...set].sort().map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+    sel.value = cur;
+  };
+  // 填充城市多选下拉
+  const extCityItems = document.getElementById('extCityDropdownItems');
+  let extCityHtml = `<div class="cat-dropdown-item ${extActiveCities.size === 0 ? 'active' : ''}" data-city="__all__" onclick="toggleExtCity('__all__')">全部城市</div>`;
+  Array.from(cities).sort().forEach(c => {
+    const esc = escapeHtml(c);
+    extCityHtml += `<div class="cat-dropdown-item ${extActiveCities.has(c) ? 'active' : ''}" data-city="${esc}" onclick="toggleExtCity('${esc.replace(/'/g, "&#39;")}')">${esc}</div>`;
+  });
+  extCityItems.innerHTML = extCityHtml;
+  updateExtCityTriggerLabel();
+  fillSelect('extFilterBatch', batches);
+  fillSelect('extFilterType', types);
+}
+
+function toggleExtCity(city) {
+  if (city === '__all__') {
+    extActiveCities.clear();
+  } else {
+    if (extActiveCities.has(city)) extActiveCities.delete(city);
+    else extActiveCities.add(city);
+  }
+  document.querySelectorAll('#extCityDropdownItems .cat-dropdown-item').forEach(t => t.classList.remove('active'));
+  if (extActiveCities.size === 0) {
+    const allItem = document.querySelector('#extCityDropdownItems .cat-dropdown-item[data-city="__all__"]');
+    if (allItem) allItem.classList.add('active');
+  } else {
+    extActiveCities.forEach(c => {
+      const item = document.querySelector(`#extCityDropdownItems .cat-dropdown-item[data-city="${c.replace(/'/g, "\\'")}"]`);
+      if (item) item.classList.add('active');
+    });
+  }
+  updateExtCityTriggerLabel();
+  renderExternalTable();
+}
+
+function toggleExtCityDropdown() {
+  const dd = document.getElementById('extCityDropdown');
+  dd.classList.toggle('open');
+  if (dd.classList.contains('open')) {
+    document.getElementById('extCityDropdownSearch').value = '';
+    filterExtCityDropdown();
+  }
+}
+
+function filterExtCityDropdown() {
+  const q = (document.getElementById('extCityDropdownSearch').value || '').toLowerCase();
+  document.querySelectorAll('#extCityDropdownItems .cat-dropdown-item').forEach(item => {
+    const text = (item.textContent || '').toLowerCase();
+    item.style.display = text.includes(q) ? '' : 'none';
+  });
+}
+
+function updateExtCityTriggerLabel() {
+  const label = document.getElementById('extCityTriggerLabel');
+  if (extActiveCities.size === 0) label.textContent = '全部城市';
+  else if (extActiveCities.size === 1) label.textContent = [...extActiveCities][0];
+  else label.textContent = `${extActiveCities.size}个城市`;
+}
+
+function renderExternalTable() {
+  const tbody = document.getElementById('extTableBody');
+  const empty = document.getElementById('extEmpty');
+  const table = document.getElementById('extTable');
+
+  const batchFilter = document.getElementById('extFilterBatch').value;
+  const typeFilter = document.getElementById('extFilterType').value;
+  const search = document.getElementById('extSearchInput').value.trim().toLowerCase();
+
+  let filtered = externalCompanies;
+  // 多选城市筛选：拆分 cities 字段，任一城市在选中集合中即通过
+  if (extActiveCities.size > 0) {
+    filtered = filtered.filter(c => {
+      if (!c.cities) return false;
+      return c.cities.split(/[,;；/、]/).some(s => {
+        s = s.trim().replace(/^[\u4e00-\u9fa5]+·/, '').replace(/等$/, '');
+        return extActiveCities.has(s);
+      });
+    });
+  }
+  if (batchFilter) filtered = filtered.filter(c => c.batch === batchFilter);
+  if (typeFilter) filtered = filtered.filter(c => c.enterprise_type === typeFilter);
+  if (search) filtered = filtered.filter(c => (c.company_name || '').toLowerCase().includes(search));
+  if (extFavOnly) filtered = filtered.filter(c => isMarked(c.favorited));   // v3.7: 仅看收藏
+
+  // 排序：收藏最前 → 正常 → 剔除最后；同级别内按开放日期降序
+  filtered.sort((a, b) => {
+    const ea = isMarked(a.excluded), eb = isMarked(b.excluded);
+    if (ea !== eb) return ea ? 1 : -1;            // 剔除的排最后
+    const fa = isMarked(a.favorited), fb = isMarked(b.favorited);
+    if (fa !== fb) return fa ? -1 : 1;             // 收藏的排最前
+    return (b.open_date || '').localeCompare(a.open_date || '');
+  });
+
+  if (filtered.length === 0) {
+    table.style.display = 'none';
+    empty.style.display = 'block';
+    return;
+  }
+  table.style.display = '';
+  empty.style.display = 'none';
+
+  tbody.innerHTML = filtered.map(c => {
+    const name = escapeHtml(c.company_name || '');
+    const type = escapeHtml(c.enterprise_type || '');
+    const batch = escapeHtml(c.batch || '');
+    const cities = escapeHtml(c.cities || '');
+    const jobs = escapeHtml(c.job_categories || '');
+    const openDate = escapeHtml(fmtDate(c.open_date));
+    const deadline = escapeHtml(fmtDate(c.deadline));
+    const url = safeUrl(c.career_url);
+    const urlText = escapeHtml(c.career_url_text || c.career_url || '查看');
+    const typeClass = escapeHtml(c.enterprise_type || 'default');
+    // external 用 source_record_id 作为 recordId
+    const recordId = escapeHtml(c.source_record_id || '');
+    const fav = isMarked(c.favorited);
+    const excl = isMarked(c.excluded);
+    const rowClass = excl ? 'ext-row-excluded' : (fav ? 'ext-row-favorited' : '');
+    const favBtn = `<button class="ext-star${fav ? ' active' : ''}" data-ext-fav="${recordId}" data-current="${fav ? '1' : ''}" title="${fav ? '取消收藏' : '收藏'}">${fav ? '⭐' : '☆'}</button>`;
+    const exclBtn = `<button class="ext-exclude-btn${excl ? ' excluded' : ''}" data-ext-excl="${recordId}" data-current="${excl ? '1' : ''}" title="${excl ? '恢复' : '剔除'}">${excl ? '↻ 恢复' : '✕ 剔除'}</button>`;
+
+    return `<tr class="${rowClass}">
+      <td class="ext-company">${name}</td>
+      <td>${type ? `<span class="ext-type-badge ${typeClass}">${type}</span>` : ''}</td>
+      <td class="ext-batch">${batch}</td>
+      <td class="ext-cities"><span class="ext-cell-toggle" data-ext-cell="cities" data-content="${cities}">${cities || '—'}</span></td>
+      <td class="ext-jobs"><span class="ext-cell-toggle" data-ext-cell="jobs" data-content="${jobs}">${jobs || '—'}</span></td>
+      <td class="ext-date">${openDate}</td>
+      <td class="ext-date">${deadline}</td>
+      <td>${url ? `<a href="${url}" target="_blank" rel="noopener" class="ext-link">${urlText}</a>` : ''}</td>
+      <td class="ext-actions">
+        ${favBtn}
+        <button class="btn btn-ghost btn-xs" data-ext-action="import" data-company="${name}" data-url="${escapeHtml(c.career_url||'')}" data-batch="${batch}" data-cities="${cities}" data-jobs="${jobs}">＋加入岗位池</button>
+        ${exclBtn}
+      </td>
+    </tr>`;
+  }).join('');
+
+  // 绑定"加入岗位池"按钮（用 data-* 避免 XSS）
+  tbody.querySelectorAll('button[data-ext-action="import"]').forEach(btn => {
+    btn.addEventListener('click', () => importExternalToPool(btn.dataset));
+  });
+  // 绑定外部库收藏按钮
+  tbody.querySelectorAll('button[data-ext-fav]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleMark('external', btn.dataset.extFav, 'favorited', btn.dataset.current === '1');
+    });
+  });
+  // 绑定外部库剔除按钮
+  tbody.querySelectorAll('button[data-ext-excl]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleMark('external', btn.dataset.extExcl, 'excluded', btn.dataset.current === '1');
+    });
+  });
+  // v3.7: 绑定 base 地点 / 岗位类别 单元格点击查看全部
+  tbody.querySelectorAll('.ext-cell-toggle').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      showExtCellPopup(el);
+    });
+  });
+}
+
+// v3.7: 点击 base 地点 / 岗位类别 单元格，弹出完整内容
+function showExtCellPopup(el) {
+  // 移除已有弹窗
+  document.getElementById('extCitiesPopup')?.remove();
+  const content = el.dataset.content || '';
+  const type = el.dataset.extCell || '';
+  const title = type === 'cities' ? 'base 地点' : '岗位类别';
+  const items = content.split(';').map(s => s.trim()).filter(Boolean);
+  const popup = document.createElement('div');
+  popup.id = 'extCitiesPopup';
+  popup.className = 'ext-cities-popup';
+  popup.innerHTML = `<div class="ext-cities-popup-title">${title}（共 ${items.length} 项）</div>${items.map(it => escapeHtml(it)).join('<br>')}`;
+  document.body.appendChild(popup);
+  // 定位到元素附近
+  const rect = el.getBoundingClientRect();
+  const popupRect = popup.getBoundingClientRect();
+  let left = rect.left + window.scrollX;
+  let top = rect.bottom + window.scrollY + 4;
+  // 防止溢出右侧
+  if (left + popupRect.width > window.innerWidth - 10) {
+    left = window.innerWidth - popupRect.width - 10;
+  }
+  popup.style.left = left + 'px';
+  popup.style.top = top + 'px';
+}
+
+async function syncExternal() {
+  const btn = document.getElementById('syncExtBtn');
+  const syncEl = document.getElementById('extSyncInfo');
+  btn.disabled = true;
+  btn.textContent = '⏳ 同步中...';
+  syncEl.className = 'ext-sync-info syncing';
+  syncEl.textContent = '同步中...';
+  try {
+    const res = await fetch('/api/sync-external', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ force: true })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast(data.message, 'success');
+      await loadExternalCompanies();
+    } else {
+      showToast(data.message || data.error || '同步失败', 'error');
+      syncEl.className = 'ext-sync-info';
+      syncEl.textContent = '同步失败';
+      // v3.9: 同步失败时弹出飞书引导
+      showFeishuSyncGuide(data.error || data.message || '');
+    }
+  } catch (e) {
+    showToast('同步失败: ' + e.message, 'error');
+    syncEl.className = 'ext-sync-info';
+    syncEl.textContent = '同步失败';
+    // v3.9: 异常时也弹引导
+    showFeishuSyncGuide(e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🔄 同步飞书';
+  }
+}
+
+// v3.9: 飞书同步引导弹窗（秋招公司库为 0 时强引导）
+// v3.10 重构：Agent 无关的多路径引导，不再硬绑 Trae IDE 插件
+function showFeishuSyncGuide(reason = '') {
+  // 60 秒内不重复弹
+  const lastShown = parseInt(localStorage.getItem('careersail-feishu-guide-shown') || '0', 10);
+  if (Date.now() - lastShown < 60000) return;
+  localStorage.setItem('careersail-feishu-guide-shown', String(Date.now()));
+
+  const existing = document.getElementById('feishu-guide-overlay');
+  if (existing) existing.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'feishu-guide-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+  overlay.innerHTML = `
+    <div style="background:var(--surface);border-radius:16px;max-width:680px;width:100%;padding:32px;box-shadow:0 20px 60px rgba(0,0,0,0.3);font-family:var(--font-body);max-height:90vh;overflow-y:auto;">
+      <div style="text-align:center;margin-bottom:20px;">
+        <div style="font-size:42px;margin-bottom:10px;">📦</div>
+        <h2 style="font-family:var(--font-display);font-size:1.4rem;color:var(--text);margin-bottom:6px;">秋招公司库为空</h2>
+        <p style="color:var(--text-secondary);font-size:0.85rem;">数据来自飞书多维表格，下面三种方式任选一种即可同步</p>
+        ${reason ? `<p style="color:var(--danger);font-size:0.78rem;margin-top:8px;">错误详情：${escapeHtml(reason)}</p>` : ''}
+      </div>
+
+      <div style="background:var(--success-soft);border-left:3px solid var(--success);border-radius:8px;padding:16px;margin-bottom:14px;">
+        <p style="font-size:0.88rem;font-weight:600;color:var(--text);margin-bottom:10px;">✅ 方式一：飞书官方 lark-cli（推荐，任何 Agent 通用）</p>
+        <p style="font-size:0.78rem;color:var(--text-secondary);margin-bottom:8px;">飞书官方开源的命令行工具，不依赖任何 IDE 插件，npm 一行安装</p>
+        <ol style="font-size:0.78rem;color:var(--text);line-height:1.75;padding-left:20px;">
+          <li><b>安装</b>：<code style="background:var(--surface);padding:2px 6px;border-radius:4px;color:var(--navy);">npx @larksuite/cli@latest install</code></li>
+          <li><b>配置飞书应用</b>：<code style="background:var(--surface);padding:2px 6px;border-radius:4px;color:var(--navy);">lark-cli config init --new</code>（按提示在浏览器完成应用创建）</li>
+          <li><b>登录授权</b>：<code style="background:var(--surface);padding:2px 6px;border-radius:4px;color:var(--navy);">lark-cli auth login --recommend</code></li>
+          <li><b>回到此页面</b>点击「🔄 同步飞书」按钮</li>
+        </ol>
+        <p style="font-size:0.72rem;color:var(--text-muted);margin-top:6px;">官方仓库：<a href="https://github.com/larksuite/cli" target="_blank" style="color:var(--navy);">github.com/larksuite/cli</a></p>
+      </div>
+
+      <div style="background:var(--navy-soft);border-left:3px solid var(--navy);border-radius:8px;padding:16px;margin-bottom:14px;">
+        <p style="font-size:0.88rem;font-weight:600;color:var(--text);margin-bottom:10px;">🔵 方式二：用你 Agent 的飞书插件/技能</p>
+        <p style="font-size:0.78rem;color:var(--text-secondary);margin-bottom:8px;">不同 Agent 有自己的飞书集成方案，效果等价：</p>
+        <ul style="font-size:0.78rem;color:var(--text);line-height:1.75;padding-left:20px;">
+          <li><b>Trae IDE</b>：安装 <code style="background:var(--surface);padding:2px 6px;border-radius:4px;color:var(--navy);">trae-remote-official:lark</code> 插件</li>
+          <li><b>WorkBuddy</b>：使用内置 <code style="background:var(--surface);padding:2px 6px;border-radius:4px;color:var(--navy);">lark-unified</code> 技能 + 飞书连接器</li>
+          <li><b>Claude Code / Codex / Cursor</b>：安装 <code style="background:var(--surface);padding:2px 6px;border-radius:4px;color:var(--navy);">lark-cli</code>（同方式一）</li>
+          <li><b>其他 Agent</b>：有飞书 MCP / 插件就用，没有就走方式一</li>
+        </ul>
+        <p style="font-size:0.78rem;color:var(--text);margin-top:8px;">装好后对 Agent 说："登录飞书，然后同步飞书秋招公司库到 CareerSail"</p>
+      </div>
+
+      <div style="background:var(--bg-alt);border-radius:10px;padding:14px;margin-bottom:20px;">
+        <p style="font-size:0.78rem;color:var(--text);line-height:1.6;">
+          同步后可在「秋招公司库」标签页查看，支持收藏/剔除/加入岗位池。
+        </p>
+      </div>
+
+      <div style="display:flex;gap:10px;justify-content:flex-end;">
+        <button onclick="document.getElementById('feishu-guide-overlay').remove()" style="padding:9px 18px;border-radius:6px;border:1.5px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;font-size:0.85rem;">稍后再装</button>
+        <button onclick="copyFeishuInstallPrompt()" style="padding:9px 18px;border-radius:6px;border:none;background:var(--navy);color:#fff;cursor:pointer;font-size:0.85rem;">复制引导话术给 Agent</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+}
+
+// v3.10: 复制飞书安装引导话术（Agent 无关）
+function copyFeishuInstallPrompt() {
+  const text = '秋招公司库是空的，请用你所在 Agent 环境的飞书集成方案帮我同步：\n' +
+    '1. 优先方案：安装飞书官方 lark-cli（npx @larksuite/cli@latest install），然后执行 lark-cli config init --new 创建应用，再 lark-cli auth login --recommend 完成授权\n' +
+    '2. 如果你自带飞书插件/技能（如 Trae 的 trae-remote-official:lark、WorkBuddy 的 lark-unified），用对应的即可\n' +
+    '3. 授权完成后，调用 lark-cli base +record-list --base-token BSTU4d8MH0yHrAtJgUjVZJgGnAb --table-id tblxxxxxx --offset 0 --limit 200 --as user 拉取数据\n' +
+    '4. 或者直接调用本服务的 POST /api/sync-external 接口触发同步\n' +
+    '请根据你当前 Agent 支持的方案选择最简路径，不要跳过';
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('已复制话术，粘贴给 AI Agent 即可', 'success');
+    document.getElementById('feishu-guide-overlay').remove();
+  }).catch(() => {
+    showToast('复制失败，请手动复制', 'error');
+  });
+}
+
+async function importExternalToPool(dataset) {
+  try {
+    const res = await fetch('/api/import-external-to-pool', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        company: dataset.company,
+        career_url: dataset.url,
+        batch: dataset.batch,
+        cities: dataset.cities,
+        job_categories: dataset.jobs
+      })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast(data.message, 'success');
+      addLog(`从外部公司库导入: ${dataset.company}`);
+    } else {
+      showToast(data.error || '导入失败', 'error');
+    }
+  } catch (e) {
+    showToast('导入失败: ' + e.message, 'error');
+  }
+}
+
+// ========== 收藏 / 剔除切换 ==========
+async function toggleMark(source, recordId, field, currentVal) {
+  try {
+    const newVal = !currentVal;
+    const res = await fetch('/api/toggle-mark', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ source, recordId: String(recordId), field, value: newVal })
+    });
+    const data = await res.json();
+    if (data.success) {
+      // 更新本地数据并重新渲染
+      if (source === 'external') {
+        const item = externalCompanies.find(c => c.source_record_id === recordId);
+        if (item) item[field] = data.value;
+        renderExternalTable();
+      } else if (source === 'job_pool') {
+        const item = allJobs.find(j => String(j._rowIndex) === String(recordId));
+        if (item) item[field] = data.value;
+        renderJobs();
+      }
+      const msgMap = {
+        favorited: data.value ? '已收藏' : '已取消收藏',
+        excluded: data.value ? '已剔除' : '已恢复'
+      };
+      showToast(msgMap[field] || '操作成功', 'success');
+    } else {
+      showToast(data.error || '操作失败', 'error');
+    }
+  } catch (e) {
+    showToast('操作失败: ' + e.message, 'error');
+  }
+}
+
+// ========== API Calls ==========
+async function apiCall(endpoint, data) {
+  try {
+    const res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+    if (!res.ok) { const err = await res.json(); throw new Error(err.error || 'Request failed'); }
+    return await res.json();
+  } catch (e) { showToast(e.message, 'error'); throw e; }
+}
+
+async function updateStage(rowIndex, stage) {
+  if (!stage) return;
+  const job = allJobs.find(j => j._rowIndex === rowIndex);
+  if (!job) return;
+  try {
+    await apiCall('/api/update-stage', { rowIndex, company: job.company, job_title: job.job_title, stage });
+    if (stage === 'offer' || stage === '挂了(被拒)') job.status = stage === 'offer' ? 'Offer' : 'Rejected';
+    job.current_stage = stage;
+    addLog(`更新进度: ${job.company} ${job.job_title} → ${stage}`);
+    await loadData();
+    populateFilters();
+    renderAll();
+    showToast('进度已更新', 'success');
+  } catch (e) {}
+}
+
+async function markSubmitted(rowIndex) {
+  const job = allJobs.find(j => j._rowIndex === rowIndex);
+  if (!job) return;
+  try {
+    await apiCall('/api/update-status', { rowIndex, company: job.company, job_title: job.job_title, status: 'Submitted' });
+    job.status = 'Submitted';
+    addLog(`标记已投递: ${job.company} ${job.job_title}`);
+    renderAll();
+    showToast('已标记为投递', 'success');
+  } catch (e) {}
+}
+
+async function markExcluded(rowIndex) {
+  const job = allJobs.find(j => j._rowIndex === rowIndex);
+  if (!job) return;
+  try {
+    await apiCall('/api/update-status', { rowIndex, company: job.company, job_title: job.job_title, status: 'Excluded' });
+    job.status = 'Excluded';
+    addLog(`已剔除: ${job.company} ${job.job_title}`);
+    renderAll();
+    showToast('已剔除', 'success');
+  } catch (e) {}
+}
+
+async function markRejected(rowIndex) {
+  const job = allJobs.find(j => j._rowIndex === rowIndex);
+  if (!job) return;
+  try {
+    await apiCall('/api/update-status', { rowIndex, company: job.company, job_title: job.job_title, status: 'Rejected' });
+    job.status = 'Rejected';
+    addLog(`挂了: ${job.company} ${job.job_title}`);
+    renderAll();
+    showToast('已标记', 'success');
+  } catch (e) {}
+}
+
+async function markOffer(rowIndex) {
+  const job = allJobs.find(j => j._rowIndex === rowIndex);
+  if (!job) return;
+  try {
+    await apiCall('/api/update-status', { rowIndex, company: job.company, job_title: job.job_title, status: 'Offer' });
+    job.status = 'Offer';
+    addLog(`🎉 Offer: ${job.company} ${job.job_title}`);
+    renderAll();
+    showToast('🎉 恭喜！', 'success');
+  } catch (e) {}
+}
+
+// ========== Import Modal ==========
+function openImportModal() { document.getElementById('importModal').style.display = 'flex'; document.getElementById('impCompany').focus(); }
+function closeImportModal() { document.getElementById('importModal').style.display = 'none'; ['impCompany','impTitle','impCity','impCategory','impUrl','impNotes'].forEach(id => document.getElementById(id).value = ''); }
+async function importJob() {
+  const company = document.getElementById('impCompany').value.trim();
+  const title = document.getElementById('impTitle').value.trim();
+  if (!company || !title) { showToast('公司名称和岗位名称为必填', 'error'); return; }
+  const data = {
+    company, job_title: title,
+    location: document.getElementById('impCity').value.trim(),
+    role_family: document.getElementById('impCategory').value.trim(),
+    priority: document.getElementById('impPriority').value,
+    job_url: document.getElementById('impUrl').value.trim(),
+    notes: document.getElementById('impNotes').value.trim(),
+    date_found: getLocalDate(), status: 'Pending'
+  };
+  try {
+    await apiCall('/api/import-job', data);
+    closeImportModal();
+    addLog(`添加岗位: ${company} ${title}`);
+    await loadData();
+    populateFilters();
+    renderAll();
+    showToast('岗位已添加', 'success');
+  } catch (e) {}
+}
+
+// ========== Edit Modal ==========
+function openEditModal(rowIndex) {
+  const job = allJobs.find(j => j._rowIndex === rowIndex);
+  if (!job) return;
+  document.getElementById('editRowIndex').value = rowIndex;
+  document.getElementById('editCompany').value = job.company || '';
+  document.getElementById('editTitle').value = job.job_title || '';
+  document.getElementById('editCity').value = job.location || '';
+  document.getElementById('editCategory').value = job.role_family || '';
+  document.getElementById('editPriority').value = job.priority || 'Medium';
+  document.getElementById('editStatus').value = job.status || 'Pending';
+  document.getElementById('editUrl').value = job.job_url || '';
+  document.getElementById('editNotes').value = job.notes || '';
+  document.getElementById('editModal').style.display = 'flex';
+}
+function closeEditModal() { document.getElementById('editModal').style.display = 'none'; }
+async function saveEdit() {
+  const rowIndex = parseInt(document.getElementById('editRowIndex').value);
+  const data = {
+    rowIndex,
+    company: document.getElementById('editCompany').value.trim(),
+    job_title: document.getElementById('editTitle').value.trim(),
+    location: document.getElementById('editCity').value.trim(),
+    role_family: document.getElementById('editCategory').value.trim(),
+    priority: document.getElementById('editPriority').value,
+    status: document.getElementById('editStatus').value,
+    job_url: document.getElementById('editUrl').value.trim(),
+    notes: document.getElementById('editNotes').value.trim()
+  };
+  try {
+    await apiCall('/api/update-job', data);
+    closeEditModal();
+    addLog(`编辑岗位: ${data.company} ${data.job_title}`);
+    await loadData();
+    populateFilters();
+    renderAll();
+    showToast('修改已保存', 'success');
+  } catch (e) {}
+}
+
+// ========== Guide Modal ==========
+function openGuideModal() { document.getElementById('guideModal').style.display = 'flex'; }
+function closeGuideModal() { document.getElementById('guideModal').style.display = 'none'; }
+
+// ========== Theme ==========
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('careersail-theme', next);
+}
+
+// ========== Refresh — 重新加载数据 + 真实岗位搜索（Playwright 浏览器自动化）==========
+// 刷新 = 重新加载CSV + 显示搜索面板（支持一键真实搜索）
+let lastJobCount = 0;
+
+async function refreshJobs() {
+  const btn = document.getElementById('refreshBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin">🔄</span> 刷新中...';
+
+  const beforeCount = allJobs.length;
+  lastJobCount = beforeCount;
+
+  try {
+    // 获取搜索目标（从用户配置生成）
+    const res = await fetch('/api/scrape', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({})
+    });
+    const result = await res.json();
+
+    if (result.success && result.mode === 'agent-search') {
+      if (result.targets.configured) {
+        const newCount = result.targets.newCompanies.length;
+        const existCount = result.targets.existingCompanies.length;
+        const cohortInfo = result.targets.cohort ? `「${result.targets.cohort}·${result.targets.job_type}」` : '';
+        addLog(`🔍 搜索目标${cohortInfo}: ${newCount} 家新公司 + ${existCount} 家补充`);
+        showSearchTargets(result.targets);
+      } else {
+        showToast('请先告诉 Agent 你的背景信息', 'error');
+        addLog('⚠ 用户画像未配置，无法生成搜索目标');
+      }
+    }
+  } catch (e) {
+    addLog('🔄 刷新：服务器不可用，仅重载本地数据');
+  }
+
+  // 重新加载数据
+  await loadData();
+  populateFilters();
+  renderAll();
+
+  const afterCount = allJobs.length;
+  if (afterCount > beforeCount) {
+    showToast(`🎉 新增 ${afterCount - beforeCount} 个岗位！`, 'success');
+    addLog(`📊 岗位池更新: ${beforeCount} → ${afterCount} (+${afterCount - beforeCount})`);
+  } else {
+    showToast('数据已刷新', 'success');
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '🔄 刷新';
+}
+
+// 真实搜索单个公司的岗位（Playwright 浏览器自动化，调用官网 API）
+async function realSearchCompany(company, keyword = '') {
+  const btnId = `searchBtn_${company.replace(/\s/g, '_')}`;
+  const btn = document.getElementById(btnId);
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '搜索中...';
+  }
+
+  try {
+    const res = await fetch('/api/search-and-import', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ company, keyword })
+    });
+    const result = await res.json();
+
+    if (result.success) {
+      if (result.imported > 0) {
+        showToast(`🎉 ${company} 新增 ${result.imported} 个岗位！`, 'success');
+        addLog(`✅ 真实搜索: ${company} → 新增${result.imported}个，跳过${result.skipped}个`);
+        // 重新加载数据
+        await loadData();
+        renderAll();
+      } else {
+        showToast(`${company} 未找到新岗位`, 'info');
+        addLog(`ℹ 真实搜索: ${company} → 无新岗位（已存在${result.skipped}个）`);
+      }
+    } else {
+      showToast(`搜索失败: ${result.error}`, 'error');
+      addLog(`❌ 搜索失败: ${company} - ${result.error}`);
+    }
+  } catch (e) {
+    showToast('搜索失败，服务器未响应', 'error');
+    addLog(`❌ 搜索失败: ${e.message}`);
+  }
+
+  if (btn) {
+    btn.disabled = false;
+    btn.innerHTML = '🔍 搜索';
+  }
+}
+
+// 显示搜索目标面板（带真实搜索按钮 + 公司发现计划）
+async function showSearchTargets(targets) {
+  const existing = document.getElementById('searchTargetPanel');
+  if (existing) existing.remove();
+
+  // 动态获取已适配招聘系统的公司（不再前端硬编码）
+  let supportedSet = new Set();
+  try {
+    const r = await fetch('/api/supported-companies');
+    const d = await r.json();
+    if (d.success && Array.isArray(d.companies)) {
+      d.companies.forEach(c => supportedSet.add(c.company));
+    }
+  } catch (e) { /* 忽略，按空集处理 */ }
+
+  const panel = document.createElement('div');
+  panel.id = 'searchTargetPanel';
+  panel.style.cssText = 'position:fixed;bottom:20px;right:20px;background:var(--surface);border:1px solid var(--accent);border-radius:var(--radius-lg);padding:20px;box-shadow:var(--shadow-lg);z-index:200;max-width:440px;max-height:75vh;overflow-y:auto;animation:slideIn 0.3s ease';
+
+  let html = '<div style="font-weight:600;color:var(--accent);margin-bottom:8px;font-size:0.9rem">🎯 岗位搜索面板</div>';
+
+  // 届别 + 岗位类型 提示（修复原硬编码 2026 的问题）
+  const cohort = targets.cohort || '';
+  const jobType = targets.job_type || '校招';
+  html += `<div style="font-size:0.74rem;background:var(--accent);color:white;padding:6px 10px;border-radius:6px;margin-bottom:10px;line-height:1.5">`;
+  html += `目标：<b>${escapeHtml(cohort || '未设置届别')} · ${escapeHtml(jobType)}</b>`;
+  if (!cohort) html += `<br>⚠ 请先在配置中填写 graduation_year，否则无法严格筛选届别`;
+  if (jobType === '校招') html += `<br>✅ 默认只收全职校招，实习岗位自动排除`;
+  html += `</div>`;
+
+  html += '<div style="font-size:0.76rem;color:var(--text-secondary);margin-bottom:12px;line-height:1.5">基于 <b>Playwright MCP 浏览器自动化</b>，直接调用公司校招官网 API，岗位 100% 真实，链接直达 JD 详情页。<br>点击「搜索」按钮即可一键导入到岗位池。</div>';
+
+  // 公司发现计划入口（四维度通用方法，不限专业）
+  html += '<div style="margin-bottom:12px">';
+  html += '<button onclick="showDiscoveryPlan()" style="background:var(--text);color:var(--surface);border:none;border-radius:6px;padding:6px 12px;font-size:0.72rem;cursor:pointer;width:100%">🧭 生成公司发现计划（本体/上游/下游/交叉）</button>';
+  html += '<div style="font-size:0.66rem;color:var(--text-tertiary);margin-top:4px;line-height:1.4">由用户画像（专业/研究方向/实习/能力）驱动，自动派生四维度关键词簇，不限专业。</div>';
+  html += '</div>';
+
+  if (targets.newCompanies && targets.newCompanies.length > 0) {
+    html += '<div style="font-size:0.75rem;font-weight:600;color:var(--text);margin-bottom:4px">🆕 新公司（优先搜索）</div>';
+    targets.newCompanies.forEach(t => {
+      const isSupported = supportedSet.has(t.company);
+      const btnId = `searchBtn_${t.company.replace(/\s/g, '_')}`;
+      html += `<div style="font-size:0.72rem;color:var(--text-secondary);padding:4px 0;display:flex;justify-content:space-between;align-items:center">`;
+      html += `<span>· ${escapeHtml(t.company)} — ${escapeHtml(t.keywords)}</span>`;
+      if (isSupported) {
+        html += `<button id="${escapeHtml(btnId)}" data-company="${escapeHtml(t.company)}" data-keywords="${escapeHtml(t.keywords || '')}" onclick="realSearchCompany(this.dataset.company, this.dataset.keywords)" style="background:var(--accent);color:white;border:none;border-radius:4px;padding:2px 8px;font-size:0.7rem;cursor:pointer">🔍 搜索</button>`;
+      } else {
+        html += `<span style="font-size:0.65rem;color:var(--text-tertiary)">待适配</span>`;
+      }
+      html += `</div>`;
+    });
+  }
+
+  if (targets.existingCompanies && targets.existingCompanies.length > 0) {
+    html += '<div style="font-size:0.75rem;font-weight:600;color:var(--text);margin-top:8px;margin-bottom:4px">🔄 补充搜索（已覆盖）</div>';
+    targets.existingCompanies.forEach(t => {
+      const isSupported = supportedSet.has(t.company);
+      const btnId = `searchBtn_${t.company.replace(/\s/g, '_')}`;
+      html += `<div style="font-size:0.72rem;color:var(--text-secondary);padding:4px 0;display:flex;justify-content:space-between;align-items:center">`;
+      html += `<span>· ${escapeHtml(t.company)} — ${escapeHtml(t.keywords)}</span>`;
+      if (isSupported) {
+        html += `<button id="${escapeHtml(btnId)}" data-company="${escapeHtml(t.company)}" data-keywords="${escapeHtml(t.keywords || '')}" onclick="realSearchCompany(this.dataset.company, this.dataset.keywords)" style="background:var(--success);color:white;border:none;border-radius:4px;padding:2px 8px;font-size:0.7rem;cursor:pointer">🔍 补充</button>`;
+      } else {
+        html += `<span style="font-size:0.65rem;color:var(--text-tertiary)">待适配</span>`;
+      }
+      html += `</div>`;
+    });
+  }
+
+  if ((!targets.newCompanies || targets.newCompanies.length === 0) && (!targets.existingCompanies || targets.existingCompanies.length === 0)) {
+    html += '<div style="font-size:0.75rem;color:var(--success);padding:4px 0">✅ 所有目标公司已覆盖，点击上方「公司发现计划」拓展新公司</div>';
+  }
+
+  html += `<div style="margin-top:12px;padding-top:8px;border-top:1px solid var(--border);font-size:0.7rem;color:var(--text-tertiary)">`;
+  html += `💡 已适配 ${supportedSet.size} 家公司（北森系统等），更多系统持续适配中...`;
+  html += '</div>';
+
+  html += '<div style="margin-top:8px;text-align:right">';
+  html += '<button onclick="document.getElementById(\'searchTargetPanel\').remove()" style="background:none;border:none;color:var(--text-secondary);font-size:0.7rem;cursor:pointer">关闭</button>';
+  html += '</div>';
+
+  panel.innerHTML = html;
+  document.body.appendChild(panel);
+}
+
+// 公司发现计划面板：展示四维度关键词簇 + Agent 指令
+async function showDiscoveryPlan() {
+  let plan;
+  try {
+    const r = await fetch('/api/discover-plan');
+    const d = await r.json();
+    if (!d.success) { showToast('获取发现计划失败', 'error'); return; }
+    plan = d.plan;
+  } catch (e) { showToast('获取发现计划失败: ' + e.message, 'error'); return; }
+
+  const existing = document.getElementById('discoveryPlanPanel');
+  if (existing) existing.remove();
+
+  const panel = document.createElement('div');
+  panel.id = 'discoveryPlanPanel';
+  panel.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--surface);border:1px solid var(--accent);border-radius:var(--radius-lg);padding:22px;box-shadow:var(--shadow-lg);z-index:300;width:560px;max-width:92vw;max-height:85vh;overflow-y:auto;animation:slideIn 0.3s ease';
+
+  let html = `<div style="font-weight:600;color:var(--accent);margin-bottom:6px;font-size:0.95rem">🧭 公司发现计划</div>`;
+  html += `<div style="font-size:0.74rem;color:var(--text-secondary);margin-bottom:12px">目标：<b>${escapeHtml(plan.cohort || '未设置')} · ${escapeHtml(plan.job_type)}</b>${plan.include_internship ? '' : '（排除实习）'}${plan.target_cities.length ? ' · 城市：' + escapeHtml(plan.target_cities.join('/')) : ''}</div>`;
+
+  const layerNames = { core: '本体行业', upstream: '上游', downstream: '下游', cross: '交叉领域' };
+  Object.entries(plan.layers).forEach(([key, l]) => {
+    html += `<div style="margin-bottom:10px;padding:10px;background:var(--bg);border-radius:8px">`;
+    html += `<div style="font-size:0.78rem;font-weight:600;color:var(--text);margin-bottom:3px">${escapeHtml(layerNames[key] || l.name)}</div>`;
+    html += `<div style="font-size:0.68rem;color:var(--text-tertiary);margin-bottom:5px;line-height:1.4">${escapeHtml(l.hint)}</div>`;
+    if (l.keywords && l.keywords.length) {
+      html += `<div style="font-size:0.7rem;color:var(--text-secondary);line-height:1.6">${l.keywords.slice(0, 12).map(k => `<span style="display:inline-block;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1px 8px;margin:2px 2px">${escapeHtml(k)}</span>`).join('')}</div>`;
+    } else {
+      html += `<div style="font-size:0.68rem;color:var(--text-tertiary)">（画像信息不足，请补充专业/研究方向/能力）</div>`;
+    }
+    html += `</div>`;
+  });
+
+  html += `<div style="margin-top:8px;padding:10px;background:var(--accent);color:white;border-radius:8px;font-size:0.72rem;line-height:1.6">${escapeHtml(plan.agent_instruction)}</div>`;
+
+  html += '<div style="margin-top:10px;text-align:right">';
+  html += '<button onclick="document.getElementById(\'discoveryPlanPanel\').remove()" style="background:var(--accent);color:white;border:none;border-radius:6px;padding:6px 16px;font-size:0.74rem;cursor:pointer">知道了</button>';
+  html += '</div>';
+
+  panel.innerHTML = html;
+  document.body.appendChild(panel);
+}
+
+// ========== Log ==========
+function addLog(msg, notes) {
+  const now = new Date();
+  const time = now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+  activityLog.unshift({ time, msg, notes: notes || '', date: getLocalDate(), id: Date.now() + Math.random() });
+  if (activityLog.length > 500) activityLog = activityLog.slice(0, 500);
+  saveLog();
+  renderLog();
+}
+
+function addLogNote() {
+  const msg = prompt('日志内容：');
+  if (!msg) return;
+  const notes = prompt('备注（可选）：');
+  addLog(msg, notes || '');
+  showToast('日志已添加', 'success');
+}
+
+function editLogEntry(logId) {
+  const entry = activityLog.find(l => l.id === logId);
+  if (!entry) return;
+  const newMsg = prompt('编辑日志内容：', entry.msg || '');
+  if (newMsg === null) return;
+  entry.msg = newMsg;
+  const newNotes = prompt('编辑备注（取消不修改）：', entry.notes || '');
+  if (newNotes !== null) entry.notes = newNotes;
+  saveLog();
+  renderLog();
+  showToast('日志已更新', 'success');
+}
+
+function deleteLogEntry(logId) {
+  if (!confirm('确定删除这条日志？')) return;
+  activityLog = activityLog.filter(l => l.id !== logId);
+  saveLog();
+  renderLog();
+  showToast('日志已删除', 'success');
+}
+
+function renderLog() {
+  const container = document.getElementById('logScroll');
+  const badge = document.getElementById('logBadge');
+  badge.textContent = activityLog.length;
+
+  if (activityLog.length === 0) {
+    container.innerHTML = '<div class="log-empty">暂无日志记录</div>';
+    return;
+  }
+
+  // Group by date, show ALL entries (not just today)
+  const grouped = {};
+  activityLog.forEach(l => {
+    const d = l.date || '未知日期';
+    if (!grouped[d]) grouped[d] = [];
+    grouped[d].push(l);
+  });
+
+  let html = '';
+  Object.keys(grouped).sort().reverse().forEach(date => {
+    const entries = grouped[date];
+    html += `<div class="log-date-sep">📅 ${escapeHtml(date)}<span class="log-date-count">${entries.length} 条</span></div>`;
+    entries.forEach(l => {
+      const escMsg = escapeHtml(l.msg || '');
+      const escNotes = escapeHtml(l.notes || '');
+      html += `
+      <div class="log-entry">
+        <span class="log-time">${escapeHtml(l.time || '--')}</span>
+        <span class="log-msg">${escMsg}${escNotes ? '<div class="log-notes">💬 ' + escNotes + '</div>' : ''}</span>
+        <span class="log-actions-inline">
+          <button class="log-btn-mini" onclick="editLogEntry(${l.id})" title="编辑">✎</button>
+          <button class="log-btn-mini" onclick="deleteLogEntry(${l.id})" title="删除" style="color:var(--danger)">✕</button>
+        </span>
+      </div>`;
+    });
+  });
+  container.innerHTML = html;
+}
+
+function saveLog() {
+  localStorage.setItem('careersail-log', JSON.stringify(activityLog));
+}
+
+function loadLog() {
+  try {
+    const saved = localStorage.getItem('careersail-log');
+    if (saved) activityLog = JSON.parse(saved);
+  } catch (e) { activityLog = []; }
+}
+
+async function syncLogToServer() {
+  try {
+    const res = await fetch('/api/log-sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ logs: activityLog })
+    });
+    if (res.ok) {
+      showToast('日志已同步到服务器', 'success');
+      addLog('💾 日志已同步到服务器');
+    }
+  } catch (e) {
+    showToast('同步失败：' + e.message, 'error');
+  }
+}
+
+// ========== Toast ==========
+function showToast(msg, type) {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+  const t = document.createElement('div');
+  t.className = `toast ${type}`; t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2800);
+}
+
+// ========== 生成简历 ==========
+function copyResumePrompt(rowIndex) {
+  const job = allJobs.find(j => parseInt(j._rowIndex) === rowIndex);
+  if (!job) { showToast('未找到该岗位', 'error'); return; }
+
+  const company = job.company || '未知';
+  const title = job.job_title || '未知';
+  const city = job.location || '';
+  const link = safeUrl(job.job_url);
+
+  if (!link) { showToast('该岗位没有有效的 JD 链接', 'error'); return; }
+  const prompt = `请帮我为以下岗位定制简历：
+
+【岗位信息】
+- 公司：${company}
+- 职位：${title}
+- 城市：${city || '不限'}
+- JD 链接：${link}
+
+【操作要求】
+1. 第一步：用浏览器访问上述 JD 链接，仔细阅读并抓取完整的职位描述、任职要求、岗位职责
+2. 第二步：调用 personal-career-os 这个 Skill 来生成定制简历
+   - 如果尚未安装，请先在终端执行：npx skills add Pluto-Mo/personal-career-os 或从 GitHub 克隆
+   - personal-career-os 安装地址：https://github.com/Pluto-Mo/personal-career-os
+3. 第三步：根据 JD 内容，personal-career-os 会自动匹配生成定制简历，输出 HTML 和 DOCX 格式（不需要 PDF 和 PNG）
+
+【重要提醒】
+- 必须使用 personal-career-os 这个 Skill，不要用其他简历 skill（如 resume-tailor、cover-letter-generator 等）
+- 必须先抓取 JD 原文内容，再生成简历，不要凭空编造
+- 如果无法抓取到真实的岗位 JD，请直接告知用户，让用户手动提供 JD 内容后再继续
+- 生成后请将 HTML/DOCX 文件保存到 CareerSail 项目的 my-materials 目录下`;
+
+  navigator.clipboard.writeText(prompt).then(() => {
+    showToast('✅ 简历生成 prompt 已复制！粘贴给 AI Agent 即可', 'success');
+  }).catch(() => {
+    // 降级方案：创建临时 textarea
+    const ta = document.createElement('textarea');
+    ta.value = prompt;
+    ta.style.position = 'fixed'; ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('✅ 简历生成 prompt 已复制！粘贴给 AI Agent 即可', 'success');
+  });
+}
+
+// ========== Keyboard ==========
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeImportModal(); closeEditModal(); closeGuideModal(); }
+});
+document.addEventListener('click', e => {
+  if (e.target.id === 'importModal') closeImportModal();
+  if (e.target.id === 'editModal') closeEditModal();
+  if (e.target.id === 'guideModal') closeGuideModal();
+});
+
+// ========== Start ==========
+init();
+</script>
+</body>
+</html>

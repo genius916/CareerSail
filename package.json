@@ -1,0 +1,13 @@
+{
+  "name": "careersail",
+  "version": "2.0.0",
+  "description": "CareerSail · 职航 — AI Agent 驱动的求职看板，支持岗位管理、进度追踪、简历定制",
+  "main": "dashboard/server.js",
+  "scripts": {
+    "start": "node dashboard/server.js",
+    "test": "node test/smoke-test.js"
+  },
+  "keywords": ["job-tracker", "career", "campus-recruitment", "job-board", "ai-agent"],
+  "license": "MIT",
+  "dependencies": {}
+}
