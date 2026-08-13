@@ -798,6 +798,95 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
+    // GET /api/external-clues — 外部公司库智能线索（基于用户画像精排）
+    if (url.pathname === '/api/external-clues') {
+      try {
+        const profile = loadUserProfile() || {};
+        const extPath = path.join(DASHBOARD_DIR, 'external_companies.csv');
+        let externalCompanies = [];
+        if (fs.existsSync(extPath)) {
+          const extResult = readCSV('external_companies.csv');
+          externalCompanies = extResult.rows;
+        }
+        if (externalCompanies.length === 0) {
+          sendJSON(res, 200, { success: true, clues: [], total: 0, message: '外部公司库为空，请先同步飞书数据' });
+          return;
+        }
+
+        const { tokenize } = require(path.join(__dirname, '..', 'lib', 'company_discovery.js'));
+
+        const targetRoles = (profile.target_roles || []).map(r => r.toLowerCase());
+        const targetCities = (profile.target_cities || []).map(c => c.replace(/^[\u4e00-\u9fa5]+·/, '').trim());
+        const profileKeywords = (profile.keywords || []).map(k => k.toLowerCase());
+        const hasProfile = targetRoles.length > 0 || profileKeywords.length > 0;
+
+        const scored = externalCompanies.map(c => {
+          let score = 0;
+          const reasons = [];
+          const jobCategories = (c.job_categories || '').toLowerCase();
+          const cities = (c.cities || '').toLowerCase();
+
+          for (const role of targetRoles) {
+            for (const rt of tokenize(role)) {
+              if (rt.length >= 2 && jobCategories.includes(rt)) {
+                score += 10; reasons.push(rt);
+                break;
+              }
+            }
+          }
+          for (const city of targetCities) {
+            if (city.length >= 2 && cities.includes(city.toLowerCase())) {
+              score += 5; reasons.push(city);
+            }
+          }
+          const companyText = `${c.company_name} ${c.job_categories} ${c.enterprise_type}`.toLowerCase();
+          for (const kw of profileKeywords) {
+            if (kw.length >= 2 && companyText.includes(kw)) {
+              score += 2; reasons.push(kw);
+            }
+          }
+          return { ...c, score, reasons: [...new Set(reasons)].slice(0, 5) };
+        });
+
+        scored.sort((a, b) => b.score - a.score);
+        const topN = scored.filter(c => c.score > 0).slice(0, 30);
+
+        const clues = topN.map(c => ({
+          company: c.company_name,
+          enterprise_type: c.enterprise_type || '',
+          cities: c.cities || '',
+          job_categories: c.job_categories || '',
+          career_url: c.career_url || '',
+          batch: c.batch || '',
+          open_date: c.open_date || '',
+          match_reasons: c.reasons,
+          score: c.score
+        }));
+
+        const byType = {};
+        clues.forEach(c => {
+          const t = c.enterprise_type || '其他';
+          if (!byType[t]) byType[t] = [];
+          byType[t].push(c);
+        });
+
+        sendJSON(res, 200, {
+          success: true,
+          clues,
+          total: externalCompanies.length,
+          matched: clues.length,
+          cold_start: !hasProfile,
+          by_type: byType,
+          summary: clues.length > 0
+            ? `从 ${externalCompanies.length} 家公司中匹配出 ${clues.length} 家，按企业类型分${Object.keys(byType).length}类`
+            : '未匹配到相关公司，请完善用户画像（target_roles / keywords）'
+        });
+      } catch (e) {
+        sendJSON(res, 500, { success: false, error: e.message });
+      }
+      return;
+    }
+
     // GET /api/supported-companies — 已适配招聘系统的公司列表
     if (url.pathname === '/api/supported-companies') {
       const companies = Object.entries(COMPANY_RECRUITER_MAP).map(([name, cfg]) => ({

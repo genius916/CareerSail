@@ -2491,11 +2491,12 @@ async function showSearchTargets(targets) {
 
   html += '<div style="font-size:0.76rem;color:var(--text-secondary);margin-bottom:12px;line-height:1.5">基于 <b>Playwright MCP 浏览器自动化</b>，直接调用公司校招官网 API，岗位 100% 真实，链接直达 JD 详情页。<br>点击「搜索」按钮即可一键导入到岗位池。</div>';
 
-  // 公司发现计划入口（四维度通用方法，不限专业）
-  html += '<div style="margin-bottom:12px">';
-  html += '<button onclick="showDiscoveryPlan()" style="background:var(--text);color:var(--surface);border:none;border-radius:6px;padding:6px 12px;font-size:0.72rem;cursor:pointer;width:100%">🧭 生成公司发现计划（本体/上游/下游/交叉）</button>';
-  html += '<div style="font-size:0.66rem;color:var(--text-tertiary);margin-top:4px;line-height:1.4">由用户画像（专业/研究方向/实习/能力）驱动，自动派生四维度关键词簇，不限专业。</div>';
+  // 公司发现方法入口（双按钮布局）
+  html += '<div style="margin-bottom:12px;display:flex;gap:8px">';
+  html += '<button onclick="showDiscoveryPlan()" style="flex:1;background:var(--text);color:var(--surface);border:none;border-radius:6px;padding:6px 8px;font-size:0.7rem;cursor:pointer">🧭 四维发现</button>';
+  html += '<button onclick="showExternalClues()" style="flex:1;background:var(--accent);color:white;border:none;border-radius:6px;padding:6px 8px;font-size:0.7rem;cursor:pointer">🏢 公司库线索</button>';
   html += '</div>';
+  html += '<div style="font-size:0.66rem;color:var(--text-tertiary);margin-bottom:4px;line-height:1.4">四维发现：画像驱动关键词派生；公司库线索：从已同步的可靠公司中智能匹配。</div>';
 
   if (targets.newCompanies && targets.newCompanies.length > 0) {
     html += '<div style="font-size:0.75rem;font-weight:600;color:var(--text);margin-bottom:4px">🆕 新公司（优先搜索）</div>';
@@ -2582,6 +2583,95 @@ async function showDiscoveryPlan() {
 
   html += '<div style="margin-top:10px;text-align:right">';
   html += '<button onclick="document.getElementById(\'discoveryPlanPanel\').remove()" style="background:var(--accent);color:white;border:none;border-radius:6px;padding:6px 16px;font-size:0.74rem;cursor:pointer">知道了</button>';
+  html += '</div>';
+
+  panel.innerHTML = html;
+  document.body.appendChild(panel);
+}
+
+// 外部公司库线索面板：从已同步公司中智能匹配，按企业类型分组展示
+async function showExternalClues() {
+  const existing = document.getElementById('externalCluesPanel');
+  if (existing) existing.remove();
+
+  let data;
+  try {
+    const r = await fetch('/api/external-clues');
+    const d = await r.json();
+    if (!d.success) { showToast('获取公司线索失败', 'error'); return; }
+    data = d;
+  } catch (e) { showToast('获取公司线索失败: ' + e.message, 'error'); return; }
+
+  const panel = document.createElement('div');
+  panel.id = 'externalCluesPanel';
+  panel.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--surface);border:1px solid var(--accent);border-radius:var(--radius-lg);padding:22px;box-shadow:var(--shadow-lg);z-index:300;width:580px;max-width:92vw;max-height:85vh;overflow-y:auto;animation:slideIn 0.3s ease';
+
+  let html = `<div style="font-weight:600;color:var(--accent);margin-bottom:6px;font-size:0.95rem">🏢 外部公司库线索</div>`;
+  html += `<div style="font-size:0.74rem;color:var(--text-secondary);margin-bottom:12px;line-height:1.5">${escapeHtml(data.summary)}</div>`;
+
+  if (data.clues && data.clues.length > 0) {
+    const types = data.by_type || {};
+    const typeOrder = ['科技', '互联网', '国央企', '金融', '外企', '教育', '其他'];
+
+    for (const tp of typeOrder) {
+      const companies = types[tp];
+      if (!companies || companies.length === 0) continue;
+      const collapsed = data.matched > 20 && tp !== typeOrder.find(t => types[t]);
+
+      html += `<div style="margin-bottom:12px">`;
+      html += `<div style="font-size:0.78rem;font-weight:600;color:var(--text);margin-bottom:4px;cursor:pointer;display:flex;align-items:center;gap:6px" onclick="const n=this.nextElementSibling;n.style.display=n.style.display==='none'?'block':'none';this.querySelector('.arrow').textContent=n.style.display==='none'?'▶':'▼'">`;
+      html += `<span class="arrow">${collapsed && companies.length > 10 ? '▶' : '▼'}</span>`;
+      html += `${escapeHtml(tp)} <span style="font-weight:400;font-size:0.7rem;color:var(--text-tertiary)">(${companies.length}家)</span>`;
+      html += `</div>`;
+
+      html += `<div style="display:${collapsed && companies.length > 10 ? 'none' : 'block'}">`;
+      companies.forEach(c => {
+        const reasons = (c.match_reasons || []).map(r => `<span style="background:var(--accent);color:white;border-radius:3px;padding:0 4px;font-size:0.6rem;margin-right:3px">${escapeHtml(r)}</span>`).join('');
+        const urlDisplay = c.career_url ? `<a href="${escapeHtml(c.career_url)}" target="_blank" style="color:var(--accent);font-size:0.65rem;text-decoration:none" title="${escapeHtml(c.career_url)}">🔗 官网</a>` : '';
+        html += `<div style="font-size:0.7rem;color:var(--text-secondary);padding:3px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:8px">`;
+        html += `<span style="flex:1;min-width:0">`;
+        html += `<b>${escapeHtml(c.company)}</b>`;
+        if (c.batch) html += ` <span style="font-size:0.6rem;color:var(--text-tertiary)">${escapeHtml(c.batch)}</span>`;
+        if (c.cities) html += `<br><span style="font-size:0.64rem;color:var(--text-tertiary)">${escapeHtml(c.cities)}</span>`;
+        if (c.job_categories) html += ` · <span style="font-size:0.64rem;color:var(--text-tertiary)">${escapeHtml(c.job_categories.split(';').slice(0,3).join(';'))}</span>`;
+        html += `<br>${reasons}`;
+        html += `</span>`;
+        html += `<span style="flex-shrink:0;display:flex;gap:4px;align-items:center">${urlDisplay}</span>`;
+        html += `</div>`;
+      });
+      html += `</div>`;
+      html += `</div>`;
+    }
+
+    const classified = new Set();
+    typeOrder.forEach(t => { if (types[t]) types[t].forEach(c => classified.add(c.company)); });
+    const unclassified = data.clues.filter(c => !classified.has(c.company));
+    if (unclassified.length > 0) {
+      html += `<div style="margin-bottom:12px">`;
+      html += `<div style="font-size:0.78rem;font-weight:600;color:var(--text);margin-bottom:4px">其他 <span style="font-weight:400;font-size:0.7rem;color:var(--text-tertiary)">(${unclassified.length}家)</span></div>`;
+      unclassified.forEach(c => {
+        html += `<div style="font-size:0.7rem;color:var(--text-secondary);padding:3px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">`;
+        html += `<span><b>${escapeHtml(c.company)}</b>`;
+        if (c.cities) html += ` · ${escapeHtml(c.cities)}`;
+        if (c.job_categories) html += ` · ${escapeHtml(c.job_categories.split(';').slice(0,2).join(';'))}`;
+        html += `</span>`;
+        if (c.career_url) html += `<a href="${escapeHtml(c.career_url)}" target="_blank" style="color:var(--accent);font-size:0.65rem;text-decoration:none">🔗</a>`;
+        html += `</div>`;
+      });
+      html += `</div>`;
+    }
+  } else {
+    html += `<div style="padding:20px;text-align:center;color:var(--text-tertiary);font-size:0.8rem">`;
+    html += `<div style="font-size:2rem;margin-bottom:8px">📭</div>`;
+    html += data.cold_start
+      ? '用户画像未配置，请先完善求职方向（target_roles / keywords）'
+      : '未匹配到相关公司，请调整目标岗位或关键词';
+    html += `</div>`;
+  }
+
+  html += '<div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center">';
+  html += `<span style="font-size:0.66rem;color:var(--text-tertiary)">💡 点击公司名旁边的 🔗 可直达校招官网</span>`;
+  html += '<button onclick="document.getElementById(\'externalCluesPanel\').remove()" style="background:var(--accent);color:white;border:none;border-radius:6px;padding:6px 16px;font-size:0.74rem;cursor:pointer">关闭</button>';
   html += '</div>';
 
   panel.innerHTML = html;
