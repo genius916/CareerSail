@@ -3,7 +3,7 @@
   "_usage": "可改成任何飞书 Base 链接：用 `lark-cli base +url-resolve --url '<飞书Base链接>' --as user` 获取 base_token",
   "base_token": "Cf3ObcMAraB00OseV55cITzSnGg",
   "table_id": "tblFFtkAAUnHjfXP",
-  "source_name": "27届 秋招投递信息",
+  "source_name": "27届 校招司库",
   "source_url": "https://y00b74dmx5n.feishu.cn/wiki/O6d1wk0UNiJq90kIsQfcRS9An1p",
   "auto_sync_on_startup": true,
   "sync_interval_hours": 6,
@@ -16,5 +16,7 @@
     "开放日期": "open_date",
     "截止日期": "deadline",
     "招聘官网": "career_url"
-  }
+  },
+  "last_sync_at": "2026-08-13 11:06:18",
+  "last_sync_count": 492
 }
