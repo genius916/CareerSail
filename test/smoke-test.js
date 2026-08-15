@@ -105,7 +105,9 @@ async function run() {
   const gitignore = fs.readFileSync(path.join(__dirname, '..', '.gitignore'), 'utf-8');
   assert(gitignore.includes('dashboard/job_pool.csv'), '.gitignore 保护 job_pool.csv');
   assert(gitignore.includes('config/'), '.gitignore 保护 config/ 目录');
-  assert(!gitignore.includes('application_log.csv'), '.gitignore 已移除 application_log.csv 引用');
+  assert(gitignore.includes('dashboard/activity_log.jsonl'), '.gitignore 保护活动日志');
+  assert(gitignore.includes('dashboard/searched_companies.json'), '.gitignore 保护已搜公司记录（v2.1）');
+  assert(gitignore.includes('backup/'), '.gitignore 保护本地备份目录（v2.1）');
 
   // 3. 检查 package.json 无 Playwright 依赖
   console.log('  [3/9] 检查 package.json...');
@@ -125,7 +127,9 @@ async function run() {
   assert(!serverCode.includes('require(\'child_process\')'), 'server.js 不再使用 child_process');
   const codeLines = serverCode.split('\n').filter(l => !l.trim().startsWith('*') && !l.trim().startsWith('//'));
   assert(!codeLines.some(l => /\bexec\s*\(/.test(l)), 'server.js 不再使用 exec() 函数调用');
-  assert(serverCode.includes('inQuotes'), 'CSV 解析器支持引号内换行');
+  // v4.0 起 CSV 解析器迁移至 lib/csv_utils.js（v2.1 修正断言指向）
+  const csvUtilsCode = fs.readFileSync(path.join(__dirname, '..', 'lib', 'csv_utils.js'), 'utf-8');
+  assert(csvUtilsCode.includes('inQuotes'), 'CSV 解析器支持引号内换行（lib/csv_utils.js）');
   // 新增：届别动态推导（不再硬编码 2026）—— 排除注释行后检查
   const nonCommentLines = serverCode.split('\n').filter(l => !l.trim().startsWith('//') && !l.trim().startsWith('*'));
   assert(!nonCommentLines.some(l => /校招\s*2026/.test(l)) && !nonCommentLines.some(l => /'2026'/.test(l)), 'server.js 不再硬编码 2026 届（注释除外）');
@@ -638,10 +642,10 @@ async function run() {
     // 10. v3.12 新增测试：displayIndex、start.bat、SKILL.md 并行安装
     console.log('  [10/10] v3.12 新增测试...');
 
-    // 10.1 displayIndex — server.js parseCSV 含 displayCounter
-    assert(serverCode.includes('displayCounter'), 'server.js parseCSV 含 displayCounter 变量（v3.12）');
-    assert(serverCode.includes('displayIndex'), 'server.js parseCSV 含 displayIndex 字段（v3.12）');
-    assert(serverCode.includes('++displayCounter'), 'server.js displayCounter 从 1 递增（v3.12）');
+    // 10.1 displayIndex — lib/csv_utils.js parseCSV 含 displayCounter（v4.0 迁移，v2.1 修正指向）
+    assert(csvUtilsCode.includes('displayCounter'), 'csv_utils.js parseCSV 含 displayCounter 变量');
+    assert(csvUtilsCode.includes('displayIndex'), 'csv_utils.js parseCSV 含 displayIndex 字段');
+    assert(csvUtilsCode.includes('++displayCounter'), 'csv_utils.js displayCounter 从 1 递增');
 
     // 10.2 displayIndex — dashboard.html 前端解析含 displayCounter
     assert(dashCode.includes('displayCounter'), 'dashboard.html 前端 CSV 解析含 displayCounter（v3.12）');
@@ -652,7 +656,7 @@ async function run() {
     const startBat = path.join(__dirname, '..', 'start.bat');
     assert(fs.existsSync(startBat), 'start.bat 一键启动脚本存在（v3.12）');
     const batContent = fs.readFileSync(startBat, 'utf-8');
-    assert(batContent.includes('node dashboard\\server.js'), 'start.bat 含启动命令（v3.12）');
+    assert(/node dashboard[\\/]server\.js/.test(batContent), 'start.bat 含启动命令');
     assert(batContent.includes('where node'), 'start.bat 含 Node.js 检测（v3.12）');
     assert(batContent.includes('CareerSail'), 'start.bat 含 CareerSail 品牌标识（v3.12）');
 
@@ -665,8 +669,8 @@ async function run() {
     const readmeContent = fs.readFileSync(path.join(__dirname, '..', 'README.md'), 'utf-8');
     assert(readmeContent.includes('start.bat'), 'README.md 含 start.bat 使用说明（v3.12）');
 
-    // 10.6 server.js 版本号更新
-    assert(serverCode.includes('v3.12'), 'server.js 含 v3.12 版本注释（v3.12）');
+    // 10.6 server.js 版本号更新（v2.1.0）
+    assert(serverCode.includes('v2.1.0'), 'server.js 含 v2.1.0 版本号');
 
   } catch (e) {
     console.error('  API 测试出错:', e.message);

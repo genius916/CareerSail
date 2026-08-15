@@ -686,7 +686,7 @@ body.ext-mode .status-tabs{margin-bottom:12px}
     <div class="header-actions">
       <button class="btn btn-accent" onclick="openImportModal()">＋ 添加岗位</button>
       <button class="btn btn-outline btn-sm" onclick="openGuideModal()" title="使用指南" style="font-weight:600">📖 指南</button>
-      <button class="btn btn-outline btn-sm" onclick="refreshJobs()" title="刷新岗位数据" id="refreshBtn">🔄 刷新</button>
+      <button class="btn btn-outline btn-sm" onclick="refreshJobs()" title="同步飞书 + 发现新开秋招公司并搜索适合岗位 + 刷新数据" id="refreshBtn">🔄 刷新</button>
       <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">
         <!-- Sun icon: nautical compass rose -->
         <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -928,7 +928,7 @@ body.ext-mode .status-tabs{margin-bottom:12px}
       <div class="guide-step"><div class="guide-step-num">2</div><div class="guide-step-content"><h4>生成专属简历</h4><p>使用 <strong>personal-career-os</strong> 技能，根据 JD 自动生成定制简历（Word/PDF），支持多版本管理。</p></div></div>
       <div class="guide-step"><div class="guide-step-num">3</div><div class="guide-step-content"><h4>快速投递</h4><p>点击岗位链接打开网申页面，用 <strong>牛客网申助手</strong> 浏览器插件一键填表，或手动填写后更新投递状态。</p></div></div>
       <div class="guide-step"><div class="guide-step-num">4</div><div class="guide-step-content"><h4>追踪进度</h4><p>在「已投递/已结束」标签页可看到<strong>竖版时间线</strong>视图，更新面试进度后自动记录每个关键节点。</p></div></div>
-      <div class="guide-step"><div class="guide-step-num">5</div><div class="guide-step-content"><h4>刷新岗位</h4><p>点击「🔄 刷新」按钮触发 AI Agent 浏览招聘网站，搜索最新岗位并自动更新到岗位池。<strong>日志面板</strong>记录每天所有操作。</p></div></div>
+      <div class="guide-step"><div class="guide-step-num">5</div><div class="guide-step-content"><h4>刷新数据</h4><p>点击「🔄 刷新」= ① 同步飞书秋招公司库 ② <strong>自动发现新开秋招的公司</strong>（按开招时间最新优先）并逐家搜索官网，只导入<strong>适合你背景的岗位</strong>（研发/算法/工程师类自动过滤）③ 重载全部数据。已搜过的公司 7 天内不重复搜。<strong>日志面板</strong>记录所有操作。</p></div></div>
     </div>
     <div class="form-actions"><button class="btn btn-primary" onclick="closeGuideModal()">知道了</button></div>
   </div>
@@ -2362,27 +2362,92 @@ function toggleTheme() {
   localStorage.setItem('careersail-theme', next);
 }
 
-// ========== Refresh — 重新加载数据 + 真实岗位搜索（Playwright 浏览器自动化）==========
-// 刷新 = 重新加载CSV + 显示搜索面板（支持一键真实搜索）
-let lastJobCount = 0;
+// ========== Refresh — 真实刷新：飞书同步 + 批量官网岗位搜索 + 重载全部数据 ==========
+// v4.3: 刷新按钮改为真刷新 —— ① 联网同步飞书秋招公司库 ② 逐家搜索已适配公司官网
+// （北森/飞书/Moka 真实 API）拉取最新校招岗位并导入岗位池 ③ 重载全部数据并汇报变化。
+// 历史问题：旧版只读本地 CSV，1 秒完成但岗位从不更新；且适配器把"XX届"拼进官网
+// 搜索关键词导致真实搜索几乎永远返回 0 条（已在 lib/recruiters/*.js 修复）。
 
 async function refreshJobs() {
   const btn = document.getElementById('refreshBtn');
   btn.disabled = true;
-  btn.innerHTML = '<span class="spin">🔄</span> 刷新中...';
+  btn.innerHTML = '<span class="spin">🔄</span> 同步飞书中...';
 
-  const beforeCount = allJobs.length;
-  lastJobCount = beforeCount;
+  const beforeJobs = allJobs.length;
+  const beforeExt = externalCompanies.length;
+  let extResult = null;
 
+  // 1. 真实同步：拉取飞书秋招公司库最新数据（联网）
   try {
-    // 获取搜索目标（从用户配置生成）
+    const res = await fetch('/api/sync-external', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ force: true })
+    });
+    extResult = await res.json();
+    if (extResult.success) {
+      addLog(`🔄 飞书同步成功: ${extResult.message}`);
+    } else {
+      addLog(`⚠ 飞书同步失败: ${extResult.error || extResult.message || '未知错误'}`);
+    }
+  } catch (e) {
+    addLog(`⚠ 飞书同步失败: ${e.message}`);
+  }
+
+  // 1.5 发现新开秋招的公司（来自秋招公司库，URL 可自动搜索的），逐家真实搜索并导入适合的岗位
+  // v4.4: 不再重复搜索已适配公司（搜一次就够），聚焦"新开秋招"的公司 ——
+  // 按 open_date 最新优先，且排除岗位池已有公司 + 7 天内已搜过的公司（searched_companies.json）
+  let totalImported = 0;
+  try {
+    const res = await fetch('/api/discover-new-companies?limit=15');
+    const data = await res.json();
+    const discovered = (data.companies || []).filter(c => c && c.company);
+
+    if (discovered.length === 0) {
+      addLog('✅ 秋招公司库暂无新开且可自动搜索的公司（已覆盖的公司不重复搜）');
+    } else {
+      const latest = discovered[0];
+      addLog(`🆕 发现 ${discovered.length} 家新开秋招公司（最新: ${latest.company} ${latest.openDate || ''}）`);
+
+      for (let i = 0; i < discovered.length; i++) {
+        const c = discovered[i];
+        btn.innerHTML = `<span class="spin">🔄</span> 新公司 ${i + 1}/${discovered.length} · ${c.company}`;
+        try {
+          const r = await fetch('/api/search-and-import', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ company: c.company, campusUrl: c.url })
+          });
+          const result = await r.json();
+          if (result.success) {
+            totalImported += result.imported || 0;
+            if ((result.imported || 0) > 0) {
+              addLog(`📥 ${c.company}: 新增${result.imported}个适合岗位${result.filteredOut ? `（过滤不适合${result.filteredOut}个）` : ''}`);
+            } else {
+              addLog(`➖ ${c.company}: 无适合岗位${result.filteredOut ? `（${result.filteredOut}个被过滤）` : ''}`);
+            }
+          } else {
+            addLog(`⚠ ${c.company}: ${result.error || '搜索失败'}（7天后自动重试）`);
+          }
+        } catch (e) {
+          addLog(`⚠ ${c.company}: ${e.message}`);
+        }
+      }
+    }
+  } catch (e) {
+    addLog('⚠ 新公司发现失败: ' + e.message);
+  }
+
+  btn.innerHTML = '<span class="spin">🔄</span> 加载数据...';
+
+  // 2. 生成搜索目标（供 Agent 一键真实搜索）
+  try {
     const res = await fetch('/api/scrape', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({})
     });
     const result = await res.json();
-
     if (result.success && result.mode === 'agent-search') {
       if (result.targets.configured) {
         const newCount = result.targets.newCompanies.length;
@@ -2391,25 +2456,30 @@ async function refreshJobs() {
         addLog(`🔍 搜索目标${cohortInfo}: ${newCount} 家新公司 + ${existCount} 家补充`);
         showSearchTargets(result.targets);
       } else {
-        showToast('请先告诉 Agent 你的背景信息', 'error');
         addLog('⚠ 用户画像未配置，无法生成搜索目标');
       }
     }
   } catch (e) {
-    addLog('🔄 刷新：服务器不可用，仅重载本地数据');
+    addLog('🔄 搜索目标获取失败（服务器不可用）');
   }
 
-  // 重新加载数据
-  await loadData();
+  // 3. 重载全部本地数据（岗位池 + 跟进记录 + 外部公司库）
+  await Promise.all([loadData(), loadExternalCompanies()]);
   populateFilters();
   renderAll();
 
-  const afterCount = allJobs.length;
-  if (afterCount > beforeCount) {
-    showToast(`🎉 新增 ${afterCount - beforeCount} 个岗位！`, 'success');
-    addLog(`📊 岗位池更新: ${beforeCount} → ${afterCount} (+${afterCount - beforeCount})`);
+  // 4. 汇报真实变化
+  const extDelta = externalCompanies.length - beforeExt;
+  if (totalImported > 0) {
+    showToast(`🎉 真实搜索新增 ${totalImported} 个岗位！公司库 ${externalCompanies.length} 家`, 'success');
+    addLog(`📊 刷新完成: 官网搜索新增 ${totalImported} 个岗位，公司库 ${beforeExt} → ${externalCompanies.length}，岗位池 ${beforeJobs} → ${allJobs.length}`);
+  } else if (extResult && extResult.success) {
+    const extNote = extDelta !== 0 ? `（${extDelta > 0 ? '+' : ''}${extDelta}）` : '';
+    showToast(`✅ 已刷新：公司库 ${externalCompanies.length} 家${extNote}（本轮无新增岗位）`, 'success');
+    addLog(`📊 刷新完成: 公司库 ${beforeExt} → ${externalCompanies.length}${extNote}，岗位 ${beforeJobs} → ${allJobs.length}`);
   } else {
-    showToast('数据已刷新', 'success');
+    showToast('已重载本地数据（飞书同步失败，详见日志）', 'error');
+    addLog(`📊 本地数据重载: 岗位 ${beforeJobs} → ${allJobs.length}`);
   }
 
   btn.disabled = false;

@@ -4,6 +4,10 @@ dashboard/follow_up.csv
 dashboard/activity_log.jsonl
 dashboard/external_companies.csv
 dashboard/application_log.csv
+dashboard/searched_companies.json
+
+# 本地备份（含个人数据快照，严禁提交）
+backup/
 
 # 用户配置（包含个人画像，严禁提交）
 # 注意：config/external_source.json 是通用飞书数据源配置，需要提交

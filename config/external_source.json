@@ -7,6 +7,8 @@
   "source_url": "https://y00b74dmx5n.feishu.cn/wiki/O6d1wk0UNiJq90kIsQfcRS9An1p",
   "auto_sync_on_startup": true,
   "sync_interval_hours": 6,
+  "last_sync_at": "2026-08-15 07:54:17",
+  "last_sync_count": 523,
   "field_map": {
     "公司名称": "company_name",
     "企业类型": "enterprise_type",
@@ -16,7 +18,5 @@
     "开放日期": "open_date",
     "截止日期": "deadline",
     "招聘官网": "career_url"
-  },
-  "last_sync_at": "2026-08-13 11:06:18",
-  "last_sync_count": 492
+  }
 }

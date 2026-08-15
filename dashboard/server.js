@@ -21,6 +21,22 @@ const path = require('path');
 const { verifyCohort, isInternship, computeMatchDegree, checkFreshness } = require(path.join(__dirname, '..', 'lib', 'job_filters'));
 const { generateDiscoveryPlan, generateProgressivePlan } = require(path.join(__dirname, '..', 'lib', 'company_discovery'));
 const { COMPANY_RECRUITER_MAP } = require(path.join(__dirname, '..', 'lib', 'recruiters'));
+const { isUnsuitableRole, isRealJob } = require(path.join(__dirname, '..', 'lib', 'job_filters'));
+
+// v4.4: 已搜索公司记录 —— 「刷新发现新公司」时避免重复搜索已搜过的公司
+function readSearchedCompanies() {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(DASHBOARD_DIR, 'searched_companies.json'), 'utf-8'));
+  } catch (e) { return {}; }
+}
+function markCompanySearched(company) {
+  if (!company) return;
+  try {
+    const data = readSearchedCompanies();
+    data[String(company).trim()] = new Date().toISOString();
+    fs.writeFileSync(path.join(DASHBOARD_DIR, 'searched_companies.json'), JSON.stringify(data, null, 2), 'utf-8');
+  } catch (e) { /* 记录失败不影响主流程 */ }
+}
 const { parseCSV, escapeCSV, rowsToCSV, getLocalDate } = require(path.join(__dirname, '..', 'lib', 'csv_utils'));
 
 const PORT = process.env.PORT || 8430;
@@ -790,6 +806,48 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
+    // v4.4 GET /api/discover-new-companies — 从秋招公司库发现"新开秋招且可自动搜索"的公司
+    // 规则：① career_url 可自动识别（北森/飞书/Moka）② 岗位池中无该公司 ③ 7 天内未搜索过
+    // 排序：开招时间（open_date）最新优先 —— 新开秋招的公司最可能带来新岗位
+    if (url.pathname === '/api/discover-new-companies') {
+      try {
+        const limit = Math.min(parseInt(url.searchParams.get('limit') || '15', 10) || 15, 50);
+        const feishuSource = require(path.join(__dirname, '..', 'lib', 'feishu_source.js'));
+        const recruiters = require(path.join(__dirname, '..', 'lib', 'recruiters'));
+        const rows = feishuSource.readExternalCompanies();
+
+        const pool = parseCSV(fs.readFileSync(path.join(DASHBOARD_DIR, 'job_pool.csv'), 'utf-8')).rows;
+        const poolCompanies = [...new Set(pool.map(r => (r.company || '').trim()).filter(Boolean))];
+        const searched = readSearchedCompanies();
+        const now = Date.now();
+        const RETRY_MS = 7 * 24 * 60 * 60 * 1000;
+
+        const candidates = [];
+        const seenNames = new Set();
+        for (const r of rows) {
+          const name = (r.company_name || '').trim();
+          const curl = (r.career_url || '').trim();
+          if (!name || !curl) continue;
+          if (seenNames.has(name)) continue; // 同名公司去重
+          if (['true', '1', '是'].includes(String(r.excluded || '').trim())) continue;
+          const type = recruiters.detectRecruiterType(curl);
+          if (!['beisen', 'feishu', 'moka'].includes(type)) continue;
+          // 已在岗位池（含已剔除）→ 该公司已覆盖，不再重复搜
+          if (poolCompanies.some(pc => pc && (pc.includes(name) || name.includes(pc)))) continue;
+          // 7 天内搜过（无论成功失败）→ 跳过
+          const last = searched[name];
+          if (last && now - new Date(last).getTime() < RETRY_MS) continue;
+          candidates.push({ company: name, url: curl, type, openDate: (r.open_date || '').substring(0, 10) });
+          seenNames.add(name);
+        }
+        candidates.sort((a, b) => (b.openDate || '').localeCompare(a.openDate || ''));
+        sendJSON(res, 200, { success: true, count: candidates.length, companies: candidates.slice(0, limit) });
+      } catch (e) {
+        sendJSON(res, 500, { success: false, error: e.message });
+      }
+      return;
+    }
+
     // GET /api/discover-plan — 公司发现计划
     if (url.pathname === '/api/discover-plan') {
       const profile = loadUserProfile() || {};
@@ -1262,8 +1320,43 @@ const server = http.createServer(async (req, res) => {
             return;
           }
 
+          // v4.5: 岗位方向过滤（配置驱动）—— 剔除适配器降级占位记录 + 用户画像中排除的岗位方向
+          const roleFilter = {
+            strongExclude: profile.role_strong_exclude || [],
+            keep: profile.role_keep || [],
+            exclude: profile.role_exclude || []
+          };
+          const excludedCompanies = profile.excluded_companies || [];
+          const cityRules = profile.company_city_rules || [];
+          const suitable = [];
+          let filteredOut = 0;
+          for (const j of jobs) {
+            if (!isRealJob(j)) { filteredOut++; continue; }
+            const jobCompany = j.company || company || '';
+            // 用户明确排除的公司
+            if (excludedCompanies.some(ec => ec && jobCompany.includes(ec))) { filteredOut++; continue; }
+            // 公司 × 城市白名单规则（如"人保财险只投上海/杭州/江西"）
+            const rule = cityRules.find(r => r.company && jobCompany.includes(r.company));
+            if (rule && Array.isArray(rule.cities) && rule.cities.length > 0) {
+              const loc = `${j.city || ''} ${j.location || ''}`;
+              if (!rule.cities.some(c => loc.includes(c))) { filteredOut++; continue; }
+            }
+            if (isUnsuitableRole(j.title || j.job_title || '', j.category || j.role_family || '', roleFilter)) { filteredOut++; continue; }
+            suitable.push(j);
+          }
+          markCompanySearched(company);
+
+          if (suitable.length === 0) {
+            appendLog({
+              msg: `🧹 ${company}: ${jobs.length} 个岗位全部被过滤（占位/专业壁垒），不导入`,
+              type: 'search-import'
+            });
+            sendJSON(res, 200, { success: true, imported: 0, skipped: 0, filteredOut, message: '无适合岗位' });
+            return;
+          }
+
           const jobPoolPath = path.join(DASHBOARD_DIR, 'job_pool.csv');
-          const result = searchModule.importJobs(jobs, jobPoolPath);
+          const result = searchModule.importJobs(suitable, jobPoolPath);
           appendLog({
             msg: `📥 搜索导入: ${company} → 新增${result.imported}个，跳过${result.skipped}个`,
             type: 'search-import'
@@ -1396,7 +1489,7 @@ if (!process.env.SKIP_AUTO_SYNC) {
 
 server.listen(PORT, '127.0.0.1', () => {
   console.log('');
-  console.log('  ⛵  CareerSail · 职航  v4.1');
+  console.log('  ⛵  CareerSail · 职航  v2.1.0');
   console.log('  ─────────────────────────');
   console.log(`  求职助手: http://localhost:${PORT}/dashboard.html`);
   console.log(`  API 端点: http://localhost:${PORT}/api/`);
