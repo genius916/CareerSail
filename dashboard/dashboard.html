@@ -1189,6 +1189,8 @@ async function init() {
   await loadData();
   populateFilters();
   renderAll();
+  // v4.9: 页面加载即预取秋招公司库，切换 tab 秒出数据
+  loadExternalCompanies();
   // v3.9: 启动后检查用户画像是否为空，为空则弹引导
   checkUserProfileAndGuide();
 }
@@ -2109,9 +2111,12 @@ async function loadExternalCompanies() {
         source_name: data.source_name || '',
         source_url: data.source_url || ''
       };
-      document.getElementById('tabCountExternal').textContent = externalCompanies.length;
-      updateExtSourceInfo();
-      populateExtFilters();
+      // v4.9: 辅助更新各自兜底，保证 renderExternalTable() 必定执行（防止单个 DOM 异常卡住整个渲染）
+      try {
+        document.getElementById('tabCountExternal').textContent = externalCompanies.length;
+        updateExtSourceInfo();
+        populateExtFilters();
+      } catch (e) { /* 辅助 UI 更新失败不阻断渲染 */ }
       renderExternalTable();
       // v3.9: 数据为 0 时弹出飞书同步引导
       if (externalCompanies.length === 0) {
