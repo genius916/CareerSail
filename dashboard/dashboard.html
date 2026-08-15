@@ -186,8 +186,21 @@ body{
 
 /* ========== Main Layout ========== */
 .main-layout{display:flex;gap:20px;min-height:60vh}
-.sidebar{width:230px;flex-shrink:0}
 .content-area{flex:1;min-width:0}
+
+/* ========== v4.8: 顶部紧凑筛选栏（原左侧栏迁移） ========== */
+.filter-bar{
+  display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:8px 12px;margin-bottom:12px;
+}
+.fb-item{display:flex;align-items:center;gap:5px}
+.fb-item>label{font-size:0.72rem;color:var(--text-muted);white-space:nowrap;font-weight:600}
+.fb-item .filter-select{width:auto;max-width:180px;padding:4px 24px 4px 8px;font-size:0.75rem;border-width:1px}
+.fb-item .search-input{width:170px;padding:4px 8px 4px 26px;font-size:0.75rem;border-width:1px}
+.fb-item .range-inputs{margin-top:0;gap:4px}
+.fb-item .range-inputs input{width:76px;flex:none;padding:4px 6px;font-size:0.72rem;border-width:1px}
+.fb-item .cat-dropdown{width:150px}
 
 /* ========== Sidebar Filters ========== */
 .filter-panel{
@@ -252,8 +265,19 @@ body{
 .status-tab.active .count{color:var(--navy)}
 
 /* ========== Job List (Vertical) ========== */
-.job-count-bar{padding:4px 0 12px;font-size:0.78rem;color:var(--text-muted)}
-.job-list{display:flex;flex-direction:column;gap:10px}
+.job-count-bar{padding:4px 0 12px;font-size:0.78rem;color:var(--text-muted);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.jump-wrap{display:inline-flex;align-items:center;gap:6px;color:var(--text-secondary)}
+.jump-wrap input{width:76px;padding:4px 8px;border:1px solid var(--border);border-radius:5px;background:var(--surface);color:var(--text);font-size:0.78rem}
+.jump-wrap input:focus{outline:none;border-color:var(--navy)}
+.range-inputs{display:flex;gap:6px;align-items:center;margin-top:6px}
+.range-inputs input{flex:1;min-width:0;padding:5px 8px;border:1px solid var(--border);border-radius:5px;background:var(--bg);color:var(--text);font-size:0.78rem}
+.range-inputs input:focus{outline:none;border-color:var(--navy)}
+.range-inputs span{color:var(--text-muted);font-size:0.75rem}
+@keyframes jobFlash{0%,60%{box-shadow:0 0 0 3px var(--accent);background:var(--accent-soft)}100%{box-shadow:none;background:var(--surface)}}
+.job-flash{animation:jobFlash 2s ease-out 1;border-color:var(--accent)!important}
+.new-today-badge{background:var(--danger-soft);color:var(--danger);border-radius:8px;padding:1px 7px;font-size:0.68rem;font-weight:600;margin-left:4px}
+/* v4.8: 三列网格卡片布局 */
+.job-list{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 
 .job-card{
   background:var(--surface);border:1px solid var(--border);
@@ -473,15 +497,49 @@ body{
 .spin{animation:spin 0.8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
+/* ========== v4.8: 紧凑卡片（覆盖上方默认值） ========== */
+.job-card{padding:10px 12px;gap:10px;border-radius:8px}
+.job-card-left{min-width:10px;padding-top:7px}
+.job-priority-dot{width:8px;height:8px}
+.job-company{font-size:0.9rem}
+.job-title-text{font-size:0.75rem}
+.job-meta{gap:8px;margin-top:4px;font-size:0.71rem}
+.badge{padding:2px 7px;font-size:0.63rem;border-radius:10px}
+.job-card-actions{margin-top:6px;gap:4px}
+.stage-select{padding:3px 6px;font-size:0.7rem;max-width:118px}
+.timeline-entry{padding:12px 14px;margin-bottom:8px}
+.timeline-entry::before{left:14px;top:48px}
+
+/* ========== v4.8: 分页 ========== */
+.pagination{
+  display:flex;align-items:center;justify-content:center;gap:4px;flex-wrap:wrap;
+  padding:14px 0 4px;font-size:0.78rem;color:var(--text-muted);
+}
+.page-btn{
+  min-width:28px;height:28px;padding:0 8px;border-radius:6px;
+  border:1px solid var(--border);background:var(--surface);color:var(--text-secondary);
+  font-size:0.78rem;cursor:pointer;font-family:var(--font-body);
+  display:inline-flex;align-items:center;justify-content:center;transition:all var(--transition);
+}
+.page-btn:hover:not(:disabled):not(.active){border-color:var(--navy);color:var(--navy)}
+.page-btn.active{background:var(--navy);border-color:var(--navy);color:#fff;font-weight:600}
+.page-btn:disabled{opacity:0.4;cursor:default}
+.page-ellipsis{color:var(--text-muted);padding:0 2px}
+.page-info{font-size:0.75rem;color:var(--text-muted);margin-right:6px}
+.page-size-wrap{display:flex;align-items:center;gap:4px;margin-left:6px;font-size:0.75rem;color:var(--text-muted)}
+.page-size-wrap select{padding:3px 20px 3px 6px;font-size:0.75rem;border:1px solid var(--border);border-radius:5px;background:var(--surface);color:var(--text);cursor:pointer}
+.page-size-wrap select:focus{outline:none;border-color:var(--navy)}
+.page-jump{width:54px;padding:3px 6px;font-size:0.75rem;border:1px solid var(--border);border-radius:5px;background:var(--surface);color:var(--text)}
+.page-jump:focus{outline:none;border-color:var(--navy)}
+
 /* ========== Responsive ========== */
+@media(max-width:1250px){.job-list{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:780px){.job-list{grid-template-columns:1fr}}
 @media(max-width:860px){
   .main-layout{flex-direction:column}
-  .sidebar{width:100%}
-  .filter-panel{position:static;display:flex;flex-wrap:wrap;gap:10px}
-  .filter-section{flex:1;min-width:120px;margin-bottom:0}
+  .filter-bar{gap:6px 8px}
   .stats-row{grid-template-columns:repeat(2,1fr)}
-  .job-card{flex-direction:column;gap:10px}
-  .job-card-left{flex-direction:row;min-width:auto}
+  .job-card{flex-direction:row;gap:8px}
 }
 @media(max-width:480px){
   .app-container{padding:0 12px}
@@ -629,7 +687,7 @@ body{
 .cat-dropdown-item.active .cat-count{color:var(--navy)}
 
 /* ========== v3.7: 秋招公司库 — 隐藏左侧栏 + 操作列固定 ========== */
-body.ext-mode .sidebar{display:none}
+body.ext-mode .filter-bar{display:none}
 body.ext-mode .main-layout{display:block}
 body.ext-mode .content-area{max-width:100%}
 body.ext-mode .stats-row{display:none}
@@ -733,25 +791,25 @@ body.ext-mode .status-tabs{margin-bottom:12px}
 
   <!-- Main Layout -->
   <div class="main-layout">
-    <!-- Sidebar Filters -->
-    <aside class="sidebar">
-      <div class="filter-panel">
-        <h3>筛选</h3>
-        <div class="filter-section">
+    <!-- Content Area -->
+    <main class="content-area">
+      <!-- v4.8: 顶部紧凑筛选栏（原左侧栏迁移至此） -->
+      <div class="filter-bar" id="filterBar">
+        <div class="fb-item">
           <div class="search-wrap">
             <span class="search-icon">🔍</span>
             <input type="text" class="search-input" id="searchInput" placeholder="搜索公司/岗位..." oninput="renderJobs()">
           </div>
         </div>
-        <div class="filter-section">
+        <div class="fb-item">
           <label>收藏</label>
           <select class="filter-select" id="filterFav" onchange="renderJobs()">
-            <option value="all">全部岗位</option>
-            <option value="fav">⭐ 仅看收藏</option>
+            <option value="all">全部</option>
+            <option value="fav">⭐ 仅收藏</option>
           </select>
         </div>
-        <div class="filter-section">
-          <label>岗位类别</label>
+        <div class="fb-item">
+          <label>类别</label>
           <div class="cat-dropdown" id="catDropdown">
             <div class="cat-dropdown-trigger" onclick="toggleCatDropdown()">
               <span class="cat-trigger-label" id="catTriggerLabel">全部</span>
@@ -763,7 +821,7 @@ body.ext-mode .status-tabs{margin-bottom:12px}
             </div>
           </div>
         </div>
-        <div class="filter-section">
+        <div class="fb-item">
           <label>城市</label>
           <div class="cat-dropdown" id="cityDropdown">
             <div class="cat-dropdown-trigger" onclick="toggleCityDropdown()">
@@ -776,30 +834,63 @@ body.ext-mode .status-tabs{margin-bottom:12px}
             </div>
           </div>
         </div>
-        <div class="filter-section">
-          <label>适配度</label>
+        <div class="fb-item">
+          <label>适配</label>
           <select class="filter-select" id="filterMatch" onchange="renderJobs()">
-            <option value="all">全部适配度</option>
-            <option value="high">🔥 高度匹配</option>
-            <option value="medium">👍 中度匹配</option>
-            <option value="low">👀 可以尝试</option>
+            <option value="all">全部</option>
+            <option value="high">🔥 高</option>
+            <option value="medium">👍 中</option>
+            <option value="low">👀 可试</option>
           </select>
         </div>
-        <div class="filter-section">
+        <div class="fb-item">
           <label>优先级</label>
           <select class="filter-select" id="filterPriority" onchange="renderJobs()">
-            <option value="all">全部优先级</option>
+            <option value="all">全部</option>
             <option value="最高">🔥 最高</option>
             <option value="High">⭐ High</option>
             <option value="Medium">Medium</option>
             <option value="低">低</option>
           </select>
         </div>
+        <div class="fb-item">
+          <label>排序</label>
+          <select class="filter-select" id="filterSort" onchange="renderJobs()">
+            <option value="default">默认</option>
+            <option value="added_desc">🆕 最新加入</option>
+            <option value="added_asc">最早加入</option>
+            <option value="date_desc">日期 新→旧</option>
+            <option value="date_asc">日期 旧→新</option>
+            <option value="company">公司 A→Z</option>
+            <option value="title">岗位 A→Z</option>
+          </select>
+        </div>
+        <div class="fb-item">
+          <label>日期</label>
+          <select class="filter-select" id="filterDate" onchange="onDateFilterChange()">
+            <option value="all">全部</option>
+            <option value="today">今日</option>
+            <option value="3d">近3天</option>
+            <option value="7d">近7天</option>
+            <option value="30d">近30天</option>
+            <option value="custom">区间…</option>
+          </select>
+          <div class="range-inputs" id="dateRangeWrap" style="display:none">
+            <input type="date" id="dateFrom" onchange="renderJobs()">
+            <span>~</span>
+            <input type="date" id="dateTo" onchange="renderJobs()">
+          </div>
+        </div>
+        <div class="fb-item">
+          <label>序号</label>
+          <div class="range-inputs" style="margin-top:0">
+            <input type="number" id="numFrom" min="1" placeholder="# 起" oninput="renderJobs()">
+            <span>~</span>
+            <input type="number" id="numTo" min="1" placeholder="# 止" oninput="renderJobs()">
+          </div>
+        </div>
       </div>
-    </aside>
 
-    <!-- Content Area -->
-    <main class="content-area">
       <!-- Status Tabs -->
       <div class="status-tabs">
         <button class="status-tab active" data-tab="all" onclick="switchTab('all')">全部<span class="count" id="tabCountAll">0</span></button>
@@ -809,8 +900,15 @@ body.ext-mode .status-tabs{margin-bottom:12px}
         <button class="status-tab ext-tab" data-tab="external" onclick="switchTab('external')">📁 秋招公司库<span class="count" id="tabCountExternal">0</span></button>
       </div>
 
-      <div class="job-count-bar" id="jobCountBar"></div>
+      <div class="job-count-bar" id="jobCountBar">
+        <span id="jobCountText">共 0 个岗位</span>
+        <span class="jump-wrap" id="jumpWrap" style="display:none">
+          跳至 #<input type="number" id="jumpNum" min="1" placeholder="序号" onkeydown="if(event.key==='Enter')jumpToIndex()">
+          <button class="btn btn-outline btn-xs" onclick="jumpToIndex()">跳转</button>
+        </span>
+      </div>
       <div id="jobContent"></div>
+      <div class="pagination" id="jobPagination" style="display:none"></div>
       <div class="empty-state" id="emptyState" style="display:none"><div class="empty-state-icon">📭</div><div class="empty-state-text">暂无匹配的岗位</div></div>
 
       <!-- Excluded Section -->
@@ -866,14 +964,15 @@ body.ext-mode .status-tabs{margin-bottom:12px}
             <tbody id="extTableBody"></tbody>
           </table>
         </div>
+        <div class="pagination" id="extPagination" style="display:none"></div>
         <div class="ext-empty" id="extEmpty" style="display:none">
           <div class="empty-state-icon">📭</div>
           <div class="empty-state-text">暂无数据，点击「同步飞书」拉取最新公司库</div>
         </div>
       </div>
 
-      <!-- Daily Log -->
-      <div class="log-panel" id="logPanel">
+      <!-- Daily Log（v4.8: 仅在「已结束」tab 显示） -->
+      <div class="log-panel" id="logPanel" style="display:none">
         <div class="log-panel-header">
           <h3>📋 操作日志 <span class="log-badge" id="logBadge">0</span></h3>
           <div class="log-actions">
@@ -924,7 +1023,7 @@ body.ext-mode .status-tabs{margin-bottom:12px}
   <div class="modal">
     <h2>⛵ CareerSail 使用指南</h2>
     <div class="guide-steps">
-      <div class="guide-step"><div class="guide-step-num">1</div><div class="guide-step-content"><h4>管理岗位池</h4><p>点击「添加岗位」录入公司、职位、链接等信息。左侧筛选栏支持按<strong>类别、城市、适配度、优先级</strong>快速定位。类别标签自动从数据生成，开源后他人也能用自己的分类。</p></div></div>
+      <div class="guide-step"><div class="guide-step-num">1</div><div class="guide-step-content"><h4>管理岗位池</h4><p>点击「添加岗位」录入公司、职位、链接等信息。顶部筛选栏支持按<strong>类别、城市、适配度、优先级、日期</strong>快速定位，列表分页展示（可选每页条数），操作日志在「已结束」页查看。</p></div></div>
       <div class="guide-step"><div class="guide-step-num">2</div><div class="guide-step-content"><h4>生成专属简历</h4><p>使用 <strong>personal-career-os</strong> 技能，根据 JD 自动生成定制简历（Word/PDF），支持多版本管理。</p></div></div>
       <div class="guide-step"><div class="guide-step-num">3</div><div class="guide-step-content"><h4>快速投递</h4><p>点击岗位链接打开网申页面，用 <strong>牛客网申助手</strong> 浏览器插件一键填表，或手动填写后更新投递状态。</p></div></div>
       <div class="guide-step"><div class="guide-step-num">4</div><div class="guide-step-content"><h4>追踪进度</h4><p>在「已投递/已结束」标签页可看到<strong>竖版时间线</strong>视图，更新面试进度后自动记录每个关键节点。</p></div></div>
@@ -938,6 +1037,103 @@ body.ext-mode .status-tabs{margin-bottom:12px}
 // ========== State ==========
 let allJobs = [];
 let currentTab = 'all';
+
+// ========== v4.8: 分页状态（每页条数 localStorage 记忆） ==========
+let jobPage = 1;
+let jobPageSize = parseInt(localStorage.getItem('csJobPageSize')) || 60;
+let extPage = 1;
+let extPageSize = parseInt(localStorage.getItem('csExtPageSize')) || 50;
+let lastExtTotal = 0;          // 供 gotoExtPage 边界钳制
+let lastJobFilterSig = '';     // 筛选条件变化 → 自动回到第 1 页
+let lastExtFilterSig = '';
+
+function jobFilterSig() {
+  return [currentTab,
+    document.getElementById('searchInput')?.value || '',
+    document.getElementById('filterFav')?.value || '',
+    [...activeCats].sort().join(','),
+    [...activeCities].sort().join(','),
+    document.getElementById('filterMatch')?.value || '',
+    document.getElementById('filterPriority')?.value || '',
+    document.getElementById('filterSort')?.value || '',
+    document.getElementById('filterDate')?.value || '',
+    document.getElementById('dateFrom')?.value || '',
+    document.getElementById('dateTo')?.value || '',
+    document.getElementById('numFrom')?.value || '',
+    document.getElementById('numTo')?.value || ''
+  ].join('|');
+}
+
+function extFilterSig() {
+  return [document.getElementById('extFilterBatch')?.value || '',
+    document.getElementById('extFilterType')?.value || '',
+    document.getElementById('extSearchInput')?.value || '',
+    extFavOnly ? '1' : '',
+    [...extActiveCities].sort().join(',')
+  ].join('|');
+}
+
+// 通用分页条渲染：onPage/onSize 为全局函数名字符串（onclick 内联调用）
+function renderPagination(elId, total, page, pageSize, sizeOptions, onPage, onSize) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  if (!total || total === 0) { el.style.display = 'none'; el.innerHTML = ''; return; }
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  // 页码窗口：首末页 + 当前页±2，间隔用省略号
+  const pages = [];
+  const add = p => { if (p >= 1 && p <= totalPages && !pages.includes(p)) pages.push(p); };
+  add(1); add(totalPages);
+  for (let p = page - 2; p <= page + 2; p++) add(p);
+  pages.sort((a, b) => a - b);
+  let btns = '', prev = 0;
+  pages.forEach(p => {
+    if (p - prev > 1) btns += '<span class="page-ellipsis">…</span>';
+    btns += `<button class="page-btn${p === page ? ' active' : ''}" onclick="${onPage}(${p})">${p}</button>`;
+    prev = p;
+  });
+  el.innerHTML = `
+    <span class="page-info">共 ${total} 条 · 第 ${page}/${totalPages} 页</span>
+    <button class="page-btn" onclick="${onPage}(${page - 1})" ${page <= 1 ? 'disabled' : ''}>‹</button>
+    ${btns}
+    <button class="page-btn" onclick="${onPage}(${page + 1})" ${page >= totalPages ? 'disabled' : ''}>›</button>
+    <span class="page-size-wrap">每页
+      <select onchange="${onSize}(this.value)">${sizeOptions.map(s => `<option value="${s}" ${s === pageSize ? 'selected' : ''}>${s}</option>`).join('')}</select>
+    </span>
+    <span class="page-size-wrap">跳页
+      <input type="number" class="page-jump" min="1" max="${totalPages}" value="${page}"
+        onkeydown="if(event.key==='Enter'){${onPage}(parseInt(this.value)||1)}">
+    </span>`;
+  el.style.display = 'flex';
+}
+
+function gotoJobPage(p) {
+  const total = getFiltered().length;
+  const tp = Math.max(1, Math.ceil(total / jobPageSize));
+  jobPage = Math.min(Math.max(1, p), tp);
+  renderJobs();
+  document.getElementById('jobPagination')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function setJobPageSize(v) {
+  jobPageSize = parseInt(v) || 60;
+  localStorage.setItem('csJobPageSize', String(jobPageSize));
+  jobPage = 1;
+  renderJobs();
+}
+
+function gotoExtPage(p) {
+  const tp = Math.max(1, Math.ceil(lastExtTotal / extPageSize));
+  extPage = Math.min(Math.max(1, p), tp);
+  renderExternalTable();
+  document.getElementById('extPagination')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function setExtPageSize(v) {
+  extPageSize = parseInt(v) || 50;
+  localStorage.setItem('csExtPageSize', String(extPageSize));
+  extPage = 1;
+  renderExternalTable();
+}
 let followUpMap = {};
 let activityLog = [];
 let activeCats = new Set();  // 多选岗位类别
@@ -1478,39 +1674,145 @@ function getFiltered() {
     );
   }
 
+  // 列入日期筛选（v4.6：今日新增 / 近N天 / 自定义区间）
+  const dateMode = document.getElementById('filterDate')?.value || 'all';
+  if (dateMode !== 'all') {
+    if (dateMode === 'custom') {
+      const from = document.getElementById('dateFrom')?.value || '';
+      const to = document.getElementById('dateTo')?.value || '';
+      if (from || to) {
+        filtered = filtered.filter(j => {
+          const d = (j.date_found || '').substring(0, 10);
+          if (!d) return false;
+          if (from && d < from) return false;
+          if (to && d > to) return false;
+          return true;
+        });
+      }
+    } else {
+      const days = dateMode === 'today' ? 0 : dateMode === '3d' ? 3 : dateMode === '7d' ? 7 : 30;
+      filtered = filtered.filter(j => dateWithinDays((j.date_found || '').substring(0, 10), days));
+    }
+  }
+
+  // 排序（v4.6：可选排序方式，收藏始终置顶）
+  const sortMode = document.getElementById('filterSort')?.value || 'default';
   const priOrder = { '最高': 0, 'High': 1, 'Medium': 2, '低': 3 };
-  filtered.sort((a, b) => {
-    // 收藏的排在最前（favorited 优先级最高）
-    const fa = isMarked(a.favorited) ? 0 : 1, fb = isMarked(b.favorited) ? 0 : 1;
-    if (fa !== fb) return fa - fb;
-    const pa = priOrder[a.priority] ?? 99, pb = priOrder[b.priority] ?? 99;
-    if (pa !== pb) return pa - pb;
-    return (b.date_found || '').localeCompare(a.date_found || '');
-  });
+  const favRank = j => isMarked(j.favorited) ? 0 : 1;
+  const rowIdx = j => parseInt(j._rowIndex) || 0;
+  if (sortMode === 'added_desc') {
+    // 最新加入：按 CSV 行序（后导入行号大），可区分同一天内不同批次的导入
+    filtered.sort((a, b) => favRank(a) - favRank(b) || rowIdx(b) - rowIdx(a));
+  } else if (sortMode === 'added_asc') {
+    filtered.sort((a, b) => favRank(a) - favRank(b) || rowIdx(a) - rowIdx(b));
+  } else if (sortMode === 'date_desc') {
+    filtered.sort((a, b) => favRank(a) - favRank(b) || (b.date_found || '').localeCompare(a.date_found || '') || rowIdx(b) - rowIdx(a));
+  } else if (sortMode === 'date_asc') {
+    filtered.sort((a, b) => favRank(a) - favRank(b) || (a.date_found || '').localeCompare(b.date_found || '') || rowIdx(a) - rowIdx(b));
+  } else if (sortMode === 'company') {
+    filtered.sort((a, b) => favRank(a) - favRank(b) || (a.company || '').localeCompare(b.company || '', 'zh') || (a.job_title || '').localeCompare(b.job_title || '', 'zh'));
+  } else if (sortMode === 'title') {
+    filtered.sort((a, b) => favRank(a) - favRank(b) || (a.job_title || '').localeCompare(b.job_title || '', 'zh') || (a.company || '').localeCompare(b.company || '', 'zh'));
+  } else {
+    // 默认：收藏 → 优先级 → 列入时间倒序
+    filtered.sort((a, b) => {
+      const fa = favRank(a), fb = favRank(b);
+      if (fa !== fb) return fa - fb;
+      const pa = priOrder[a.priority] ?? 99, pb = priOrder[b.priority] ?? 99;
+      if (pa !== pb) return pa - pb;
+      return (b.date_found || '').localeCompare(a.date_found || '');
+    });
+  }
+
+  // 视图序号（v4.6）：排序后编号 #1..#N，供卡片显示、序号区间筛选和跳转
+  filtered.forEach((j, i) => { j._viewIndex = i + 1; });
+
+  // 序号区间筛选（基于上方视图序号，编号不因区间过滤而改变）
+  const nf = parseInt(document.getElementById('numFrom')?.value, 10);
+  const nt = parseInt(document.getElementById('numTo')?.value, 10);
+  if (!isNaN(nf) || !isNaN(nt)) {
+    filtered = filtered.filter(j => (isNaN(nf) || j._viewIndex >= nf) && (isNaN(nt) || j._viewIndex <= nt));
+  }
   return filtered;
+}
+
+// v4.6: 日期是否在最近 N 天内（0 = 今天）
+function dateWithinDays(dateStr, days) {
+  if (!dateStr) return false;
+  const d = new Date(dateStr + 'T00:00:00');
+  if (isNaN(d.getTime())) return false;
+  const now = new Date();
+  const today0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  return today0.getTime() - d.getTime() <= days * 86400000 && d.getTime() <= today0.getTime() + 86400000;
+}
+
+// v4.6: 自定义日期区间显隐
+function onDateFilterChange() {
+  const mode = document.getElementById('filterDate').value;
+  document.getElementById('dateRangeWrap').style.display = mode === 'custom' ? 'flex' : 'none';
+  renderJobs();
+}
+
+// v4.6→v4.8: 跳转至视图序号 #N（自动翻到所在页 + 滚动 + 高亮）
+function jumpToIndex() {
+  const input = document.getElementById('jumpNum');
+  const n = parseInt(input.value, 10);
+  if (isNaN(n) || n < 1) { showToast('请输入 ≥1 的序号', 'error'); return; }
+  const filtered = getFiltered();
+  const pos = filtered.findIndex(j => (j._viewIndex || 0) === n);
+  if (pos === -1) {
+    const max = filtered.length > 0 ? Math.max(...filtered.map(j => j._viewIndex || 0)) : 0;
+    showToast(`未找到 #${n}，当前列表序号范围 1 ~ ${max}`, 'error');
+    return;
+  }
+  // v4.8: 序号在别的页 → 先翻页再定位
+  jobPage = Math.floor(pos / jobPageSize) + 1;
+  renderJobs();
+  const el = document.getElementById('job-card-' + n);
+  if (!el) { showToast(`#${n} 定位失败`, 'error'); return; }
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  el.classList.remove('job-flash');
+  void el.offsetWidth; // 重置动画
+  el.classList.add('job-flash');
+  setTimeout(() => el.classList.remove('job-flash'), 2200);
 }
 
 function renderJobs() {
   const filtered = getFiltered();
   const content = document.getElementById('jobContent');
   const empty = document.getElementById('emptyState');
-  const bar = document.getElementById('jobCountBar');
+  const countText = document.getElementById('jobCountText');
+  const jumpWrap = document.getElementById('jumpWrap');
   const exclSection = document.getElementById('excludedSection');
   const exclContent = document.getElementById('excludedContent');
 
-  bar.textContent = `共 ${filtered.length} 个岗位`;
+  // v4.8: 筛选条件变化 → 自动回到第 1 页；页码越界 → 钳制到最后
+  const sig = jobFilterSig();
+  if (sig !== lastJobFilterSig) { jobPage = 1; lastJobFilterSig = sig; }
+  const totalPages = Math.max(1, Math.ceil(filtered.length / jobPageSize));
+  if (jobPage > totalPages) jobPage = totalPages;
+
+  // v4.6: 今日新增数量角标（基于 date_found 为今天）
+  const today = getLocalDate();
+  const todayNew = allJobs.filter(j => j.status !== 'Excluded' && (j.date_found || '').substring(0, 10) === today).length;
+  countText.innerHTML = `共 ${filtered.length} 个岗位` + (todayNew > 0 ? `<span class="new-today-badge">今日新增 ${todayNew}</span>` : '');
+  jumpWrap.style.display = (filtered.length > 0 && currentTab !== 'external') ? 'inline-flex' : 'none';
 
   if (filtered.length === 0) {
     content.innerHTML = '';
     empty.style.display = 'block';
   } else {
     empty.style.display = 'none';
+    // v4.8: 只渲染当前页（性能：922 条 → 每页最多几十条）
+    const startIdx = (jobPage - 1) * jobPageSize;
+    const pageItems = filtered.slice(startIdx, startIdx + jobPageSize);
     if (currentTab === 'submitted' || currentTab === 'ended') {
-      content.innerHTML = '<div class="timeline-view">' + filtered.map((j, i) => buildTimelineEntry(j, i)).join('') + '</div>';
+      content.innerHTML = '<div class="timeline-view">' + pageItems.map((j, i) => buildTimelineEntry(j, i)).join('') + '</div>';
     } else {
-      content.innerHTML = '<div class="job-list">' + filtered.map((j, i) => buildJobCard(j, i)).join('') + '</div>';
+      content.innerHTML = '<div class="job-list">' + pageItems.map((j, i) => buildJobCard(j, i)).join('') + '</div>';
     }
   }
+  renderPagination('jobPagination', filtered.length, jobPage, jobPageSize, [30, 60, 90, 150], 'gotoJobPage', 'setJobPageSize');
 
   // Excluded section — show at bottom, not in ended
   const excluded = allJobs.filter(j => j.status === 'Excluded');
@@ -1557,12 +1859,16 @@ function buildJobCard(job, idx, isExcluded) {
   const fav = isMarked(job.favorited);
   const favBtn = `<button class="star-btn${fav ? ' active' : ''}" data-job-fav="${parseInt(job._rowIndex)}" data-current="${fav ? '1' : ''}" title="${fav ? '取消收藏' : '收藏'}" onclick="event.stopPropagation()">${fav ? '⭐' : '☆'}</button>`;
 
+  // v4.6: 视图序号（排序后编号）+ 今日新增标记 + 跳转锚点
+  const viewNum = job._viewIndex || (idx + 1);
+  const isTodayNew = !isExcluded && (job.date_found || '').substring(0, 10) === getLocalDate();
+
   return `
-  <div class="job-card${isExcluded ? ' excluded' : ''}" style="animation-delay:${idx*0.03}s">
+  <div class="job-card${isExcluded ? ' excluded' : ''}" id="${isExcluded ? 'excl-card-' : 'job-card-'}${viewNum}" style="animation-delay:${Math.min(idx,30)*0.03}s">
     <div class="job-card-left"><div class="job-priority-dot dot-${priority}"></div></div>
     <div class="job-card-main">
       <div class="job-card-header">
-        <div><div class="job-company">${company}</div><div class="job-title-text">${title}</div></div>
+        <div><div class="job-company">${company}${isTodayNew ? '<span class="new-today-badge">🆕 今日</span>' : ''}</div><div class="job-title-text">${title}</div></div>
         <div class="badge-row">
           ${category ? `<span class="badge badge-cat">${category}</span>` : ''}
           <span class="badge badge-priority ${priority==='最高'?'p-high':''}">${priority}</span>
@@ -1574,7 +1880,7 @@ function buildJobCard(job, idx, isExcluded) {
         ${city ? `<span class="job-meta-item">📍 ${city}</span>` : ''}
         <span class="job-meta-item">📅 ${date}</span>
         ${stage ? `<span class="job-meta-item">🔄 ${stage}</span>` : ''}
-        <span class="job-meta-item" title="当前视图序号" style="opacity:0.6;font-size:0.7rem;">#${idx + 1}</span>
+        <span class="job-meta-item" title="当前视图序号（可用于跳转/区间筛选）" style="opacity:0.6;font-size:0.7rem;">#${viewNum}</span>
       </div>
       ${notes ? `<div style="margin-top:4px;font-size:0.76rem;color:var(--text-muted);">💬 ${notes}</div>` : ''}
       <div class="job-card-actions">
@@ -1626,7 +1932,7 @@ function buildTimelineEntry(job, idx) {
   }
 
   return `
-  <div class="timeline-entry" style="animation-delay:${idx*0.04}s">
+  <div class="timeline-entry" id="job-card-${job._viewIndex || (idx + 1)}" style="animation-delay:${Math.min(idx,30)*0.04}s">
     <div class="timeline-header">
       <div class="timeline-dot ${isOffer?'done':isRejected?'fail':'active'}"></div>
       <div class="timeline-body">
@@ -1756,11 +2062,14 @@ function switchTab(tab) {
 
   // 外部公司库是独立功能区，切换时控制各区域显隐
   const isExternal = tab === 'external';
-  document.body.classList.toggle('ext-mode', isExternal);  // v3.7: 隐藏左侧 sidebar + stats
+  document.body.classList.toggle('ext-mode', isExternal);  // v3.7: 隐藏顶部筛选栏 + stats
   document.getElementById('externalSection').style.display = isExternal ? 'block' : 'none';
   document.getElementById('jobContent').style.display = isExternal ? 'none' : 'block';
   document.getElementById('jobCountBar').style.display = isExternal ? 'none' : 'block';
+  document.getElementById('jobPagination').style.display = 'none';
   document.getElementById('emptyState').style.display = 'none';
+  // v4.8: 操作日志只在「已结束」tab 显示（其他 tab 不重复占位）
+  document.getElementById('logPanel').style.display = (tab === 'ended') ? 'block' : 'none';
 
   if (isExternal) {
     document.getElementById('excludedSection').style.display = 'none';
@@ -1943,12 +2252,23 @@ function renderExternalTable() {
   if (filtered.length === 0) {
     table.style.display = 'none';
     empty.style.display = 'block';
+    renderPagination('extPagination', 0, 1, extPageSize, [20, 50, 100, 200], 'gotoExtPage', 'setExtPageSize');
     return;
   }
+
+  // v4.8: 筛选变化回第 1 页 + 分页切片
+  const sig = extFilterSig();
+  if (sig !== lastExtFilterSig) { extPage = 1; lastExtFilterSig = sig; }
+  const extTotalPages = Math.max(1, Math.ceil(filtered.length / extPageSize));
+  if (extPage > extTotalPages) extPage = extTotalPages;
+  lastExtTotal = filtered.length;
+  const extStart = (extPage - 1) * extPageSize;
+  const extPageItems = filtered.slice(extStart, extStart + extPageSize);
+
   table.style.display = '';
   empty.style.display = 'none';
 
-  tbody.innerHTML = filtered.map(c => {
+  tbody.innerHTML = extPageItems.map(c => {
     const name = escapeHtml(c.company_name || '');
     const type = escapeHtml(c.enterprise_type || '');
     const batch = escapeHtml(c.batch || '');
@@ -2009,6 +2329,8 @@ function renderExternalTable() {
       showExtCellPopup(el);
     });
   });
+  // v4.8: 公司库分页条
+  renderPagination('extPagination', lastExtTotal, extPage, extPageSize, [20, 50, 100, 200], 'gotoExtPage', 'setExtPageSize');
 }
 
 // v3.7: 点击 base 地点 / 岗位类别 单元格，弹出完整内容
@@ -2403,8 +2725,19 @@ async function refreshJobs() {
     const data = await res.json();
     const discovered = (data.companies || []).filter(c => c && c.company);
 
+    // v4.6: 记录扫描明细 —— 每次刷新都能看到公司库各跳过原因的数量，判断覆盖是否全面
+    if (data.summary) addLog(`📊 新公司扫描: ${data.summary}`);
+
+    // v4.7: 不支持 API 自动搜索的公司不再静默跳过 —— 明确告知数量、名单和下一步
+    if (data.stats && data.stats.unsupportedPending > 0) {
+      const names = (data.unsupportedCompanies || []).slice(0, 15).join('、');
+      const more = data.stats.unsupportedPending > 15 ? ` 等 ${data.stats.unsupportedPending} 家` : '';
+      addLog(`⚠️ 另有 ${data.stats.unsupportedPending} 家公司官网是自建系统（${names}${more}），API 自动刷新搜不了，需要浏览器搜索`);
+      addLog(`📋 待浏览器搜清单: http://localhost:8430/api/pending-browser-search（fresh=1 只看今天没搜过的）→ 把清单交给 AI Agent 逐家浏览器搜索导入`);
+    }
+
     if (discovered.length === 0) {
-      addLog('✅ 秋招公司库暂无新开且可自动搜索的公司（已覆盖的公司不重复搜）');
+      addLog('✅ 秋招公司库暂无新开且可自动搜索的公司（岗位池已有的公司不重复搜，不在岗位池的 1 天内不重搜）');
     } else {
       const latest = discovered[0];
       addLog(`🆕 发现 ${discovered.length} 家新开秋招公司（最新: ${latest.company} ${latest.openDate || ''}）`);

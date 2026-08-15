@@ -807,8 +807,10 @@ const server = http.createServer(async (req, res) => {
     }
 
     // v4.4 GET /api/discover-new-companies — 从秋招公司库发现"新开秋招且可自动搜索"的公司
-    // 规则：① career_url 可自动识别（北森/飞书/Moka）② 岗位池中无该公司 ③ 7 天内未搜索过
+    // 规则：① career_url 可自动识别（北森/飞书/Moka）② 岗位池中无该公司（池内公司 7 天不重搜）
+    //       ③ 不在岗位池的公司 1 天内不重搜（v4.7 重搜周期分级：池外 7天→1天）
     // 排序：开招时间（open_date）最新优先 —— 新开秋招的公司最可能带来新岗位
+    // v4.7: unsupportedSystem 的公司不再静默跳过 —— 返回名单 + /api/pending-browser-search 待浏览器搜清单
     if (url.pathname === '/api/discover-new-companies') {
       try {
         const limit = Math.min(parseInt(url.searchParams.get('limit') || '15', 10) || 15, 50);
@@ -820,28 +822,114 @@ const server = http.createServer(async (req, res) => {
         const poolCompanies = [...new Set(pool.map(r => (r.company || '').trim()).filter(Boolean))];
         const searched = readSearchedCompanies();
         const now = Date.now();
-        const RETRY_MS = 7 * 24 * 60 * 60 * 1000;
+        const RETRY_NO_POOL_MS = 1 * 24 * 60 * 60 * 1000; // v4.7: 不在岗位池的公司 1 天后可重搜
 
         const candidates = [];
+        const unsupported = []; // v4.7: API 不支持、需要浏览器搜索的公司（不在岗位池的）
         const seenNames = new Set();
+        // v4.6: 跳过原因统计 —— 让"刷新为什么快/还剩多少可搜"透明可查
+        const stats = {
+          total: rows.length,          // 公司库总数
+          noUrl: 0,                    // 无招聘官网链接
+          excludedMarked: 0,           // 用户在公司库标记剔除
+          dupName: 0,                  // 同名重复
+          unsupportedSystem: 0,        // 官网不是北森/飞书/Moka，无法自动搜索
+          unsupportedPending: 0,       // 其中不在岗位池、待浏览器搜索的
+          alreadyInPool: 0,            // 岗位池已有该公司（含已剔除），已覆盖（= 池内 7 天+不重搜）
+          searchedRecently: 0,         // 1 天内已搜过（成功或失败）
+          candidates: 0                // 本轮可搜索
+        };
         for (const r of rows) {
           const name = (r.company_name || '').trim();
           const curl = (r.career_url || '').trim();
-          if (!name || !curl) continue;
-          if (seenNames.has(name)) continue; // 同名公司去重
-          if (['true', '1', '是'].includes(String(r.excluded || '').trim())) continue;
+          if (!name || !curl) { stats.noUrl++; continue; }
+          if (seenNames.has(name)) { stats.dupName++; continue; } // 同名公司去重
+          if (['true', '1', '是'].includes(String(r.excluded || '').trim())) { stats.excludedMarked++; continue; }
           const type = recruiters.detectRecruiterType(curl);
-          if (!['beisen', 'feishu', 'moka'].includes(type)) continue;
+          const inPool = poolCompanies.some(pc => pc && (pc.includes(name) || name.includes(pc)));
+          if (!['beisen', 'feishu', 'moka'].includes(type)) {
+            stats.unsupportedSystem++;
+            // v4.7: 记录"不在岗位池"的不支持系统公司 → 待浏览器搜索清单
+            if (!inPool) {
+              stats.unsupportedPending++;
+              const lastT = searched[name];
+              unsupported.push({
+                company: name, url: curl,
+                openDate: (r.open_date || '').substring(0, 10),
+                searchedWithin1d: !!(lastT && now - new Date(lastT).getTime() < RETRY_NO_POOL_MS)
+              });
+            }
+            seenNames.add(name); // 同名去重（unsupported 也参与）
+            continue;
+          }
           // 已在岗位池（含已剔除）→ 该公司已覆盖，不再重复搜
-          if (poolCompanies.some(pc => pc && (pc.includes(name) || name.includes(pc)))) continue;
-          // 7 天内搜过（无论成功失败）→ 跳过
+          if (inPool) { stats.alreadyInPool++; continue; }
+          // 不在岗位池且 1 天内搜过（无论成功失败）→ 跳过（v4.7: 池外重搜周期 7天→1天）
           const last = searched[name];
-          if (last && now - new Date(last).getTime() < RETRY_MS) continue;
+          if (last && now - new Date(last).getTime() < RETRY_NO_POOL_MS) { stats.searchedRecently++; continue; }
           candidates.push({ company: name, url: curl, type, openDate: (r.open_date || '').substring(0, 10) });
           seenNames.add(name);
         }
+        stats.candidates = candidates.length;
         candidates.sort((a, b) => (b.openDate || '').localeCompare(a.openDate || ''));
-        sendJSON(res, 200, { success: true, count: candidates.length, companies: candidates.slice(0, limit) });
+        unsupported.sort((a, b) => (b.openDate || '').localeCompare(a.openDate || ''));
+        sendJSON(res, 200, {
+          success: true,
+          count: candidates.length,
+          companies: candidates.slice(0, limit),
+          stats,
+          // v4.7: 不支持自动搜索的公司名单（前 30 家，供日志展示）
+          unsupportedCompanies: unsupported.slice(0, 30).map(u => u.company),
+          summary: `公司库 ${stats.total} 家：无链接 ${stats.noUrl} | ⚠️系统不支持自动搜 ${stats.unsupportedSystem}（其中 ${stats.unsupportedPending} 家不在岗位池、待浏览器搜） | 已在岗位池 ${stats.alreadyInPool} | 1天内已搜 ${stats.searchedRecently} | 本轮API可搜 ${stats.candidates} 家（取前 ${Math.min(limit, candidates.length)}）`
+        });
+      } catch (e) {
+        sendJSON(res, 500, { success: false, error: e.message });
+      }
+      return;
+    }
+
+    // v4.7 GET /api/pending-browser-search — 待浏览器搜索清单
+    // 返回：官网非北森/飞书/Moka（API 搜不了）且不在岗位池的公司，按开招时间倒序
+    // 用途：交给 Agent 用浏览器逐家搜索（参考 SKILL.md 浏览器自动化工作流）
+    if (url.pathname === '/api/pending-browser-search') {
+      try {
+        const limit = Math.min(parseInt(url.searchParams.get('limit') || '50', 10) || 50, 500);
+        const onlyFresh = url.searchParams.get('fresh') === '1'; // 排除 1 天内已搜过的
+        const feishuSource = require(path.join(__dirname, '..', 'lib', 'feishu_source.js'));
+        const recruiters = require(path.join(__dirname, '..', 'lib', 'recruiters'));
+        const rows = feishuSource.readExternalCompanies();
+
+        const pool = parseCSV(fs.readFileSync(path.join(DASHBOARD_DIR, 'job_pool.csv'), 'utf-8')).rows;
+        const poolCompanies = [...new Set(pool.map(r => (r.company || '').trim()).filter(Boolean))];
+        const searched = readSearchedCompanies();
+        const now = Date.now();
+        const DAY_MS = 24 * 60 * 60 * 1000;
+
+        const pending = [];
+        const seen = new Set();
+        for (const r of rows) {
+          const name = (r.company_name || '').trim();
+          const curl = (r.career_url || '').trim();
+          if (!name || !curl || seen.has(name)) continue;
+          if (['true', '1', '是'].includes(String(r.excluded || '').trim())) continue;
+          if (poolCompanies.some(pc => pc && (pc.includes(name) || name.includes(pc)))) continue; // 已在岗位池
+          const type = recruiters.detectRecruiterType(curl);
+          if (['beisen', 'feishu', 'moka'].includes(type)) continue; // API 能搜的走自动刷新
+          seen.add(name);
+          const last = searched[name];
+          const searchedWithin1d = !!(last && now - new Date(last).getTime() < DAY_MS);
+          if (onlyFresh && searchedWithin1d) continue;
+          pending.push({ company: name, url: curl, openDate: (r.open_date || '').substring(0, 10), system: type || '自建/其他', searchedWithin1d });
+        }
+        pending.sort((a, b) => (b.openDate || '').localeCompare(a.openDate || ''));
+        sendJSON(res, 200, {
+          success: true,
+          count: pending.length,
+          returned: Math.min(limit, pending.length),
+          freshCount: pending.filter(p => !p.searchedWithin1d).length,
+          companies: pending.slice(0, limit),
+          hint: '这些公司官网无法 API 自动搜索。把此清单交给 AI Agent 用浏览器逐家搜索（参考 SKILL.md「Playwright MCP 浏览器自动化」工作流），搜索后岗位经 job_filters 过滤导入岗位池'
+        });
       } catch (e) {
         sendJSON(res, 500, { success: false, error: e.message });
       }
