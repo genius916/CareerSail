@@ -538,9 +538,17 @@ async function run() {
     assert(typeof feishuSource.syncExternalCompanies === 'function', 'feishu_source.syncExternalCompanies 是函数');
     assert(typeof feishuSource.readExternalCompanies === 'function', 'feishu_source.readExternalCompanies 是函数');
     assert(typeof feishuSource.loadConfig === 'function', 'feishu_source.loadConfig 是函数');
-    assert(Array.isArray(feishuSource.CSV_HEADERS) && feishuSource.CSV_HEADERS.length === 13, 'feishu_source.CSV_HEADERS 含 13 个字段（含 favorited + excluded）');
+    assert(Array.isArray(feishuSource.CSV_HEADERS) && feishuSource.CSV_HEADERS.length === 21, 'feishu_source.CSV_HEADERS 含 21 个字段（v5.0 适配 26年汇总表 + favorited/excluded）');
     assert(feishuSource.CSV_HEADERS.includes('company_name'), 'CSV_HEADERS 含 company_name');
     assert(feishuSource.CSV_HEADERS.includes('career_url'), 'CSV_HEADERS 含 career_url');
+    assert(feishuSource.CSV_HEADERS.includes('notice_url'), 'CSV_HEADERS 含 notice_url（v5.0 公告链接）');
+    assert(feishuSource.CSV_HEADERS.includes('notice_url_text'), 'CSV_HEADERS 含 notice_url_text（v5.0 公告链接文本）');
+    assert(feishuSource.CSV_HEADERS.includes('industry'), 'CSV_HEADERS 含 industry（v5.0 行业类别）');
+    assert(feishuSource.CSV_HEADERS.includes('cohort'), 'CSV_HEADERS 含 cohort（v5.0 招聘届次）');
+    assert(feishuSource.CSV_HEADERS.includes('education'), 'CSV_HEADERS 含 education（v5.0 学历要求）');
+    assert(feishuSource.CSV_HEADERS.includes('major'), 'CSV_HEADERS 含 major（v5.0 专业要求）');
+    assert(feishuSource.CSV_HEADERS.includes('updated_at'), 'CSV_HEADERS 含 updated_at（v5.0 更新时间）');
+    assert(feishuSource.CSV_HEADERS.includes('remark'), 'CSV_HEADERS 含 remark（v5.0 备注）');
     assert(feishuSource.CSV_HEADERS.includes('favorited'), 'CSV_HEADERS 含 favorited（v3.6 收藏字段）');
     assert(feishuSource.CSV_HEADERS.includes('excluded'), 'CSV_HEADERS 含 excluded（v3.6 剔除字段）');
     // 配置模板可正常加载
@@ -548,6 +556,8 @@ async function run() {
     assert(extConfig !== null, 'feishu_source.loadConfig 返回非 null（模板可 seed）');
     assert(extConfig.base_token && extConfig.table_id, 'external_source.json 含 base_token 和 table_id');
     assert(extConfig.field_map && typeof extConfig.field_map === 'object', 'external_source.json 含 field_map');
+    assert(extConfig.field_map['简历投递链接'] === 'career_url', 'field_map 含 简历投递链接 → career_url（v5.0）');
+    assert(extConfig.field_map['公告链接'] === 'notice_url', 'field_map 含 公告链接 → notice_url（v5.0）');
 
     // 8.7 实习过滤：批量导入实习岗位应被排除（user_profile 默认 job_type=full-time）
     // 先确保 user_profile 为全职模式（模板默认即 full-time）

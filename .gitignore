@@ -5,6 +5,7 @@ dashboard/activity_log.jsonl
 dashboard/external_companies.csv
 dashboard/application_log.csv
 dashboard/searched_companies.json
+dashboard/browser_search_status.json
 
 # 本地备份（含个人数据快照，严禁提交）
 backup/

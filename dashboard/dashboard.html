@@ -587,22 +587,62 @@ body{
 }
 .ext-table tbody tr:hover{background:var(--surface-hover)}
 .ext-table tbody tr:last-child td{border-bottom:none}
+/* v4.4 需控制浏览器搜索公司清单 Modal */
+.bs-desc{font-size:0.82rem;color:var(--text-secondary);line-height:1.6;margin-bottom:12px}
+.bs-filterbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+.bs-filterbar .search-input,.bs-filterbar .filter-select{font-size:0.78rem;padding:4px 8px}
+.bs-filterbar .search-input{width:140px}
+.bs-filterbar .filter-select{width:auto}
+.bs-fav-toggle{cursor:pointer;font-size:0.78rem;padding:4px 10px;border-radius:6px;border:1px solid var(--border-light);background:var(--surface);transition:all .15s;user-select:none}
+.bs-fav-toggle.active{background:var(--warning);color:#fff;border-color:var(--warning)}
+.bs-stats{font-size:0.75rem;color:var(--text-muted);margin-bottom:8px;display:flex;gap:12px;flex-wrap:wrap}
+.bs-stats span b{color:var(--text);font-weight:600}
+.bs-progress{margin-bottom:10px}
+.bs-progress-bar{height:8px;background:var(--surface-hover,#eef);border-radius:4px;overflow:hidden;border:1px solid var(--border-light)}
+.bs-progress-fill{height:100%;background:linear-gradient(90deg,var(--success,#2a9),var(--primary));transition:width .3s}
+.bs-progress-text{font-size:0.72rem;color:var(--text-muted);margin-top:3px;display:flex;justify-content:space-between}
+.bs-cb{cursor:pointer}
+.bs-toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.bs-toolbar-btns{display:flex;gap:8px;flex-wrap:wrap}
+.bs-meta{font-size:0.78rem;color:var(--text-muted)}
+.bs-table-wrap{max-height:46vh;overflow:auto;border:1px solid var(--border-light);border-radius:8px}
+.bs-table-wrap .ext-table td,.bs-table-wrap .ext-table th{padding:7px 10px;font-size:0.78rem}
+.bs-table-wrap .ext-table tr.bs-excluded td{opacity:.5;text-decoration:line-through}
+.bs-table-wrap .ext-table tr.bs-searched td{opacity:.6}
+.bs-act-btn{cursor:pointer;border:none;background:none;font-size:1rem;padding:2px 4px;line-height:1;transition:transform .1s}
+.bs-act-btn:hover{transform:scale(1.3)}
+.bs-act-btn.fav-on{color:var(--warning)}
+.bs-act-btn.exc-on{color:var(--danger,#e34)}
+.bs-act-btn.done-on{color:var(--success,#2a9)}
+.bs-pagination{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap}
+.bs-pagination button{padding:3px 10px;font-size:0.78rem;border:1px solid var(--border-light);border-radius:4px;background:var(--surface);cursor:pointer}
+.bs-pagination button:hover:not(:disabled){background:var(--surface-hover)}
+.bs-pagination button:disabled{opacity:.4;cursor:default}
+.bs-pagination button.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.bs-page-size{font-size:0.75rem;color:var(--text-muted)}
 .ext-company{font-weight:600;color:var(--text)}
 .ext-type-badge{
   display:inline-block;padding:2px 8px;border-radius:10px;
   font-size:0.7rem;font-weight:500;
 }
 .ext-type-badge.国央企{background:#e6f4ff;color:#0958d9}
+.ext-type-badge.央国企{background:#e6f4ff;color:#0958d9}
+.ext-type-badge.民企{background:#f6ffed;color:#389e0d}
 .ext-type-badge.科技{background:#f6ffed;color:#389e0d}
 .ext-type-badge.互联网{background:#fff1f0;color:#cf1322}
 .ext-type-badge.游戏{background:#f9f0ff;color:#531dab}
 .ext-type-badge.外企{background:#e6f4ff;color:#0958d9}
+.ext-type-badge.合资{background:#fff0f6;color:#c41d7f}
 .ext-type-badge.金融{background:#fffbe6;color:#d4b106}
 .ext-type-badge.教育{background:#fff7e6;color:#d46b08}
+.ext-type-badge.事业单位{background:#f0f5ff;color:#1d39c4}
+.ext-type-badge.社会组织{background:#fcffe6;color:#7cb305}
+.ext-type-badge.政府机关{background:#fffbe6;color:#d48806}
+.ext-type-badge.其他{background:var(--bg-alt);color:var(--text-secondary)}
 .ext-batch{font-size:0.74rem;color:var(--text-secondary)}
 .ext-cities,.ext-jobs{font-size:0.74rem;color:var(--text-secondary);max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ext-date{font-size:0.74rem;color:var(--text-muted);white-space:nowrap}
-.ext-link{color:var(--navy);text-decoration:none;font-size:0.76rem;font-weight:500}
+.ext-link{color:var(--navy);text-decoration:none;font-size:0.76rem;font-weight:500;max-width:150px;display:inline-block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:bottom}
 .ext-link:hover{color:var(--accent);text-decoration:underline}
 .ext-actions{display:flex;gap:5px;white-space:nowrap;align-items:center}
 .ext-empty{padding:40px 20px;text-align:center}
@@ -939,10 +979,14 @@ body.ext-mode .status-tabs{margin-bottom:12px}
             <select id="extFilterBatch" class="filter-select ext-filter" onchange="renderExternalTable()">
               <option value="">全部批次</option>
             </select>
+            <select id="extFilterCohort" class="filter-select ext-filter" onchange="renderExternalTable()">
+              <option value="">全部届次</option>
+            </select>
             <select id="extFilterType" class="filter-select ext-filter" onchange="renderExternalTable()">
               <option value="">全部类型</option>
             </select>
             <input type="text" id="extSearchInput" class="search-input ext-search" placeholder="搜索公司名..." oninput="renderExternalTable()" style="width:160px">
+            <button class="btn btn-outline btn-sm" onclick="openBrowserSearchModal()" id="browserSearchBtn" title="公司库中官网为自建系统、无法用招聘 API 搜索的公司（无论是否已入岗位池）。点开复制指令交给编程 Agent 用浏览器逐家搜索" style="font-weight:600">🌐 需控制浏览器搜索（…）</button>
             <button class="btn btn-primary btn-sm" onclick="syncExternal()" id="syncExtBtn">🔄 同步飞书</button>
           </div>
         </div>
@@ -952,12 +996,18 @@ body.ext-mode .status-tabs{margin-bottom:12px}
               <tr>
                 <th>公司名称</th>
                 <th>企业类型</th>
+                <th>行业</th>
                 <th>批次</th>
-                <th>base 地点</th>
-                <th>岗位类别</th>
-                <th>开放日期</th>
-                <th>截止日期</th>
-                <th>招聘官网</th>
+                <th>届次</th>
+                <th>工作地点</th>
+                <th>招聘岗位</th>
+                <th>学历</th>
+                <th>专业要求</th>
+                <th>截止时间</th>
+                <th>更新时间</th>
+                <th>投递链接</th>
+                <th>公告链接</th>
+                <th>备注</th>
                 <th class="ext-col-actions">操作</th>
               </tr>
             </thead>
@@ -998,6 +1048,60 @@ body.ext-mode .status-tabs{margin-bottom:12px}
     <div class="form-group"><label>网申链接</label><input type="url" id="impUrl" placeholder="https://..."></div>
     <div class="form-group"><label>备注</label><textarea id="impNotes" placeholder="如：内推码、截止日期..."></textarea></div>
     <div class="form-actions"><button class="btn btn-outline" onclick="closeImportModal()">取消</button><button class="btn btn-primary" onclick="importJob()">确认添加</button></div>
+  </div>
+</div>
+
+<!-- v4.4 需控制浏览器搜索 Modal（公司库中官网为自建系统、无法用招聘 API 搜索的公司全清单） -->
+<div class="modal-overlay" id="browserSearchModal" style="display:none">
+  <div class="modal" style="max-width:920px">
+    <h2>🌐 需控制浏览器搜索的公司</h2>
+    <p class="bs-desc">这些公司官网是<b>自建系统，无法用招聘 API 自动搜索</b>，所以「🔄 刷新」不会帮它们搜。无论岗位是否已入池，只要 API 搜不了就列在这里。☆ 收藏优先搜 ｜ ✗ 剔除不需要的 ｜ ✓ 标记已搜完。</p>
+
+    <!-- 筛选工具栏 -->
+    <div class="bs-filterbar">
+      <input type="text" class="search-input" id="bsSearchInput" placeholder="搜索公司名..." oninput="bsApplyFilters()" style="width:140px">
+      <select class="filter-select" id="bsFilterSystem" onchange="bsApplyFilters()">
+        <option value="">全部系统</option>
+      </select>
+      <select class="filter-select" id="bsFilterStatus" onchange="bsApplyFilters()">
+        <option value="">全部状态</option>
+        <option value="unsearched">未搜完</option>
+        <option value="searched">已搜完</option>
+      </select>
+      <select class="filter-select" id="bsSortBy" onchange="bsApplyFilters()">
+        <option value="date">按开招日期↓</option>
+        <option value="name">按公司名</option>
+        <option value="fav">收藏优先</option>
+      </select>
+      <button class="bs-fav-toggle" id="bsFavOnly" onclick="bsToggleFavOnly()">☆ 仅看收藏</button>
+      <button class="bs-fav-toggle" id="bsShowExcluded" onclick="bsToggleShowExcluded()">显示已剔除</button>
+    </div>
+    <div class="bs-stats" id="bsStats"></div>
+    <div class="bs-progress" id="bsProgress"></div>
+
+    <div class="bs-toolbar">
+      <span class="bs-meta" id="bsMeta">加载中...</span>
+      <div class="bs-toolbar-btns">
+        <button class="btn btn-outline btn-sm" onclick="bsBatchAction('favorited', true)" title="把选中公司标记为收藏">☆ 批量收藏</button>
+        <button class="btn btn-outline btn-sm" onclick="bsBatchAction('excluded', true)" title="把选中公司标记为剔除（不删除）">✗ 批量剔除</button>
+        <button class="btn btn-outline btn-sm" onclick="bsBatchAction('searched', true)" title="把选中公司标记为已搜完">✓ 批量已搜完</button>
+        <button class="btn btn-outline btn-sm" onclick="bsClearStatus()" title="把选中公司的所有标记清空">↺ 清空选中状态</button>
+        <button class="btn btn-primary btn-sm" onclick="copyBrowserSearchPrompt()">📋 复制清单给 Agent</button>
+        <button class="btn btn-outline btn-sm" onclick="bsExportCSV()">⬇ 导出 CSV</button>
+        <button class="btn btn-outline btn-sm" onclick="loadBrowserSearchList()">↻ 重新拉取</button>
+      </div>
+    </div>
+    <div class="bs-table-wrap">
+      <table class="ext-table">
+        <thead><tr>
+          <th style="width:28px"><input type="checkbox" id="bsSelectAll" onchange="bsToggleSelectAll(this.checked)" title="全选当前页"></th>
+          <th style="width:32px">#</th><th>公司名称</th><th>系统</th><th style="width:80px">开招日期</th><th>官网</th><th style="width:84px">操作</th>
+        </tr></thead>
+        <tbody id="bsTableBody"></tbody>
+      </table>
+    </div>
+    <div class="bs-pagination" id="bsPagination"></div>
+    <div class="form-actions"><button class="btn btn-outline" onclick="closeBrowserSearchModal()">关闭</button></div>
   </div>
 </div>
 
@@ -1159,11 +1263,12 @@ function fmtDate(str) {
   return m ? m[1] : s;
 }
 
-// P2-8: URL 协议白名单校验 — 只允许 http/https
+// P2-8: URL 协议白名单校验 — 只允许 http/https/mailto（mailto 为秋招公司库投递邮箱链接，无法执行脚本）
 function safeUrl(url) {
   if (!url) return '';
   const str = String(url).trim();
   if (/^https?:\/\//i.test(str)) return str;
+  if (/^mailto:/i.test(str)) return str;
   return '';
 }
 
@@ -1370,8 +1475,28 @@ async function loadData() {
       fetch('follow_up.csv?' + Date.now())
     ]);
     allJobs = parseCSV(await poolRes.text());
+    assignStableSeq(); // v4.11: 固定序号
     followUpMap = buildFollowUpMap(parseCSV(await followRes.text()));
   } catch (e) { console.error('Data load failed:', e); showToast('数据加载失败', 'error'); }
+}
+
+// v4.11→v4.12: 固定序号 —— 解决"序号随 tab/筛选/排序/翻页变化"的问题
+// 规则（v4.12 与用户约定）：
+//   1. 按默认排序（收藏 → 优先级 → 加入时间倒序）从 1 开始连续编号 1,2,3...，
+//      与列表默认展示顺序一致，翻页/筛选/切 tab 序号不变；
+//   2. 已剔除岗位不编号（剔除区不显示序号）；
+//   3. 收藏或优先级变更会改变默认排序 → 序号相应重排（保持 1..N 连续）。
+function assignStableSeq() {
+  // v4.12: 按默认排序（收藏 → 优先级 → 加入时间倒序，与列表默认展示一致）从 1 连续编号；
+  // 已剔除岗位不编号（剔除区不显示序号）。序号不随翻页/筛选/切换 tab 变化。
+  const priOrder = { '最高': 0, 'High': 1, 'Medium': 2, '低': 3 };
+  const favRank = j => isMarked(j.favorited) ? 0 : 1;
+  const actives = allJobs.filter(j => j.status !== 'Excluded');
+  actives.sort((a, b) => favRank(a) - favRank(b)
+    || (priOrder[a.priority] ?? 99) - (priOrder[b.priority] ?? 99)
+    || (b.date_found || '').localeCompare(a.date_found || ''));
+  actives.forEach((j, i) => { j._seq = i + 1; });
+  for (const j of allJobs) if (j.status === 'Excluded') j._seq = null;
 }
 
 // ========== Dynamic Filters ==========
@@ -1600,6 +1725,7 @@ function getMatchLevel(job) {
 
 // ========== Render ==========
 function renderAll() {
+  assignStableSeq(); // v4.11: 任何变更（增/删/剔除/恢复）后重算固定序号
   updateStats();
   renderJobs();
   updateTabCounts();
@@ -1726,14 +1852,12 @@ function getFiltered() {
     });
   }
 
-  // 视图序号（v4.6）：排序后编号 #1..#N，供卡片显示、序号区间筛选和跳转
-  filtered.forEach((j, i) => { j._viewIndex = i + 1; });
-
-  // 序号区间筛选（基于上方视图序号，编号不因区间过滤而改变）
+  // v4.12: 序号 = 固定序号 _seq（按默认排序从 1 连续编号），
+  // 不随 tab/筛选/排序/翻页变化 —— 卡片显示、序号区间筛选和跳转都用它
   const nf = parseInt(document.getElementById('numFrom')?.value, 10);
   const nt = parseInt(document.getElementById('numTo')?.value, 10);
   if (!isNaN(nf) || !isNaN(nt)) {
-    filtered = filtered.filter(j => (isNaN(nf) || j._viewIndex >= nf) && (isNaN(nt) || j._viewIndex <= nt));
+    filtered = filtered.filter(j => (isNaN(nf) || j._seq >= nf) && (isNaN(nt) || j._seq <= nt));
   }
   return filtered;
 }
@@ -1755,16 +1879,22 @@ function onDateFilterChange() {
   renderJobs();
 }
 
-// v4.6→v4.8: 跳转至视图序号 #N（自动翻到所在页 + 滚动 + 高亮）
+// v4.6→v4.11: 跳转至固定序号 #N（自动翻到所在页 + 滚动 + 高亮）
 function jumpToIndex() {
   const input = document.getElementById('jumpNum');
   const n = parseInt(input.value, 10);
   if (isNaN(n) || n < 1) { showToast('请输入 ≥1 的序号', 'error'); return; }
   const filtered = getFiltered();
-  const pos = filtered.findIndex(j => (j._viewIndex || 0) === n);
+  const pos = filtered.findIndex(j => (j._seq || 0) === n);
   if (pos === -1) {
-    const max = filtered.length > 0 ? Math.max(...filtered.map(j => j._viewIndex || 0)) : 0;
-    showToast(`未找到 #${n}，当前列表序号范围 1 ~ ${max}`, 'error');
+    // v4.12: 找不到时区分"被筛掉了"和"序号不存在"（已剔除岗位不编号，不会命中）
+    const inPool = allJobs.find(j => (j._seq || 0) === n);
+    if (inPool) {
+      showToast(`#${n} 被当前筛选条件过滤掉了，试试清空筛选`, 'error');
+    } else {
+      const max = allJobs.filter(j => j.status !== 'Excluded').length;
+      showToast(`未找到 #${n}，当前有效序号范围 1 ~ ${max}（已剔除岗位不编号）`, 'error');
+    }
     return;
   }
   // v4.8: 序号在别的页 → 先翻页再定位
@@ -1861,12 +1991,15 @@ function buildJobCard(job, idx, isExcluded) {
   const fav = isMarked(job.favorited);
   const favBtn = `<button class="star-btn${fav ? ' active' : ''}" data-job-fav="${parseInt(job._rowIndex)}" data-current="${fav ? '1' : ''}" title="${fav ? '取消收藏' : '收藏'}" onclick="event.stopPropagation()">${fav ? '⭐' : '☆'}</button>`;
 
-  // v4.6: 视图序号（排序后编号）+ 今日新增标记 + 跳转锚点
-  const viewNum = job._viewIndex || (idx + 1);
+  // v4.12: 固定序号（按默认排序从 1 连续编号）+ 今日新增标记 + 跳转锚点；已剔除不编号
+  const viewNum = job._seq || 0;
   const isTodayNew = !isExcluded && (job.date_found || '').substring(0, 10) === getLocalDate();
+  const seqBadge = (!isExcluded && viewNum)
+    ? `<span class="job-meta-item" title="固定序号（按默认排序从 1 连续编号，不随筛选/排序/翻页变化；可用于跳转/区间筛选）" style="opacity:0.6;font-size:0.7rem;">#${viewNum}</span>`
+    : '';
 
   return `
-  <div class="job-card${isExcluded ? ' excluded' : ''}" id="${isExcluded ? 'excl-card-' : 'job-card-'}${viewNum}" style="animation-delay:${Math.min(idx,30)*0.03}s">
+  <div class="job-card${isExcluded ? ' excluded' : ''}" id="${isExcluded ? 'excl-card-r' : 'job-card-'}${isExcluded ? (parseInt(job._rowIndex) || 0) : viewNum}" style="animation-delay:${Math.min(idx,30)*0.03}s">
     <div class="job-card-left"><div class="job-priority-dot dot-${priority}"></div></div>
     <div class="job-card-main">
       <div class="job-card-header">
@@ -1882,7 +2015,7 @@ function buildJobCard(job, idx, isExcluded) {
         ${city ? `<span class="job-meta-item">📍 ${city}</span>` : ''}
         <span class="job-meta-item">📅 ${date}</span>
         ${stage ? `<span class="job-meta-item">🔄 ${stage}</span>` : ''}
-        <span class="job-meta-item" title="当前视图序号（可用于跳转/区间筛选）" style="opacity:0.6;font-size:0.7rem;">#${viewNum}</span>
+        ${seqBadge}
       </div>
       ${notes ? `<div style="margin-top:4px;font-size:0.76rem;color:var(--text-muted);">💬 ${notes}</div>` : ''}
       <div class="job-card-actions">
@@ -1934,7 +2067,7 @@ function buildTimelineEntry(job, idx) {
   }
 
   return `
-  <div class="timeline-entry" id="job-card-${job._viewIndex || (idx + 1)}" style="animation-delay:${Math.min(idx,30)*0.04}s">
+  <div class="timeline-entry" id="job-card-${job._seq || (idx + 1)}" style="animation-delay:${Math.min(idx,30)*0.04}s">
     <div class="timeline-header">
       <div class="timeline-dot ${isOffer?'done':isRejected?'fail':'active'}"></div>
       <div class="timeline-body">
@@ -2118,6 +2251,8 @@ async function loadExternalCompanies() {
         populateExtFilters();
       } catch (e) { /* 辅助 UI 更新失败不阻断渲染 */ }
       renderExternalTable();
+// v4.4: 同步刷新「秋招公司库」工具栏「🌐 需控制浏览器搜索」角标
+      loadBrowserSearchCount();
       // v3.9: 数据为 0 时弹出飞书同步引导
       if (externalCompanies.length === 0) {
         showFeishuSyncGuide();
@@ -2143,18 +2278,25 @@ function updateExtSourceInfo() {
   }
 }
 
+// v5.0: 拆分多值字段（批次/届次/类型可能为 "A;B" 形式）
+function splitExtVals(s) {
+  return (s || '').split(/[,;；/、]/).map(x => x.trim()).filter(Boolean);
+}
+
 function populateExtFilters() {
   const cities = new Set();
   const batches = new Set();
   const types = new Set();
+  const cohorts = new Set();
   externalCompanies.forEach(c => {
     // 拆分城市：支持 ; 和 / 分隔，去掉"等"
-    (c.cities || '').split(/[,;；/、]/).forEach(s => {
-      s = s.trim().replace(/^[\u4e00-\u9fa5]+·/, '').replace(/等$/, '');
+    splitExtVals(c.cities).forEach(s => {
+      s = s.replace(/^[\u4e00-\u9fa5]+·/, '').replace(/等$/, '');
       if (s) cities.add(s);
     });
-    if (c.batch) batches.add(c.batch);
-    if (c.enterprise_type) types.add(c.enterprise_type);
+    splitExtVals(c.batch).forEach(s => batches.add(s));            // v5.0: 批次可能多选（; 分隔）
+    splitExtVals(c.cohort).forEach(s => cohorts.add(s));           // v5.0: 届次可能多选
+    splitExtVals(c.enterprise_type).forEach(s => types.add(s));
   });
   const fillSelect = (id, set) => {
     const sel = document.getElementById(id);
@@ -2172,6 +2314,7 @@ function populateExtFilters() {
   extCityItems.innerHTML = extCityHtml;
   updateExtCityTriggerLabel();
   fillSelect('extFilterBatch', batches);
+  fillSelect('extFilterCohort', cohorts);
   fillSelect('extFilterType', types);
 }
 
@@ -2226,6 +2369,7 @@ function renderExternalTable() {
   const table = document.getElementById('extTable');
 
   const batchFilter = document.getElementById('extFilterBatch').value;
+  const cohortFilter = document.getElementById('extFilterCohort').value;
   const typeFilter = document.getElementById('extFilterType').value;
   const search = document.getElementById('extSearchInput').value.trim().toLowerCase();
 
@@ -2240,18 +2384,20 @@ function renderExternalTable() {
       });
     });
   }
-  if (batchFilter) filtered = filtered.filter(c => c.batch === batchFilter);
-  if (typeFilter) filtered = filtered.filter(c => c.enterprise_type === typeFilter);
+  // v5.0: 批次/届次/类型为多值字段（";"分隔），任一命中即通过
+  if (batchFilter) filtered = filtered.filter(c => splitExtVals(c.batch).includes(batchFilter));
+  if (cohortFilter) filtered = filtered.filter(c => splitExtVals(c.cohort).includes(cohortFilter));
+  if (typeFilter) filtered = filtered.filter(c => splitExtVals(c.enterprise_type).includes(typeFilter));
   if (search) filtered = filtered.filter(c => (c.company_name || '').toLowerCase().includes(search));
   if (extFavOnly) filtered = filtered.filter(c => isMarked(c.favorited));   // v3.7: 仅看收藏
 
-  // 排序：收藏最前 → 正常 → 剔除最后；同级别内按开放日期降序
+  // 排序：收藏最前 → 正常 → 剔除最后；同级别内按更新时间降序（v5.0：新表以「更新时间」为活跃度主键）
   filtered.sort((a, b) => {
     const ea = isMarked(a.excluded), eb = isMarked(b.excluded);
     if (ea !== eb) return ea ? 1 : -1;            // 剔除的排最后
     const fa = isMarked(a.favorited), fb = isMarked(b.favorited);
     if (fa !== fb) return fa ? -1 : 1;             // 收藏的排最前
-    return (b.open_date || '').localeCompare(a.open_date || '');
+    return (b.updated_at || '').localeCompare(a.updated_at || '');
   });
 
   if (filtered.length === 0) {
@@ -2276,13 +2422,20 @@ function renderExternalTable() {
   tbody.innerHTML = extPageItems.map(c => {
     const name = escapeHtml(c.company_name || '');
     const type = escapeHtml(c.enterprise_type || '');
+    const industry = escapeHtml(c.industry || '');
     const batch = escapeHtml(c.batch || '');
+    const cohort = escapeHtml(c.cohort || '');
     const cities = escapeHtml(c.cities || '');
     const jobs = escapeHtml(c.job_categories || '');
-    const openDate = escapeHtml(fmtDate(c.open_date));
+    const edu = escapeHtml(c.education || '');
+    const major = escapeHtml(c.major || '');
     const deadline = escapeHtml(fmtDate(c.deadline));
-    const url = safeUrl(c.career_url);
-    const urlText = escapeHtml(c.career_url_text || c.career_url || '查看');
+    const updatedAt = escapeHtml(fmtDate(c.updated_at));
+    const remark = escapeHtml(c.remark || '');
+    const careerUrl = safeUrl(c.career_url);
+    const careerText = escapeHtml(c.career_url_text || c.career_url || '投递');
+    const noticeUrl = safeUrl(c.notice_url);
+    const noticeText = escapeHtml(c.notice_url_text || c.notice_url || '公告');
     const typeClass = escapeHtml(c.enterprise_type || 'default');
     // external 用 source_record_id 作为 recordId
     const recordId = escapeHtml(c.source_record_id || '');
@@ -2295,12 +2448,18 @@ function renderExternalTable() {
     return `<tr class="${rowClass}">
       <td class="ext-company">${name}</td>
       <td>${type ? `<span class="ext-type-badge ${typeClass}">${type}</span>` : ''}</td>
-      <td class="ext-batch">${batch}</td>
+      <td class="ext-cities"><span class="ext-cell-toggle" data-ext-cell="industry" data-content="${industry}">${industry || '—'}</span></td>
+      <td class="ext-batch">${batch || '—'}</td>
+      <td class="ext-batch">${cohort || '—'}</td>
       <td class="ext-cities"><span class="ext-cell-toggle" data-ext-cell="cities" data-content="${cities}">${cities || '—'}</span></td>
       <td class="ext-jobs"><span class="ext-cell-toggle" data-ext-cell="jobs" data-content="${jobs}">${jobs || '—'}</span></td>
-      <td class="ext-date">${openDate}</td>
-      <td class="ext-date">${deadline}</td>
-      <td>${url ? `<a href="${url}" target="_blank" rel="noopener" class="ext-link">${urlText}</a>` : ''}</td>
+      <td class="ext-batch">${edu || '—'}</td>
+      <td class="ext-cities"><span class="ext-cell-toggle" data-ext-cell="major" data-content="${major}">${major || '—'}</span></td>
+      <td class="ext-date">${deadline || '—'}</td>
+      <td class="ext-date">${updatedAt || '—'}</td>
+      <td>${careerUrl ? `<a href="${careerUrl}" target="_blank" rel="noopener" class="ext-link" title="${careerText}">📮 ${careerText}</a>` : '—'}</td>
+      <td>${noticeUrl ? `<a href="${noticeUrl}" target="_blank" rel="noopener" class="ext-link" title="${noticeText}">📢 ${noticeText}</a>` : '—'}</td>
+      <td class="ext-cities"><span class="ext-cell-toggle" data-ext-cell="remark" data-content="${remark}">${remark || '—'}</span></td>
       <td class="ext-actions">
         ${favBtn}
         <button class="btn btn-ghost btn-xs" data-ext-action="import" data-company="${name}" data-url="${escapeHtml(c.career_url||'')}" data-batch="${batch}" data-cities="${cities}" data-jobs="${jobs}">＋加入岗位池</button>
@@ -2338,13 +2497,14 @@ function renderExternalTable() {
   renderPagination('extPagination', lastExtTotal, extPage, extPageSize, [20, 50, 100, 200], 'gotoExtPage', 'setExtPageSize');
 }
 
-// v3.7: 点击 base 地点 / 岗位类别 单元格，弹出完整内容
+// v3.7: 点击 工作地点/招聘岗位 等单元格，弹出完整内容（v5.0: 扩展到行业/专业/备注）
 function showExtCellPopup(el) {
   // 移除已有弹窗
   document.getElementById('extCitiesPopup')?.remove();
   const content = el.dataset.content || '';
   const type = el.dataset.extCell || '';
-  const title = type === 'cities' ? 'base 地点' : '岗位类别';
+  const titleMap = { cities: '工作地点', jobs: '招聘岗位', industry: '行业类别', major: '专业要求', remark: '备注' };
+  const title = titleMap[type] || '详情';
   const items = content.split(';').map(s => s.trim()).filter(Boolean);
   const popup = document.createElement('div');
   popup.id = 'extCitiesPopup';
@@ -2398,6 +2558,366 @@ async function syncExternal() {
     btn.disabled = false;
     btn.textContent = '🔄 同步飞书';
   }
+}
+
+// ========== v4.4 「🌐 需控制浏览器搜索」—— 全库 + 收藏/剔除/已搜完 + 分页/筛选/排序 ==========
+// 数据源：GET /api/pending-browser-search（合并 browser_search_status.json 状态）
+let browserSearchList = [];   // 后端返回的原始全量数据
+let browserSearchTotal = 0;   // 总数（含已剔除）
+let bsFiltered = [];          // 当前筛选+排序后的列表
+let bsPage = 1;
+let bsPageSize = 20;
+let bsFavOnly = false;
+let bsShowExcluded = false;
+
+// 拉取清单数量 + 更新「秋招公司库」工具栏按钮角标
+async function loadBrowserSearchCount() {
+  try {
+    const res = await fetch('/api/pending-browser-search?limit=1');
+    const data = await res.json();
+    if (data.success) browserSearchTotal = data.total || data.count || 0;
+  } catch (e) { /* 网络失败保留旧数据 */ }
+  const btn = document.getElementById('browserSearchBtn');
+  if (btn) {
+    const n = browserSearchTotal;
+    btn.textContent = `🌐 需控制浏览器搜索（${n}）`;
+    btn.style.fontWeight = n > 0 ? '700' : '400';
+    btn.style.color = n > 0 ? 'var(--warning)' : '';
+  }
+}
+
+// 打开清单弹窗
+async function openBrowserSearchModal() {
+  bsPage = 1; bsFavOnly = false; bsShowExcluded = false;
+  document.getElementById('bsFavOnly').classList.remove('active');
+  document.getElementById('bsShowExcluded').classList.remove('active');
+  document.getElementById('bsSearchInput').value = '';
+  document.getElementById('browserSearchModal').style.display = 'flex';
+  await loadBrowserSearchList();
+}
+
+function closeBrowserSearchModal() {
+  document.getElementById('browserSearchModal').style.display = 'none';
+}
+
+// 拉取全量数据（含已剔除，前端筛选）
+async function loadBrowserSearchList() {
+  const meta = document.getElementById('bsMeta');
+  const tbody = document.getElementById('bsTableBody');
+  meta.textContent = '加载中...';
+  tbody.innerHTML = '';
+  try {
+    const res = await fetch('/api/pending-browser-search?limit=20000&includeExcluded=1');
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error || '拉取失败');
+    browserSearchList = data.companies || [];
+    browserSearchTotal = data.total || browserSearchList.length;
+    bsPopulateSystemFilter();
+    bsApplyFilters();
+    loadBrowserSearchCount();
+  } catch (e) {
+    meta.textContent = '拉取失败: ' + e.message;
+  }
+}
+
+// 填充系统类型下拉
+function bsPopulateSystemFilter() {
+  const sel = document.getElementById('bsFilterSystem');
+  const systems = [...new Set(browserSearchList.map(c => c.system || '自建/其他'))].sort();
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">全部系统</option>' + systems.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
+  sel.value = cur;
+}
+
+// 筛选 + 排序 + 分页 → 渲染
+function bsApplyFilters() {
+  const q = (document.getElementById('bsSearchInput')?.value || '').trim().toLowerCase();
+  const sys = document.getElementById('bsFilterSystem')?.value || '';
+  const statusF = document.getElementById('bsFilterStatus')?.value || '';
+  const sortBy = document.getElementById('bsSortBy')?.value || 'date';
+
+  bsFiltered = browserSearchList.filter(c => {
+    if (!bsShowExcluded && c.excluded) return false;
+    if (bsFavOnly && !c.favorited) return false;
+    if (q && !(c.company || '').toLowerCase().includes(q)) return false;
+    if (sys && (c.system || '自建/其他') !== sys) return false;
+    if (statusF === 'unsearched' && c.searched) return false;
+    if (statusF === 'searched' && !c.searched) return false;
+    return true;
+  });
+
+  // 排序
+  if (sortBy === 'name') {
+    bsFiltered.sort((a, b) => (a.company || '').localeCompare(b.company || ''));
+  } else if (sortBy === 'fav') {
+    bsFiltered.sort((a, b) => (b.favorited?1:0) - (a.favorited?1:0) || (b.openDate||'').localeCompare(a.openDate||''));
+  } else {
+    bsFiltered.sort((a, b) => (b.openDate || '').localeCompare(a.openDate || ''));
+  }
+
+  // 修正页码
+  const maxPage = Math.max(1, Math.ceil(bsFiltered.length / bsPageSize));
+  if (bsPage > maxPage) bsPage = maxPage;
+  if (bsPage < 1) bsPage = 1;
+
+  renderBrowserSearchTable();
+  bsRenderPagination();
+  bsRenderStats();
+  bsRenderProgress();
+}
+
+// 统计行
+function bsRenderStats() {
+  const el = document.getElementById('bsStats');
+  const s = {
+    total: browserSearchTotal,
+    visible: bsFiltered.length,
+    fav: browserSearchList.filter(c => c.favorited).length,
+    exc: browserSearchList.filter(c => c.excluded).length,
+    done: browserSearchList.filter(c => c.searched).length
+  };
+  el.innerHTML = `<span>共 <b>${s.total}</b> 家</span><span>当前显示 <b>${s.visible}</b></span><span>☆ 收藏 <b>${s.fav}</b></span><span>✗ 已剔除 <b>${s.exc}</b></span><span>✓ 已搜完 <b>${s.done}</b></span>`;
+}
+
+// 渲染表格（当前页）
+function renderBrowserSearchTable() {
+  const tbody = document.getElementById('bsTableBody');
+  const meta = document.getElementById('bsMeta');
+  if (bsFiltered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:24px">暂无匹配的公司</td></tr>';
+    meta.textContent = '无匹配结果';
+    return;
+  }
+  const start = (bsPage - 1) * bsPageSize;
+  const pageData = bsFiltered.slice(start, start + bsPageSize);
+  meta.textContent = `第 ${bsPage}/${Math.ceil(bsFiltered.length / bsPageSize)} 页 · 显示 ${start + 1}-${start + pageData.length} / 共 ${bsFiltered.length} 家`;
+
+  tbody.innerHTML = pageData.map((c, i) => {
+    const name = escapeHtml(c.company || '');
+    const url = safeUrl(c.url);
+    let host = '';
+    try { host = new URL(c.url).hostname; } catch (e) { host = ''; }
+    const sysLabel = escapeHtml(!c.system || c.system === 'unknown' ? '自建/其他' : c.system);
+    const rowClass = c.excluded ? 'bs-excluded' : (c.searched ? 'bs-searched' : '');
+    const favCls = c.favorited ? 'fav-on' : '';
+    const excCls = c.excluded ? 'exc-on' : '';
+    const doneCls = c.searched ? 'done-on' : '';
+    const idx = start + i + 1;
+    return `<tr class="${rowClass}">
+      <td><input type="checkbox" class="bs-cb" data-company="${name}"></td>
+      <td style="color:var(--text-muted)">${idx}</td>
+      <td class="ext-company">${name}${c.searched ? '<span style="font-size:.65rem;color:var(--success,#2a9);margin-left:4px">✓'+escapeHtml(c.searchedAt||'')+'</span>' : ''}</td>
+      <td>${sysLabel}</td>
+      <td class="ext-date">${escapeHtml(fmtDate(c.openDate))}</td>
+      <td>${url ? `<a href="${url}" target="_blank" rel="noopener" class="ext-link" title="${escapeHtml(c.url)}">${escapeHtml(host || '查看')}</a>` : '—'}</td>
+      <td style="white-space:nowrap">
+        <button class="bs-act-btn ${favCls}" data-company="${name}" onclick="bsToggleStatus(this.dataset.company,'favorited')" title="收藏优先搜索">☆</button>
+        <button class="bs-act-btn ${excCls}" data-company="${name}" onclick="bsToggleStatus(this.dataset.company,'excluded')" title="剔除（不删除，只是标记不需要）">✗</button>
+        <button class="bs-act-btn ${doneCls}" data-company="${name}" onclick="bsToggleStatus(this.dataset.company,'searched')" title="标记已搜完">✓</button>
+      </td>
+    </tr>`;
+  }).join('');
+  // 同步全选框状态
+  const selAll = document.getElementById('bsSelectAll');
+  if (selAll) {
+    const cbs = tbody.querySelectorAll('.bs-cb');
+    selAll.checked = cbs.length > 0 && Array.from(cbs).every(cb => cb.checked);
+  }
+}
+
+// 分页控件
+function bsRenderPagination() {
+  const el = document.getElementById('bsPagination');
+  const totalPages = Math.max(1, Math.ceil(bsFiltered.length / bsPageSize));
+  if (totalPages <= 1) { el.innerHTML = `<span class="bs-page-size">每页 <select onchange="bsChangePageSize(this.value)"><option ${bsPageSize===20?'selected':''}>20</option><option ${bsPageSize===50?'selected':''}>50</option><option ${bsPageSize===100?'selected':''}>100</option></select></span>`; return; }
+  let btns = `<button ${bsPage<=1?'disabled':''} onclick="bsGoToPage(${bsPage-1})">‹</button>`;
+  // 智能页码：最多显示 7 个
+  const pages = [];
+  if (totalPages <= 7) { for (let i=1;i<=totalPages;i++) pages.push(i); }
+  else { pages.push(1); if (bsPage>3) pages.push('...'); for (let i=Math.max(2,bsPage-1);i<=Math.min(totalPages-1,bsPage+1);i++) pages.push(i); if (bsPage<totalPages-2) pages.push('...'); pages.push(totalPages); }
+  for (const p of pages) {
+    if (p === '...') btns += `<span style="color:var(--text-muted)">…</span>`;
+    else btns += `<button class="${p===bsPage?'active':''}" onclick="bsGoToPage(${p})">${p}</button>`;
+  }
+  btns += `<button ${bsPage>=totalPages?'disabled':''} onclick="bsGoToPage(${bsPage+1})">›</button>`;
+  btns += `<span class="bs-page-size">每页 <select onchange="bsChangePageSize(this.value)"><option ${bsPageSize===20?'selected':''}>20</option><option ${bsPageSize===50?'selected':''}>50</option><option ${bsPageSize===100?'selected':''}>100</option></select></span>`;
+  el.innerHTML = btns;
+}
+
+function bsGoToPage(p) { bsPage = p; renderBrowserSearchTable(); bsRenderPagination(); document.getElementById('bsMeta') && (document.getElementById('bsMeta').textContent = `第 ${bsPage}/${Math.ceil(bsFiltered.length/bsPageSize)} 页`); }
+
+function bsChangePageSize(v) { bsPageSize = parseInt(v)||20; bsPage = 1; renderBrowserSearchTable(); bsRenderPagination(); document.getElementById('bsMeta') && (document.getElementById('bsMeta').textContent = `第 1/${Math.ceil(bsFiltered.length/bsPageSize)} 页`); }
+
+function bsToggleFavOnly() { bsFavOnly = !bsFavOnly; document.getElementById('bsFavOnly').classList.toggle('active', bsFavOnly); bsPage = 1; bsApplyFilters(); }
+function bsToggleShowExcluded() { bsShowExcluded = !bsShowExcluded; document.getElementById('bsShowExcluded').classList.toggle('active', bsShowExcluded); bsPage = 1; bsApplyFilters(); }
+
+// 切换收藏/剔除/已搜完状态（调 API → 本地更新 → 重渲染）
+async function bsToggleStatus(company, field) {
+  try {
+    const res = await fetch('/api/browser-search-status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ company, field })
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error || '操作失败');
+    // 本地更新
+    const c = browserSearchList.find(c => c.company === company);
+    if (c) { c[field] = data.status[field]; if (field==='searched') c.searchedAt = data.status.searched_at || ''; }
+    bsApplyFilters();
+  } catch (e) {
+    showToast('操作失败: ' + e.message, 'error');
+  }
+}
+
+// v4.6 全选当前页
+function bsToggleSelectAll(checked) {
+  document.querySelectorAll('#bsTableBody .bs-cb').forEach(cb => { cb.checked = checked; });
+}
+
+// v4.6 获取选中的公司名
+function bsGetSelected() {
+  const names = [];
+  document.querySelectorAll('#bsTableBody .bs-cb:checked').forEach(cb => {
+    // dataset.company 是浏览器自动解码 HTML 实体后的原始字符串
+    if (cb.dataset.company) names.push(cb.dataset.company);
+  });
+  return names;
+}
+
+// v4.6 批量操作
+async function bsBatchAction(field, value) {
+  const companies = bsGetSelected();
+  if (companies.length === 0) { showToast('请先勾选要批量操作的公司', 'error'); return; }
+  const fieldName = { favorited: '收藏', excluded: '剔除', searched: '已搜完' }[field];
+  if (!confirm(`确认把选中的 ${companies.length} 家公司标记为「${fieldName}」？`)) return;
+  try {
+    const res = await fetch('/api/browser-search-batch', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ companies, field, value })
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error || '批量操作失败');
+    // 本地同步
+    for (const c of browserSearchList) {
+      if (companies.includes(c.company)) {
+        c[field] = value;
+        if (field === 'searched' && value) {
+          const today = new Date().toISOString().substring(0, 10);
+          c.searchedAt = today;
+        }
+        if (field === 'searched' && !value) c.searchedAt = '';
+      }
+    }
+    showToast(`已批量${fieldName} ${data.changed} / ${data.total} 家`, 'success');
+    bsApplyFilters();
+  } catch (e) {
+    showToast('批量操作失败: ' + e.message, 'error');
+  }
+}
+
+// v4.6 清空选中公司的所有标记（收藏/剔除/已搜完 全部归 false）
+async function bsClearStatus() {
+  const companies = bsGetSelected();
+  if (companies.length === 0) { showToast('请先勾选要清空状态的公司', 'error'); return; }
+  if (!confirm(`确认清空选中的 ${companies.length} 家公司的所有标记（收藏/剔除/已搜完）？`)) return;
+  try {
+    // 三次批量调用
+    const fields = ['favorited', 'excluded', 'searched'];
+    for (const field of fields) {
+      await fetch('/api/browser-search-batch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ companies, field, value: false })
+      });
+    }
+    // 本地同步
+    for (const c of browserSearchList) {
+      if (companies.includes(c.company)) {
+        c.favorited = false; c.excluded = false; c.searched = false; c.searchedAt = '';
+      }
+    }
+    showToast(`已清空 ${companies.length} 家公司的标记`, 'success');
+    bsApplyFilters();
+  } catch (e) {
+    showToast('清空失败: ' + e.message, 'error');
+  }
+}
+
+// v4.6 导出当前筛选结果为 CSV
+function bsExportCSV() {
+  const list = bsFiltered.length > 0 ? bsFiltered : browserSearchList;
+  if (list.length === 0) { showToast('清单为空，无需导出', 'error'); return; }
+  const header = ['公司名称', '官网', '招聘系统', '开招日期', '收藏', '剔除', '已搜完', '搜完日期'];
+  const rows = list.map(c => [
+    c.company || '', c.url || '', c.system || '自建/其他', c.openDate || '',
+    c.favorited ? '是' : '', c.excluded ? '是' : '', c.searched ? '是' : '', c.searchedAt || ''
+  ]);
+  const csv = [header, ...rows].map(r => r.map(v => {
+    const s = String(v || '');
+    return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  }).join(',')).join('\n');
+  const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `browser_search_list_${getLocalDate()}.csv`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast(`已导出 ${list.length} 家公司到 CSV`, 'success');
+}
+
+// v4.6 渲染进度条
+function bsRenderProgress() {
+  const el = document.getElementById('bsProgress');
+  if (!el) return;
+  const total = browserSearchList.length;
+  const searched = browserSearchList.filter(c => c.searched).length;
+  const fav = browserSearchList.filter(c => c.favorited).length;
+  const exc = browserSearchList.filter(c => c.excluded).length;
+  const pct = total > 0 ? Math.round(searched / total * 100) : 0;
+  el.innerHTML = `
+    <div class="bs-progress-bar"><div class="bs-progress-fill" style="width:${pct}%"></div></div>
+    <div class="bs-progress-text">
+      <span>搜索进度: ${searched}/${total} (${pct}%) · ⭐收藏 ${fav} · ✗剔除 ${exc}</span>
+      <span>${total - searched} 家待搜</span>
+    </div>`;
+}
+
+// 复制当前筛选后的清单给 Agent（只复制当前看到的）
+function copyBrowserSearchPrompt() {
+  const list = bsFiltered.length > 0 ? bsFiltered : browserSearchList;
+  if (list.length === 0) { showToast('清单为空，无需搜索', 'error'); return; }
+  const today = getLocalDate();
+  const lines = list.map((c, i) =>
+    `${i + 1}. ${c.company} | ${c.url || '（无官网链接）'} | 开招 ${c.openDate || '未知'}${c.searched ? ' | ✅已搜完' : ''}${c.favorited ? ' | ⭐收藏' : ''}`
+  );
+  const prompt = [
+    '请用浏览器自动化（Playwright MCP / browser_use）逐家打开下面 ' + list.length + ' 家公司的校招官网，帮我搜索适合我的岗位并导入 CareerSail 岗位池。',
+    '',
+    '要求：',
+    '1. 我的求职画像见 config/user_profile.json（目标城市/岗位方向/关键词），岗位需符合画像才算"适合"；',
+    '2. 每家公司：打开官网 → 定位 2027 届校招/秋招岗位列表 → 筛出适合的岗位 → 通过 POST http://localhost:8430/api/import-job 导入（字段：company/job_title/location/role_family/job_url/notes/date_found=' + today + '/status=Pending），同一岗位不要重复导入；',
+    '3. 每搜完一家，在对话里汇报一句：公司名 + 导入几个岗位（或没搜到合适岗位 + 原因）；',
+    '4. 全部搜完后给我一个汇总表：成功导入 X 家 / 没搜到合适岗位 Y 家（列名单）。',
+    '',
+    '公司清单（CareerSail 需控制浏览器搜索，生成于 ' + today + '，共 ' + list.length + ' 家）：',
+    ...lines
+  ].join('\n');
+
+  navigator.clipboard.writeText(prompt).then(() => {
+    showToast(`已复制 ${list.length} 家公司的搜索指令，粘贴给编程 Agent 即可`, 'success');
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = prompt;
+    ta.style.cssText = 'position:fixed;inset:0;width:90%;height:80%;z-index:99999';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); showToast('已复制，粘贴给编程 Agent 即可', 'success'); }
+    catch (e) { showToast('复制失败，请手动全选复制', 'error'); }
+    ta.remove();
+  });
 }
 
 // v3.9: 飞书同步引导弹窗（秋招公司库为 0 时强引导）
@@ -2723,7 +3243,7 @@ async function refreshJobs() {
 
   // 1.5 发现新开秋招的公司（来自秋招公司库，URL 可自动搜索的），逐家真实搜索并导入适合的岗位
   // v4.4: 不再重复搜索已适配公司（搜一次就够），聚焦"新开秋招"的公司 ——
-  // 按 open_date 最新优先，且排除岗位池已有公司 + 7 天内已搜过的公司（searched_companies.json）
+  // 按 open_date 最新优先，且排除岗位池已有公司 + 1 天内已搜过的公司（searched_companies.json）
   let totalImported = 0;
   try {
     const res = await fetch('/api/discover-new-companies?limit=15');
@@ -2732,14 +3252,6 @@ async function refreshJobs() {
 
     // v4.6: 记录扫描明细 —— 每次刷新都能看到公司库各跳过原因的数量，判断覆盖是否全面
     if (data.summary) addLog(`📊 新公司扫描: ${data.summary}`);
-
-    // v4.7: 不支持 API 自动搜索的公司不再静默跳过 —— 明确告知数量、名单和下一步
-    if (data.stats && data.stats.unsupportedPending > 0) {
-      const names = (data.unsupportedCompanies || []).slice(0, 15).join('、');
-      const more = data.stats.unsupportedPending > 15 ? ` 等 ${data.stats.unsupportedPending} 家` : '';
-      addLog(`⚠️ 另有 ${data.stats.unsupportedPending} 家公司官网是自建系统（${names}${more}），API 自动刷新搜不了，需要浏览器搜索`);
-      addLog(`📋 待浏览器搜清单: http://localhost:8430/api/pending-browser-search（fresh=1 只看今天没搜过的）→ 把清单交给 AI Agent 逐家浏览器搜索导入`);
-    }
 
     if (discovered.length === 0) {
       addLog('✅ 秋招公司库暂无新开且可自动搜索的公司（岗位池已有的公司不重复搜，不在岗位池的 1 天内不重搜）');
@@ -2808,12 +3320,14 @@ async function refreshJobs() {
 
   // 4. 汇报真实变化
   const extDelta = externalCompanies.length - beforeExt;
+  await loadBrowserSearchCount(); // v4.4: 同步「秋招公司库」工具栏「🌐 需控制浏览器搜索」角标
+  const bsNote = browserSearchTotal > 0 ? `（🌐 ${browserSearchTotal} 家需控制浏览器搜索，见「秋招公司库」区按钮）` : '';
   if (totalImported > 0) {
-    showToast(`🎉 真实搜索新增 ${totalImported} 个岗位！公司库 ${externalCompanies.length} 家`, 'success');
+    showToast(`🎉 真实搜索新增 ${totalImported} 个岗位！公司库 ${externalCompanies.length} 家${bsNote}`, 'success');
     addLog(`📊 刷新完成: 官网搜索新增 ${totalImported} 个岗位，公司库 ${beforeExt} → ${externalCompanies.length}，岗位池 ${beforeJobs} → ${allJobs.length}`);
   } else if (extResult && extResult.success) {
     const extNote = extDelta !== 0 ? `（${extDelta > 0 ? '+' : ''}${extDelta}）` : '';
-    showToast(`✅ 已刷新：公司库 ${externalCompanies.length} 家${extNote}（本轮无新增岗位）`, 'success');
+    showToast(`✅ 已刷新：公司库 ${externalCompanies.length} 家${extNote}（本轮无新增岗位）${bsNote}`, 'success');
     addLog(`📊 刷新完成: 公司库 ${beforeExt} → ${externalCompanies.length}${extNote}，岗位 ${beforeJobs} → ${allJobs.length}`);
   } else {
     showToast('已重载本地数据（飞书同步失败，详见日志）', 'error');

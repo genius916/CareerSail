@@ -384,7 +384,7 @@ Agent 根据用户专业 + 目标岗位，自动推导 **4 个层面**的搜索�
 3. **飞书同步失败（秋招公司库显示 0 条）**：按以下优先级引导用户（不要硬绑特定 IDE 插件）：
    - **方案 A（通用推荐）**：安装飞书官方 `lark-cli`（`npx @larksuite/cli@latest install`），跨 Agent 通用，无 IDE 依赖。然后 `lark-cli config init --new` 配置飞书应用，`lark-cli auth login --recommend` 完成授权，最后调本服务 `POST /api/sync-external` 触发同步
    - **方案 B（用 Agent 自带的飞书集成）**：若 Agent 已有等价的飞书插件/技能/MCP（如 Trae 的 `trae-remote-official:lark`、WorkBuddy 的 `lark-unified`、OpenClaw 的 lark MCP 等），直接用即可，目标都是能调飞书 Base API 拉取多维表格记录
-   - **方案 C（兜底）**：提示用户手动编辑 `dashboard/external_companies.csv` 添加公司记录，或从飞书原始表格（`https://y00b74dmx5n.feishu.cn/wiki/O6d1wk0UNiJq90kIsQfcRS9An1p`）复制粘贴
+   - **方案 C（兜底）**：提示用户手动编辑 `dashboard/external_companies.csv` 添加公司记录，或从飞书原始表格（`https://gcn14f8b1xu1.feishu.cn/base/WNcRbTcsSaUi2usaKu8csm1qnU2?table=tbl9Z9a9ynA7Pagk&view=vewFArTk4K`，26年【秋招/春招/实习】汇总表）复制粘贴
    - **重要**：不要把方案 A 和方案 B 对立——lark-cli 是飞书官方开源的命令行工具（`https://github.com/larksuite/cli`），不是 Trae 专属；任何 Agent 环境都能用 npm 装。Agent 应根据自身环境选最简路径，不要因"没有某插件"就放弃同步
 4. **GitHub 推送需要授权**：调用 RequestAuthorization 工具或引导用户 `gh auth login`
 5. **任何授权失败**：明确告诉用户需要授权什么、为什么要授权、授权后能做什么，不要静默跳过
