@@ -640,7 +640,7 @@ body{
 .ext-type-badge.政府机关{background:#fffbe6;color:#d48806}
 .ext-type-badge.其他{background:var(--bg-alt);color:var(--text-secondary)}
 .ext-batch{font-size:0.74rem;color:var(--text-secondary)}
-.ext-cities,.ext-jobs{font-size:0.74rem;color:var(--text-secondary);max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ext-cities,.ext-jobs{font-size:0.74rem;color:var(--text-secondary);max-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ext-date{font-size:0.74rem;color:var(--text-muted);white-space:nowrap}
 .ext-link{color:var(--navy);text-decoration:none;font-size:0.76rem;font-weight:500;max-width:150px;display:inline-block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:bottom}
 .ext-link:hover{color:var(--accent);text-decoration:underline}
@@ -755,13 +755,29 @@ body.ext-mode .status-tabs{margin-bottom:12px}
 .ext-row-excluded td.ext-actions{background:var(--bg-alt)}
 .ext-row-favorited td.ext-actions{background:var(--surface)}
 
-/* base 地点 / 岗位类别 单元格：截断 + 悬浮查看全部 */
+/* v5.1: 顶部横向拖动条 — 与表格横向滚动双向同步，表格不溢出时自动隐藏 */
+.ext-hscroll-top{
+  height:10px;background:var(--bg-alt);border:1px solid var(--border-light);
+  border-radius:5px;margin-bottom:6px;position:relative;display:none;
+}
+.ext-hscroll-top.visible{display:block}
+.ext-hscroll-thumb{
+  height:100%;background:var(--primary);opacity:0.45;border-radius:5px;
+  position:absolute;top:0;left:0;width:60px;cursor:grab;user-select:none;
+  transition:opacity .15s;
+}
+.ext-hscroll-thumb:hover{opacity:0.7}
+.ext-hscroll-thumb.dragging{opacity:0.9;cursor:grabbing}
+
+/* base 地点 / 岗位类别 单元格：截断 + 点击弹窗查看全部 */
 .ext-cell-toggle{
-  cursor:pointer;display:inline-block;max-width:160px;
+  cursor:pointer;display:inline-block;max-width:120px;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   vertical-align:middle;
 }
 .ext-cell-toggle:hover{color:var(--navy);text-decoration:underline}
+/* v5.1: 列宽分级 — 学历/行业/备注更窄，正常缩略、点击弹窗展开 */
+.ext-cell-toggle.w-narrow{max-width:76px}
 .ext-cities-popup{
   position:absolute;background:var(--surface);border:1px solid var(--border);
   border-radius:var(--radius-sm);box-shadow:var(--shadow-lg);
@@ -990,11 +1006,17 @@ body.ext-mode .status-tabs{margin-bottom:12px}
             <button class="btn btn-primary btn-sm" onclick="syncExternal()" id="syncExtBtn">🔄 同步飞书</button>
           </div>
         </div>
-        <div class="ext-table-wrap">
+        <!-- v5.1: 顶部横向拖动条 — 与表格横向滚动双向同步 -->
+        <div class="ext-hscroll-top" id="extHScrollTop" title="拖动滑块横向浏览表格（与表格底部滚动条同步）">
+          <div class="ext-hscroll-thumb" id="extHScrollThumb"></div>
+        </div>
+        <div class="ext-table-wrap" id="extTableWrap">
           <table class="ext-table" id="extTable">
             <thead>
               <tr>
                 <th>公司名称</th>
+                <th>投递链接</th>
+                <th>公告链接</th>
                 <th>企业类型</th>
                 <th>行业</th>
                 <th>批次</th>
@@ -1005,8 +1027,6 @@ body.ext-mode .status-tabs{margin-bottom:12px}
                 <th>专业要求</th>
                 <th>截止时间</th>
                 <th>更新时间</th>
-                <th>投递链接</th>
-                <th>公告链接</th>
                 <th>备注</th>
                 <th class="ext-col-actions">操作</th>
               </tr>
@@ -1296,6 +1316,8 @@ async function init() {
   renderAll();
   // v4.9: 页面加载即预取秋招公司库，切换 tab 秒出数据
   loadExternalCompanies();
+  // v5.1: 初始化秋招公司库顶部横向拖动条（事件只绑一次，渲染时由 syncExtTopScrollbar 更新）
+  initExtTopScrollbar();
   // v3.9: 启动后检查用户画像是否为空，为空则弹引导
   checkUserProfileAndGuide();
 }
@@ -2404,6 +2426,7 @@ function renderExternalTable() {
     table.style.display = 'none';
     empty.style.display = 'block';
     renderPagination('extPagination', 0, 1, extPageSize, [20, 50, 100, 200], 'gotoExtPage', 'setExtPageSize');
+    syncExtTopScrollbar(); // v5.1: 空数据时收起顶部拖动条
     return;
   }
 
@@ -2447,19 +2470,19 @@ function renderExternalTable() {
 
     return `<tr class="${rowClass}">
       <td class="ext-company">${name}</td>
-      <td>${type ? `<span class="ext-type-badge ${typeClass}">${type}</span>` : ''}</td>
-      <td class="ext-cities"><span class="ext-cell-toggle" data-ext-cell="industry" data-content="${industry}">${industry || '—'}</span></td>
-      <td class="ext-batch">${batch || '—'}</td>
-      <td class="ext-batch">${cohort || '—'}</td>
-      <td class="ext-cities"><span class="ext-cell-toggle" data-ext-cell="cities" data-content="${cities}">${cities || '—'}</span></td>
-      <td class="ext-jobs"><span class="ext-cell-toggle" data-ext-cell="jobs" data-content="${jobs}">${jobs || '—'}</span></td>
-      <td class="ext-batch">${edu || '—'}</td>
-      <td class="ext-cities"><span class="ext-cell-toggle" data-ext-cell="major" data-content="${major}">${major || '—'}</span></td>
-      <td class="ext-date">${deadline || '—'}</td>
-      <td class="ext-date">${updatedAt || '—'}</td>
       <td>${careerUrl ? `<a href="${careerUrl}" target="_blank" rel="noopener" class="ext-link" title="${careerText}">📮 ${careerText}</a>` : '—'}</td>
       <td>${noticeUrl ? `<a href="${noticeUrl}" target="_blank" rel="noopener" class="ext-link" title="${noticeText}">📢 ${noticeText}</a>` : '—'}</td>
-      <td class="ext-cities"><span class="ext-cell-toggle" data-ext-cell="remark" data-content="${remark}">${remark || '—'}</span></td>
+      <td>${type ? `<span class="ext-type-badge ${typeClass}">${type}</span>` : ''}</td>
+      <td><span class="ext-cell-toggle w-narrow" data-ext-cell="industry" data-content="${industry}">${industry || '—'}</span></td>
+      <td class="ext-batch">${batch || '—'}</td>
+      <td class="ext-batch">${cohort || '—'}</td>
+      <td><span class="ext-cell-toggle w-narrow" data-ext-cell="cities" data-content="${cities}">${cities || '—'}</span></td>
+      <td><span class="ext-cell-toggle" data-ext-cell="jobs" data-content="${jobs}">${jobs || '—'}</span></td>
+      <td><span class="ext-cell-toggle w-narrow" data-ext-cell="education" data-content="${edu}">${edu || '—'}</span></td>
+      <td><span class="ext-cell-toggle" data-ext-cell="major" data-content="${major}">${major || '—'}</span></td>
+      <td class="ext-date">${deadline || '—'}</td>
+      <td class="ext-date">${updatedAt || '—'}</td>
+      <td><span class="ext-cell-toggle w-narrow" data-ext-cell="remark" data-content="${remark}">${remark || '—'}</span></td>
       <td class="ext-actions">
         ${favBtn}
         <button class="btn btn-ghost btn-xs" data-ext-action="import" data-company="${name}" data-url="${escapeHtml(c.career_url||'')}" data-batch="${batch}" data-cities="${cities}" data-jobs="${jobs}">＋加入岗位池</button>
@@ -2495,17 +2518,20 @@ function renderExternalTable() {
   });
   // v4.8: 公司库分页条
   renderPagination('extPagination', lastExtTotal, extPage, extPageSize, [20, 50, 100, 200], 'gotoExtPage', 'setExtPageSize');
+  syncExtTopScrollbar(); // v5.1: 渲染后更新顶部拖动条
 }
 
-// v3.7: 点击 工作地点/招聘岗位 等单元格，弹出完整内容（v5.0: 扩展到行业/专业/备注）
+// v3.7: 点击 工作地点/招聘岗位 等单元格，弹出完整内容（v5.0: 扩展到行业/专业/备注；v5.1: + 学历）
 function showExtCellPopup(el) {
   // 移除已有弹窗
   document.getElementById('extCitiesPopup')?.remove();
   const content = el.dataset.content || '';
   const type = el.dataset.extCell || '';
-  const titleMap = { cities: '工作地点', jobs: '招聘岗位', industry: '行业类别', major: '专业要求', remark: '备注' };
+  const titleMap = { cities: '工作地点', jobs: '招聘岗位', industry: '行业类别', education: '学历要求', major: '专业要求', remark: '备注' };
   const title = titleMap[type] || '详情';
-  const items = content.split(';').map(s => s.trim()).filter(Boolean);
+  // 学历用逗号分隔（"本科, 硕士, 博士"），其余字段按分号拆（专业要求文本可能含逗号，不能拆）
+  const sep = (type === 'education') ? /[;；,，]/ : /[;；]/;
+  const items = content.split(sep).map(s => s.trim()).filter(Boolean);
   const popup = document.createElement('div');
   popup.id = 'extCitiesPopup';
   popup.className = 'ext-cities-popup';
@@ -2522,6 +2548,73 @@ function showExtCellPopup(el) {
   }
   popup.style.left = left + 'px';
   popup.style.top = top + 'px';
+}
+
+// ========== v5.1: 顶部横向拖动条（与表格横向滚动双向同步） ==========
+function syncExtTopScrollbar() {
+  const wrap = document.getElementById('extTableWrap');
+  const bar = document.getElementById('extHScrollTop');
+  const thumb = document.getElementById('extHScrollThumb');
+  if (!wrap || !bar || !thumb) return;
+  const overflow = wrap.scrollWidth - wrap.clientWidth;
+  if (overflow <= 4) { bar.classList.remove('visible'); return; } // 表格不溢出 → 隐藏拖动条
+  bar.classList.add('visible');
+  const ratio = wrap.clientWidth / wrap.scrollWidth;
+  const barW = Math.max(30, Math.round(bar.clientWidth * ratio));
+  const maxLeft = bar.clientWidth - barW;
+  const left = maxLeft > 0 ? Math.round((wrap.scrollLeft / overflow) * maxLeft) : 0;
+  thumb.style.width = barW + 'px';
+  thumb.style.left = left + 'px';
+  thumb.dataset.maxLeft = String(maxLeft);
+  thumb.dataset.overflow = String(overflow);
+}
+
+function initExtTopScrollbar() {
+  const wrap = document.getElementById('extTableWrap');
+  const bar = document.getElementById('extHScrollTop');
+  const thumb = document.getElementById('extHScrollThumb');
+  if (!wrap || !bar || !thumb) return;
+
+  // 表格滚动 → 更新拖动条
+  wrap.addEventListener('scroll', syncExtTopScrollbar);
+  window.addEventListener('resize', syncExtTopScrollbar);
+
+  // 拖动滑块 → 滚动表格
+  let dragging = false, startX = 0, startLeft = 0;
+  thumb.addEventListener('mousedown', (e) => {
+    dragging = true;
+    startX = e.clientX;
+    startLeft = parseInt(thumb.style.left || '0', 10);
+    thumb.classList.add('dragging');
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', (e) => {
+    if (!dragging) return;
+    const maxLeft = parseInt(thumb.dataset.maxLeft || '0', 10);
+    const overflow = parseInt(thumb.dataset.overflow || '0', 10);
+    let left = startLeft + (e.clientX - startX);
+    left = Math.max(0, Math.min(maxLeft, left));
+    thumb.style.left = left + 'px';
+    wrap.scrollLeft = maxLeft > 0 ? (left / maxLeft) * overflow : 0;
+  });
+  document.addEventListener('mouseup', () => {
+    if (dragging) { dragging = false; thumb.classList.remove('dragging'); }
+  });
+
+  // 点击轨道空白处 → 跳到该位置
+  bar.addEventListener('mousedown', (e) => {
+    if (e.target === thumb) return;
+    const maxLeft = parseInt(thumb.dataset.maxLeft || '0', 10);
+    const overflow = parseInt(thumb.dataset.overflow || '0', 10);
+    if (maxLeft <= 0) return;
+    const rect = bar.getBoundingClientRect();
+    let left = e.clientX - rect.left - thumb.clientWidth / 2;
+    left = Math.max(0, Math.min(maxLeft, left));
+    thumb.style.left = left + 'px';
+    wrap.scrollLeft = (left / maxLeft) * overflow;
+  });
+
+  syncExtTopScrollbar();
 }
 
 async function syncExternal() {
