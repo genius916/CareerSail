@@ -992,6 +992,9 @@ body.ext-mode .status-tabs{margin-bottom:12px}
                 <div id="extCityDropdownItems"></div>
               </div>
             </div>
+            <select id="extFilterIndustry" class="filter-select ext-filter" onchange="renderExternalTable()">
+              <option value="">全部行业</option>
+            </select>
             <select id="extFilterBatch" class="filter-select ext-filter" onchange="renderExternalTable()">
               <option value="">全部批次</option>
             </select>
@@ -1189,7 +1192,9 @@ function jobFilterSig() {
 }
 
 function extFilterSig() {
-  return [document.getElementById('extFilterBatch')?.value || '',
+  return [document.getElementById('extFilterIndustry')?.value || '', // v5.2: 行业筛选
+    document.getElementById('extFilterBatch')?.value || '',
+    document.getElementById('extFilterCohort')?.value || '',
     document.getElementById('extFilterType')?.value || '',
     document.getElementById('extSearchInput')?.value || '',
     extFavOnly ? '1' : '',
@@ -2310,6 +2315,7 @@ function populateExtFilters() {
   const batches = new Set();
   const types = new Set();
   const cohorts = new Set();
+  const industries = new Set(); // v5.2: 行业筛选
   externalCompanies.forEach(c => {
     // 拆分城市：支持 ; 和 / 分隔，去掉"等"
     splitExtVals(c.cities).forEach(s => {
@@ -2319,6 +2325,8 @@ function populateExtFilters() {
     splitExtVals(c.batch).forEach(s => batches.add(s));            // v5.0: 批次可能多选（; 分隔）
     splitExtVals(c.cohort).forEach(s => cohorts.add(s));           // v5.0: 届次可能多选
     splitExtVals(c.enterprise_type).forEach(s => types.add(s));
+    // v5.2: 行业选项只按分号拆（"能源/化工/环保"是完整行业名，不能按 / 拆碎）
+    (c.industry || '').split(/[;；]/).map(s => s.trim()).filter(Boolean).forEach(s => industries.add(s));
   });
   const fillSelect = (id, set) => {
     const sel = document.getElementById(id);
@@ -2338,6 +2346,7 @@ function populateExtFilters() {
   fillSelect('extFilterBatch', batches);
   fillSelect('extFilterCohort', cohorts);
   fillSelect('extFilterType', types);
+  fillSelect('extFilterIndustry', industries); // v5.2: 行业筛选
 }
 
 function toggleExtCity(city) {
@@ -2393,6 +2402,7 @@ function renderExternalTable() {
   const batchFilter = document.getElementById('extFilterBatch').value;
   const cohortFilter = document.getElementById('extFilterCohort').value;
   const typeFilter = document.getElementById('extFilterType').value;
+  const industryFilter = document.getElementById('extFilterIndustry').value; // v5.2: 行业筛选
   const search = document.getElementById('extSearchInput').value.trim().toLowerCase();
 
   let filtered = externalCompanies;
@@ -2410,6 +2420,8 @@ function renderExternalTable() {
   if (batchFilter) filtered = filtered.filter(c => splitExtVals(c.batch).includes(batchFilter));
   if (cohortFilter) filtered = filtered.filter(c => splitExtVals(c.cohort).includes(cohortFilter));
   if (typeFilter) filtered = filtered.filter(c => splitExtVals(c.enterprise_type).includes(typeFilter));
+  // v5.2: 行业筛选 — 行业值内含 "/"（如"能源/化工/环保"），只按分号拆分后精确匹配
+  if (industryFilter) filtered = filtered.filter(c => (c.industry || '').split(/[;；]/).map(s => s.trim()).includes(industryFilter));
   if (search) filtered = filtered.filter(c => (c.company_name || '').toLowerCase().includes(search));
   if (extFavOnly) filtered = filtered.filter(c => isMarked(c.favorited));   // v3.7: 仅看收藏
 
