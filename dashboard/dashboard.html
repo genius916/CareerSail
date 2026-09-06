@@ -992,18 +992,35 @@ body.ext-mode .status-tabs{margin-bottom:12px}
                 <div id="extCityDropdownItems"></div>
               </div>
             </div>
-            <select id="extFilterIndustry" class="filter-select ext-filter" onchange="renderExternalTable()">
-              <option value="">全部行业</option>
-            </select>
-            <select id="extFilterBatch" class="filter-select ext-filter" onchange="renderExternalTable()">
-              <option value="">全部批次</option>
-            </select>
-            <select id="extFilterCohort" class="filter-select ext-filter" onchange="renderExternalTable()">
-              <option value="">全部届次</option>
-            </select>
-            <select id="extFilterType" class="filter-select ext-filter" onchange="renderExternalTable()">
-              <option value="">全部类型</option>
-            </select>
+            <!-- v5.3: 行业/批次/届次/企业类型 全部改为多选下拉 -->
+            <div class="cat-dropdown ext-filter" id="extIndustryDropdown" style="min-width:110px" data-ext-filter="industry">
+              <div class="cat-dropdown-trigger"><span class="cat-trigger-label" id="extIndustryTriggerLabel">全部行业</span><span class="cat-trigger-caret">▼</span></div>
+              <div class="cat-dropdown-panel">
+                <input type="text" class="cat-dropdown-search" placeholder="搜索行业...">
+                <div id="extIndustryDropdownItems"></div>
+              </div>
+            </div>
+            <div class="cat-dropdown ext-filter" id="extBatchDropdown" style="min-width:110px" data-ext-filter="batch">
+              <div class="cat-dropdown-trigger"><span class="cat-trigger-label" id="extBatchTriggerLabel">全部批次</span><span class="cat-trigger-caret">▼</span></div>
+              <div class="cat-dropdown-panel">
+                <input type="text" class="cat-dropdown-search" placeholder="搜索批次...">
+                <div id="extBatchDropdownItems"></div>
+              </div>
+            </div>
+            <div class="cat-dropdown ext-filter" id="extCohortDropdown" style="min-width:110px" data-ext-filter="cohort">
+              <div class="cat-dropdown-trigger"><span class="cat-trigger-label" id="extCohortTriggerLabel">全部届次</span><span class="cat-trigger-caret">▼</span></div>
+              <div class="cat-dropdown-panel">
+                <input type="text" class="cat-dropdown-search" placeholder="搜索届次...">
+                <div id="extCohortDropdownItems"></div>
+              </div>
+            </div>
+            <div class="cat-dropdown ext-filter" id="extTypeDropdown" style="min-width:110px" data-ext-filter="type">
+              <div class="cat-dropdown-trigger"><span class="cat-trigger-label" id="extTypeTriggerLabel">全部类型</span><span class="cat-trigger-caret">▼</span></div>
+              <div class="cat-dropdown-panel">
+                <input type="text" class="cat-dropdown-search" placeholder="搜索类型...">
+                <div id="extTypeDropdownItems"></div>
+              </div>
+            </div>
             <input type="text" id="extSearchInput" class="search-input ext-search" placeholder="搜索公司名..." oninput="renderExternalTable()" style="width:160px">
             <button class="btn btn-outline btn-sm" onclick="openBrowserSearchModal()" id="browserSearchBtn" title="公司库中官网为自建系统、无法用招聘 API 搜索的公司（无论是否已入岗位池）。点开复制指令交给编程 Agent 用浏览器逐家搜索" style="font-weight:600">🌐 需控制浏览器搜索（…）</button>
             <button class="btn btn-primary btn-sm" onclick="syncExternal()" id="syncExtBtn">🔄 同步飞书</button>
@@ -1192,10 +1209,10 @@ function jobFilterSig() {
 }
 
 function extFilterSig() {
-  return [document.getElementById('extFilterIndustry')?.value || '', // v5.2: 行业筛选
-    document.getElementById('extFilterBatch')?.value || '',
-    document.getElementById('extFilterCohort')?.value || '',
-    document.getElementById('extFilterType')?.value || '',
+  return [[...extActiveIndustry].sort().join(','), // v5.3: 行业/批次/届次/类型多选
+    [...extActiveBatch].sort().join(','),
+    [...extActiveCohort].sort().join(','),
+    [...extActiveType].sort().join(','),
     document.getElementById('extSearchInput')?.value || '',
     extFavOnly ? '1' : '',
     [...extActiveCities].sort().join(',')
@@ -1323,6 +1340,12 @@ async function init() {
   loadExternalCompanies();
   // v5.1: 初始化秋招公司库顶部横向拖动条（事件只绑一次，渲染时由 syncExtTopScrollbar 更新）
   initExtTopScrollbar();
+  // v5.3: 初始化行业/批次/届次/企业类型 多选下拉
+  ['industry', 'batch', 'cohort', 'type'].forEach(initExtMultiselect);
+  // v5.3: 点击页面空白处关闭所有 ext 多选下拉
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.cat-dropdown[data-ext-filter]').forEach(d => d.classList.remove('open'));
+  });
   // v3.9: 启动后检查用户画像是否为空，为空则弹引导
   checkUserProfileAndGuide();
 }
@@ -2251,6 +2274,11 @@ let externalCompanies = [];
 let externalSourceInfo = { last_sync_at: '', source_name: '', source_url: '' };
 let extFavOnly = false;  // v3.7: 仅看收藏
 let extActiveCities = new Set(); // 多选城市（秋招公司库）
+// v5.3: 行业/批次/届次/企业类型 多选状态
+let extActiveIndustry = new Set();
+let extActiveBatch = new Set();
+let extActiveCohort = new Set();
+let extActiveType = new Set();
 
 function toggleExtFavOnly() {
   extFavOnly = !extFavOnly;
@@ -2328,12 +2356,6 @@ function populateExtFilters() {
     // v5.2: 行业选项只按分号拆（"能源/化工/环保"是完整行业名，不能按 / 拆碎）
     (c.industry || '').split(/[;；]/).map(s => s.trim()).filter(Boolean).forEach(s => industries.add(s));
   });
-  const fillSelect = (id, set) => {
-    const sel = document.getElementById(id);
-    const cur = sel.value;
-    sel.innerHTML = '<option value="">全部</option>' + [...set].sort().map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
-    sel.value = cur;
-  };
   // 填充城市多选下拉
   const extCityItems = document.getElementById('extCityDropdownItems');
   let extCityHtml = `<div class="cat-dropdown-item ${extActiveCities.size === 0 ? 'active' : ''}" data-city="__all__" onclick="toggleExtCity('__all__')">全部城市</div>`;
@@ -2343,10 +2365,106 @@ function populateExtFilters() {
   });
   extCityItems.innerHTML = extCityHtml;
   updateExtCityTriggerLabel();
-  fillSelect('extFilterBatch', batches);
-  fillSelect('extFilterCohort', cohorts);
-  fillSelect('extFilterType', types);
-  fillSelect('extFilterIndustry', industries); // v5.2: 行业筛选
+  // v5.3: 行业/批次/届次/类型 改为多选下拉渲染
+  renderExtMultiItems('industry', industries);
+  renderExtMultiItems('batch', batches);
+  renderExtMultiItems('cohort', cohorts);
+  renderExtMultiItems('type', types);
+}
+
+// ========== v5.3: 通用多选下拉管理器（行业/批次/届次/类型） ==========
+// field 取值：industry / batch / cohort / type
+const EXT_MULTI_CONFIG = {
+  industry: { set: () => extActiveIndustry, label: '全部行业', unit: '个行业' },
+  batch:    { set: () => extActiveBatch,    label: '全部批次', unit: '个批次' },
+  cohort:   { set: () => extActiveCohort,   label: '全部届次', unit: '个届次' },
+  type:     { set: () => extActiveType,     label: '全部类型', unit: '个类型' },
+};
+
+// 渲染某字段的多选下拉项（保留当前选中状态）
+function renderExtMultiItems(field, values) {
+  const cfg = EXT_MULTI_CONFIG[field];
+  const active = cfg.set();
+  const itemsEl = document.getElementById(`ext${capFirst(field)}DropdownItems`);
+  if (!itemsEl) return;
+  const cap = capFirst(field);
+  let html = `<div class="cat-dropdown-item ${active.size === 0 ? 'active' : ''}" data-ext-multi="${field}" data-val="__all__">${cfg.label}</div>`;
+  [...values].sort().forEach(v => {
+    const esc = escapeHtml(v);
+    html += `<div class="cat-dropdown-item ${active.has(v) ? 'active' : ''}" data-ext-multi="${field}" data-val="${esc}">${esc}</div>`;
+  });
+  itemsEl.innerHTML = html;
+  updateExtMultiLabel(field);
+}
+
+function capFirst(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+function updateExtMultiLabel(field) {
+  const cfg = EXT_MULTI_CONFIG[field];
+  const active = cfg.set();
+  const label = document.getElementById(`ext${capFirst(field)}TriggerLabel`);
+  if (!label) return;
+  if (active.size === 0) label.textContent = cfg.label;
+  else if (active.size === 1) label.textContent = [...active][0];
+  else label.textContent = `${active.size}${cfg.unit}`;
+}
+
+// 切换某字段某值的选中
+function toggleExtMulti(field, value) {
+  const cfg = EXT_MULTI_CONFIG[field];
+  const active = cfg.set();
+  if (value === '__all__') active.clear();
+  else {
+    if (active.has(value)) active.delete(value);
+    else active.add(value);
+  }
+  renderExtMultiItems(field, getExtFilterValues(field));
+  renderExternalTable();
+}
+
+// 取某字段的全部候选值（从已渲染的下拉项中提取，避免重复计算）
+function getExtFilterValues(field) {
+  const itemsEl = document.getElementById(`ext${capFirst(field)}DropdownItems`);
+  const vals = new Set();
+  itemsEl?.querySelectorAll('.cat-dropdown-item[data-val]').forEach(it => {
+    const v = it.dataset.val;
+    if (v && v !== '__all__') vals.add(v);
+  });
+  return vals;
+}
+
+// 初始化某个多选下拉：绑定 trigger 开关、搜索过滤、项点击、外部点击关闭
+function initExtMultiselect(field) {
+  const dd = document.getElementById(`ext${capFirst(field)}Dropdown`);
+  if (!dd) return;
+  const trigger = dd.querySelector('.cat-dropdown-trigger');
+  const search = dd.querySelector('.cat-dropdown-search');
+  const items = dd.querySelector('[id$="DropdownItems"]');
+
+  trigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    // 关闭其他 ext 多选下拉
+    document.querySelectorAll('.cat-dropdown[data-ext-filter]').forEach(d => { if (d !== dd) d.classList.remove('open'); });
+    dd.classList.toggle('open');
+    if (dd.classList.contains('open')) { search.value = ''; filterExtMulti(field, ''); }
+  });
+  search.addEventListener('input', (e) => { e.stopPropagation(); filterExtMulti(field, e.target.value); });
+  search.addEventListener('click', (e) => e.stopPropagation());
+  items.addEventListener('click', (e) => {
+    const item = e.target.closest('.cat-dropdown-item');
+    if (!item) return;
+    e.stopPropagation();
+    toggleExtMulti(field, item.dataset.val);
+  });
+}
+
+function filterExtMulti(field, q) {
+  const itemsEl = document.getElementById(`ext${capFirst(field)}DropdownItems`);
+  const query = (q || '').toLowerCase();
+  itemsEl?.querySelectorAll('.cat-dropdown-item').forEach(it => {
+    const text = (it.textContent || '').toLowerCase();
+    it.style.display = text.includes(query) ? '' : 'none';
+  });
 }
 
 function toggleExtCity(city) {
@@ -2399,10 +2517,6 @@ function renderExternalTable() {
   const empty = document.getElementById('extEmpty');
   const table = document.getElementById('extTable');
 
-  const batchFilter = document.getElementById('extFilterBatch').value;
-  const cohortFilter = document.getElementById('extFilterCohort').value;
-  const typeFilter = document.getElementById('extFilterType').value;
-  const industryFilter = document.getElementById('extFilterIndustry').value; // v5.2: 行业筛选
   const search = document.getElementById('extSearchInput').value.trim().toLowerCase();
 
   let filtered = externalCompanies;
@@ -2416,12 +2530,19 @@ function renderExternalTable() {
       });
     });
   }
-  // v5.0: 批次/届次/类型为多值字段（";"分隔），任一命中即通过
-  if (batchFilter) filtered = filtered.filter(c => splitExtVals(c.batch).includes(batchFilter));
-  if (cohortFilter) filtered = filtered.filter(c => splitExtVals(c.cohort).includes(cohortFilter));
-  if (typeFilter) filtered = filtered.filter(c => splitExtVals(c.enterprise_type).includes(typeFilter));
-  // v5.2: 行业筛选 — 行业值内含 "/"（如"能源/化工/环保"），只按分号拆分后精确匹配
-  if (industryFilter) filtered = filtered.filter(c => (c.industry || '').split(/[;；]/).map(s => s.trim()).includes(industryFilter));
+  // v5.3: 行业/批次/届次/企业类型 全部多选 — 公司字段拆分后任一命中选中集合即通过
+  if (extActiveIndustry.size > 0) {
+    filtered = filtered.filter(c => (c.industry || '').split(/[;；]/).map(s => s.trim()).some(s => extActiveIndustry.has(s)));
+  }
+  if (extActiveBatch.size > 0) {
+    filtered = filtered.filter(c => splitExtVals(c.batch).some(s => extActiveBatch.has(s)));
+  }
+  if (extActiveCohort.size > 0) {
+    filtered = filtered.filter(c => splitExtVals(c.cohort).some(s => extActiveCohort.has(s)));
+  }
+  if (extActiveType.size > 0) {
+    filtered = filtered.filter(c => splitExtVals(c.enterprise_type).some(s => extActiveType.has(s)));
+  }
   if (search) filtered = filtered.filter(c => (c.company_name || '').toLowerCase().includes(search));
   if (extFavOnly) filtered = filtered.filter(c => isMarked(c.favorited));   // v3.7: 仅看收藏
 
